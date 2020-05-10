@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { LoginContext } from "./loginContext";
-import { loginWithGoogle, logoutAll, emailPwSignIn } from "./firebase_";
+import { loginWithGoogle,loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
 import { navigate } from "@reach/router";
 import {
   Button,
@@ -15,17 +15,19 @@ import {
 const LoginForm = () => {
   const [login, setLogin] = useContext(LoginContext);
   const [isSummit, setIsSummit] = useState(false);
-  const [use_email, set_use_email] = useState("");
-  const [use_password, set_use_password] = useState("");
-  const [use_error, set_use_error] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+
+ 
 
   useEffect(() => {
     console.log("loginForm_useEffect");
   });
 
-  const handleClick = event => {
+  const handleClick = () => {
     setIsSummit(false);
-    //emailPwSignIn(use_email, use_password);
+    emailPwSignIn(email, password);
     navigate("/input");
   };
 
@@ -33,11 +35,11 @@ const LoginForm = () => {
     const { name, value } = event.currentTarget;
     switch (name) {
       case "email":
-        set_use_email(value);
+        setEmail(value);
         console.log("loginForm_email", value);
         break;
       case "password":
-        set_use_password(value);
+        setPassword(value);
         console.log("loginForm_password", value);
         break;
       default:
@@ -47,7 +49,8 @@ const LoginForm = () => {
   };
 
   const googleLogin = () => {
-    loginWithGoogle();
+    //loginWithGoogle();
+    loginWithGoogleRedirect();
   };
 
   const logout = () => {

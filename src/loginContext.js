@@ -2,24 +2,21 @@ import React, { useState, useEffect, createContext } from "react";
 import { Container } from "semantic-ui-react";
 import { auth } from "./firebase_";
 
-const loginInit = {
-  user: null
-};
-
 export const LoginContext = createContext();
 
 const LoginContextProvider = props => {
-  const [login, setLogin] = useState(loginInit);
+  const [login, setLogin] = useState(null);
 
   const ifAuthStateChange = () => {
     return auth.onAuthStateChanged(userAuth => {
       if (userAuth) {
+        
         console.log("The user is logged in");
         //console.log(userAuth);
-        setLogin({ user: userAuth });
+        setLogin(userAuth);
       } else {
         console.log("The user is not logged in");
-        setLogin({ user: null });
+        setLogin(null);
       }
     });
   };
