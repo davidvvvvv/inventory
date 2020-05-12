@@ -18,6 +18,7 @@ if (!firebase.apps.length) {
 }
 
 export const auth = firebase.auth();
+console.log('auth ',auth);
 export const firestore = firebase.firestore();
 
 const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -40,7 +41,7 @@ export const loginWithGoogleRedirect = () => {
 };
 
 export const emailPwSignIn = (email, password) => {
-  auth.signInWithEmailAndPassword(email, password).catch(error => {
+  auth.signInWithEmailAndPassword(email, password).then(authCreditial=>{console.log("authCreditial ",authCreditial)}).catch(error => {
     console.log("signInWithEmailAndPassword_error", error.message);
   });
 };
@@ -67,3 +68,11 @@ export const getDBDoc = async (col, doc) => {
     .get()
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
+
+auth.getRedirectResult().then(function(result) {
+  if (result.credential) {
+    // This gives you a Google Access Token.
+    console.log("accessToken ",result.credential.accessToken);
+  }
+  console.log("user ",result.user);
+});
