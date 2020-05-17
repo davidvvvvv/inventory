@@ -8,7 +8,7 @@ const MainPage = props => {
   const [login, setLogin] = useContext(LoginContext);
 
   return (
-    <Router>
+    <Router /*basepath="/inventory"*/>
       {/*login.user === false && <LoginForm />*/}
       {/*login.user === true && <InputForm />*/}
       <LoginForm path="/" />
