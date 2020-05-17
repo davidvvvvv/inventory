@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { LoginContext } from "./loginContext";
 import LoginForm from "./loginForm";
 import InputForm from "./inputForm";
-import { Router } from "@reach/router";
+import { Router,navigate } from "@reach/router";
 
 const MainPage = props => {
   const [login, setLogin] = useContext(LoginContext);

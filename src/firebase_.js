@@ -18,7 +18,6 @@ if (!firebase.apps.length) {
 }
 
 export const auth = firebase.auth();
-console.log('auth ',auth);
 export const firestore = firebase.firestore();
 
 const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -29,19 +28,20 @@ googleProvider.setCustomParameters({
 */
 
 export const loginWithGoogle = () => {
-  auth.signInWithPopup(googleProvider).catch(error => {
+  auth.signInWithPopup(googleProvider)
+  .catch(error => {
     console.log("loginWithGoogle_error", error.message);
   });
 };
 
 export const loginWithGoogleRedirect = () => {
   auth.signInWithRedirect(googleProvider).catch(error => {
-    console.log("loginWithGoogleRedirect_error", error.message);
+    console.log("loginWithGoogle_error", error.message);
   });
 };
 
 export const emailPwSignIn = (email, password) => {
-  auth.signInWithEmailAndPassword(email, password).then(authCreditial=>{console.log("authCreditial ",authCreditial)}).catch(error => {
+  auth.signInWithEmailAndPassword(email, password).catch(error => {
     console.log("signInWithEmailAndPassword_error", error.message);
   });
 };
@@ -69,10 +69,16 @@ export const getDBDoc = async (col, doc) => {
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
 
+/*
 auth.getRedirectResult().then(function(result) {
   if (result.credential) {
     // This gives you a Google Access Token.
     console.log("accessToken ",result.credential.accessToken);
+    console.log("sign_in_method ",result.credential.signInMethod);
+    console.log("providerId ",result.credential.providerId);
   }
-  console.log("user ",result.user);
+  if (result.additionalUserInfo){
+    console.log('isNewUser ',result.additionalUserInfo.isNewUser);
+  }
 });
+*/

@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import {logoutAll} from "./firebase_";
+import { logoutAll } from "./firebase_";
 import {
   Button,
   Form,
@@ -17,12 +17,13 @@ const InputForm = () => {
   const [currentDate, setNewDate] = useState(null);
   const onChange = (event, data) => setNewDate(data.value);
   const [login, setLogin] = useContext(LoginContext);
+
   const onClick = event => {
     logoutAll();
     navigate("/");
   };
 
-  if (login==null) navigate("/");
+  if (login == null) navigate("/");
 
   return (
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { LoginContext } from "./loginContext";
-import { loginWithGoogle,loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
+import { loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
 import { navigate } from "@reach/router";
 import {
   Button,
@@ -17,12 +17,11 @@ const LoginForm = () => {
   const [isSummit, setIsSummit] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-
- 
+  const [test,setTest] = useState("null");
 
   useEffect(() => {
     console.log("loginForm_useEffect");
+   // runNFC();
   });
 
   const handleClick = () => {
@@ -53,9 +52,35 @@ const LoginForm = () => {
     loginWithGoogleRedirect();
   };
 
-  const logout = () => {
-    logoutAll();
-  };
+  const runNFC = async ()=>{
+    /* eslint-disable no-undef */
+    if ('NDEFReader' in window) {
+      try {
+        const reader = new NDEFReader();
+        await reader.scan();
+        console.log("> Scan started");
+        setTest("yes1");
+
+        reader.addEventListener("error", (event) => {
+          console.log(`Argh! ${event.message}`);
+          setTest("no0");
+        });
+
+        reader.addEventListener("reading", ({ message, serialNumber }) => {
+          console.log(`> Serial Number: ${serialNumber}`);
+          console.log(`> Records: (${message.records.length})`);
+          setTest("yes2");
+        });
+      } catch (error) {
+        console.log("Argh! " + error);
+        setTest("no1");
+      }
+    }else{
+      console.log("not support nfc");
+      setTest("no2");
+    }
+    /* eslint-enable no-undef */
+  }
 
   return (
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
@@ -82,7 +107,6 @@ const LoginForm = () => {
               type="password"
               onChange={inputChange}
             />
-
             <Button
               color="teal"
               {...{ loading: isSummit }}
@@ -90,7 +114,7 @@ const LoginForm = () => {
               size="large"
               onClick={handleClick}
             >
-              Login{" "}
+              Login{" "}{test}
             </Button>
           </Segment>
         </Form>

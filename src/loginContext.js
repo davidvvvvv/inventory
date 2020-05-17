@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext } from "react";
 import { Container } from "semantic-ui-react";
-import { auth } from "./firebase_";
+import { auth,firestore } from "./firebase_";
 
 export const LoginContext = createContext();
 
@@ -21,14 +21,31 @@ const LoginContextProvider = props => {
           console.log("  Photo URL: " + profile.photoURL);
         });
         */
-        setLogin(userAuth);
-       
+       validAccountCheck();
       } else {
         console.log("The user is not logged in");
         setLogin(null);
       }
     });
   };
+
+  const validAccountCheck = ()=>{
+    const user=auth.currentUser;
+    firestore.collection('users').doc(user.uid).set({
+      name:user.displayName,
+      email:user.email,
+      photoURL: user.photoURL
+    },{
+      merge:true
+    }).then(()=>{
+      console.log("firebase_validAcccountCheck_return_true");
+      setLogin(user);
+      //return true;
+    }).catch((error)=>{
+      console.log("firebase_validAcccountCheck_return_false",error.message)
+     //return false;
+    })
+  }
 
   useEffect(() => {
     console.log("loginContext_useEffect");
