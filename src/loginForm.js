@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { LoginContext } from "./loginContext";
-import { loginWithGoogle,loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
+import { loginWithGoogle, loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
 import { navigate } from "@reach/router";
 import {
   Button,
@@ -27,12 +27,19 @@ const LoginForm = () => {
     if (login) navigate("/input");
   });
 
-  const pwLogin = () => {
-    setPwLoginWaiting(true);
-    const response=emailPwSignIn(email, password);
-    if (!(response === true)){
-      console.log("acount")
-      setError(response);}
+  const pwLogin = async () => {
+    if (!(email === "" || password === "")) {
+      setPwLoginWaiting(true);
+      try {
+        await emailPwSignIn(email, password);
+      } catch (error) {
+        //console.log("loginForm_pwLogin_error.message",error.message);
+        setError(error.message);
+        setPwLoginWaiting(false);
+      }
+    }else{
+      setError("請輸入適當資料");
+    }
   };
 
   const inputChange = event => {
@@ -40,11 +47,11 @@ const LoginForm = () => {
     switch (name) {
       case "email":
         setEmail(value);
-        console.log("loginForm_email", value);
+        //console.log("loginForm_email", value);
         break;
       case "password":
         setPassword(value);
-        console.log("loginForm_password", value);
+        //console.log("loginForm_password", value);
         break;
       default:
         console.log("loginForm can't found input type");
@@ -55,7 +62,7 @@ const LoginForm = () => {
   const googleLogin = () => {
     //loginWithGoogle();
     setGoogleLoginWaiting(true);
-    const response=loginWithGoogleRedirect();
+    const response = loginWithGoogleRedirect();
     if (!(response === true)) setError(response);
   };
 
@@ -103,11 +110,11 @@ const LoginForm = () => {
             >
               臨時帳戶登入{" "}
             </Button>
-            
+
           </Segment>
         </Form>
         <Message negative attached='bottom'>
-              {error}
+          {error}
         </Message>
       </Grid.Column>
     </Grid>

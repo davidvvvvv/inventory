@@ -46,13 +46,7 @@ export const loginWithGoogleRedirect = () => {
 };
 
 export const emailPwSignIn = (email, password) => {
-  auth.signInWithEmailAndPassword(email, password)//.then(authCreditial=>{console.log("authCreditial ",authCreditial)})
-  .then(() => true)
-  .catch(error => {
-    console.log("signInWithEmailAndPassword_error", error.message);
-    return error.message;
-  });
-  
+  return auth.signInWithEmailAndPassword(email, password)//.then(authCreditial=>{console.log("authCreditial ",authCreditial)})
 };
 
 export const logoutAll = () => {
