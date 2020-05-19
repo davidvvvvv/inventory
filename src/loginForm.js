@@ -14,21 +14,25 @@ import {
 
 const LoginForm = () => {
   const [login, setLogin] = useContext(LoginContext);
-  const [isSummit, setIsSummit] = useState(false);
+  const [pwLoginWaiting, setPwLoginWaiting] = useState(false);
+  const [googleLoginWaiting, setGoogleLoginWaiting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
- 
+
 
   useEffect(() => {
     console.log("loginForm_useEffect");
+    if (login) navigate("/input");
   });
 
-  const handleClick = () => {
-    setIsSummit(false);
-    emailPwSignIn(email, password);
-    navigate("/input");
+  const pwLogin = () => {
+    setPwLoginWaiting(true);
+    const response=emailPwSignIn(email, password);
+    if (!(response === true)){
+      console.log("acount")
+      setError(response);}
   };
 
   const inputChange = event => {
@@ -50,7 +54,9 @@ const LoginForm = () => {
 
   const googleLogin = () => {
     //loginWithGoogle();
-    loginWithGoogleRedirect();
+    setGoogleLoginWaiting(true);
+    const response=loginWithGoogleRedirect();
+    if (!(response === true)) setError(response);
   };
 
   const logout = () => {
@@ -61,15 +67,20 @@ const LoginForm = () => {
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="teal" textAlign="center">
-          <Image src="/logo.png" /> Log-in to your account
+          <Image src="/logo.png" /> 余李慕芬簡易租借系統
         </Header>
+        <Message>
+          <Button {...{ loading: googleLoginWaiting }} color="facebook" fluid size="large" onClick={googleLogin}>
+            學校帳戶 - Google 登入
+          </Button>
+        </Message>
         <Form size="large">
           <Segment>
             <Form.Input
               fluid
               icon="user"
               iconPosition="left"
-              placeholder="E-mail address"
+              placeholder="電子郵件"
               name="email"
               onChange={inputChange}
             />
@@ -77,7 +88,7 @@ const LoginForm = () => {
               fluid
               icon="lock"
               iconPosition="left"
-              placeholder="Password"
+              placeholder="密碼"
               name="password"
               type="password"
               onChange={inputChange}
@@ -85,20 +96,18 @@ const LoginForm = () => {
 
             <Button
               color="teal"
-              {...{ loading: isSummit }}
+              {...{ loading: pwLoginWaiting }}
               fluid
               size="large"
-              onClick={handleClick}
+              onClick={pwLogin}
             >
-              Login{" "}
+              臨時帳戶登入{" "}
             </Button>
+            
           </Segment>
         </Form>
-        <Message>
-          Google User ? Here !
-          <Button color="facebook" fluid size="large" onClick={googleLogin}>
-            Google User Login
-          </Button>
+        <Message negative attached='bottom'>
+              {error}
         </Message>
       </Grid.Column>
     </Grid>

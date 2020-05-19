@@ -15,14 +15,34 @@ import {
 
 const InputForm = () => {
   const [currentDate, setNewDate] = useState(null);
+  const [nfcMessage,setNfcMessage]= useState("");
   const onChange = (event, data) => setNewDate(data.value);
   const [login, setLogin] = useContext(LoginContext);
+  
   const onClick = event => {
     logoutAll();
     navigate("/");
   };
 
   if (login==null) navigate("/");
+
+  if ('NDEFReader' in window) { 
+    /*global NDEFReader*/
+    const reader = new NDEFReader();
+reader.scan().then(() => {
+ // setNfcMessage("Scan started successfully.");
+  
+  reader.onerror = event => {
+    setNfcMessage("Error! Cannot read data from the NFC tag. Try a different one?");
+  };
+  reader.onreading = event => {
+    setNfcMessage("NDEF message read.");
+  };
+}).catch(error => {
+  setNfcMessage(`Error! Scan failed to start: ${error}.`);
+});
+    
+   }
 
   return (
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
@@ -39,7 +59,7 @@ const InputForm = () => {
           </Segment>
         </Form>
         <Message>
-          New to us? <a href="#">Sign Up</a>
+          New to us?  <a href="#">Sign Up {nfcMessage}</a>
         </Message>
       </Grid.Column>
     </Grid>
