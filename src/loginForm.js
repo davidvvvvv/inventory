@@ -16,10 +16,10 @@ const LoginForm = () => {
   const [login, setLogin] = useContext(LoginContext);
   const [pwLoginWaiting, setPwLoginWaiting] = useState(false);
   const [googleLoginWaiting, setGoogleLoginWaiting] = useState(false);
+  const [showMessageBox,setShowMessageBox] = useState("hidden");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
 
 
   useEffect(() => {
@@ -32,13 +32,16 @@ const LoginForm = () => {
       setPwLoginWaiting(true);
       try {
         await emailPwSignIn(email, password);
+        setShowMessageBox("hidden");
       } catch (error) {
         //console.log("loginForm_pwLogin_error.message",error.message);
         setError(error.message);
         setPwLoginWaiting(false);
+        setShowMessageBox("visible");
       }
     }else{
       setError("請輸入適當資料");
+      setShowMessageBox("visible");
     }
   };
 
@@ -59,11 +62,17 @@ const LoginForm = () => {
     }
   };
 
-  const googleLogin = () => {
+  const googleLogin = async() => {
     //loginWithGoogle();
     setGoogleLoginWaiting(true);
-    const response = loginWithGoogleRedirect();
-    if (!(response === true)) setError(response);
+    setShowMessageBox("hidden");
+    try{
+      await loginWithGoogle();
+    } catch (error){
+      setError(error.message);
+      setGoogleLoginWaiting(false);
+      setShowMessageBox("visible");
+    }
   };
 
   const logout = () => {
@@ -113,7 +122,7 @@ const LoginForm = () => {
 
           </Segment>
         </Form>
-        <Message negative attached='bottom'>
+        <Message negative style={{visibility:showMessageBox}} >
           {error}
         </Message>
       </Grid.Column>

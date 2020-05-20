@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import {logoutAll} from "./firebase_";
+import { logoutAll } from "./firebase_";
 import {
   Button,
   Form,
@@ -10,49 +10,62 @@ import {
   Header,
   Image,
   Message,
-  Segment
+  Segment,
+  Menu
 } from "semantic-ui-react";
 
 const InputForm = () => {
   const [currentDate, setNewDate] = useState(null);
-  const [nfcMessage,setNfcMessage]= useState("");
+  const [nfcMessage, setNfcMessage] = useState("");
   const onChange = (event, data) => setNewDate(data.value);
   const [login, setLogin] = useContext(LoginContext);
-  
-  const onClick = event => {
+  const [activeItem,setActiveItem] = useState("");
+
+  const logoutAllFunction = () => {
+    setActiveItem("logout");
     logoutAll();
     navigate("/");
   };
 
-  if (login==null) navigate("/");
+  if (login == null) navigate("/");
 
-  if ('NDEFReader' in window) { 
+  if ('NDEFReader' in window) {
     /*global NDEFReader*/
     const reader = new NDEFReader();
-reader.scan().then(() => {
- // setNfcMessage("Scan started successfully.");
-  
-  reader.onerror = event => {
-    setNfcMessage("Error! Cannot read data from the NFC tag. Try a different one?");
-  };
-  reader.onreading = event => {
-    setNfcMessage("NDEF message read.");
-  };
-}).catch(error => {
-  setNfcMessage(`Error! Scan failed to start: ${error}.`);
-});
-    
-   }
+    reader.scan().then(() => {
+      // setNfcMessage("Scan started successfully.");
+
+      reader.onerror = event => {
+        setNfcMessage("Error! Cannot read data from the NFC tag. Try a different one?");
+      };
+      reader.onreading = event => {
+        setNfcMessage("NDEF message read.");
+      };
+    }).catch(error => {
+      setNfcMessage(`Error! Scan failed to start: ${error}.`);
+    });
+
+  }
 
   return (
-    <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
+    <div>
+    <Menu pointing secondary >
+      <Menu.Menu position='right'>
+        <Menu.Item
+          name='logout'
+          active={activeItem === 'logout'}
+          onClick={logoutAllFunction}
+        />
+      </Menu.Menu>
+    </Menu>
+    <Grid textAlign="center" style={{ height: "100vh" }}>
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="teal" textAlign="center">
           <Image src="/logo.png" />
         </Header>
         <Form size="large">
           <Segment stacked>
-            <Button color="teal" fluid size="large" onClick={onClick}>
+            <Button color="teal" fluid size="large">
               Login{" "}
             </Button>
             <SemanticDatepicker onChange={onChange} />
@@ -63,6 +76,7 @@ reader.scan().then(() => {
         </Message>
       </Grid.Column>
     </Grid>
+    </div>
   );
 };
 

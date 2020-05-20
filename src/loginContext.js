@@ -22,7 +22,6 @@ const LoginContextProvider = props => {
         });
         */
         setLogin(userAuth);
-       
       } else {
         console.log("The user is not logged in");
         setLogin(null);
@@ -40,7 +39,7 @@ const LoginContextProvider = props => {
   }, []);
 
   return (
-    <Container style={{ margin: 20 }}>
+    <Container>
       <LoginContext.Provider value={[login, setLogin]}>
         {props.children}
       </LoginContext.Provider>
