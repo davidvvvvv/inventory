@@ -1,8 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
 import { logoutAll } from "./firebase_";
+import { readTag } from "./nfc";
 import {
   Button,
   Form,
@@ -11,7 +12,8 @@ import {
   Image,
   Message,
   Segment,
-  Menu
+  Menu, 
+  Checkbox
 } from "semantic-ui-react";
 
 const InputForm = () => {
@@ -19,7 +21,7 @@ const InputForm = () => {
   const [nfcMessage, setNfcMessage] = useState("");
   const onChange = (event, data) => setNewDate(data.value);
   const [login, setLogin] = useContext(LoginContext);
-  const [activeItem,setActiveItem] = useState("");
+  const [activeItem, setActiveItem] = useState("");
 
   const logoutAllFunction = () => {
     setActiveItem("logout");
@@ -29,53 +31,60 @@ const InputForm = () => {
 
   if (login == null) navigate("/");
 
-  if ('NDEFReader' in window) {
-    /*global NDEFReader*/
-    const reader = new NDEFReader();
-    reader.scan().then(() => {
-      // setNfcMessage("Scan started successfully.");
-
-      reader.onerror = event => {
-        setNfcMessage("Error! Cannot read data from the NFC tag. Try a different one?");
-      };
-      reader.onreading = event => {
-        setNfcMessage("NDEF message read.");
-      };
-    }).catch(error => {
-      setNfcMessage(`Error! Scan failed to start: ${error}.`);
-    });
-
-  }
+  useEffect(() => {
+    console.log("inputForm_useEffect");
+    readTag(setNfcMessage);
+    return () => {
+      console.log("inputForm_useEffect_unsubscribe");
+    };
+  }, []);
 
   return (
-    <div>
-    <Menu pointing secondary >
-      <Menu.Menu position='right'>
-        <Menu.Item
-          name='logout'
-          active={activeItem === 'logout'}
-          onClick={logoutAllFunction}
-        />
-      </Menu.Menu>
-    </Menu>
-    <Grid textAlign="center" style={{ height: "100vh" }}>
-      <Grid.Column style={{ maxWidth: 450 }}>
-        <Header as="h2" color="teal" textAlign="center">
-          <Image src="/logo.png" />
-        </Header>
-        <Form size="large">
-          <Segment stacked>
-            <Button color="teal" fluid size="large">
-              Login{" "}
-            </Button>
-            <SemanticDatepicker onChange={onChange} />
-          </Segment>
-        </Form>
-        <Message>
-          New to us?  <a href="#">Sign Up {nfcMessage}</a>
-        </Message>
-      </Grid.Column>
-    </Grid>
+    <div style={{ height: "100vh" }}>
+      <Menu pointing >
+        <Menu.Menu position='right'>
+          <Menu.Item
+            name='logout'
+            active={activeItem === 'logout'}
+            onClick={logoutAllFunction}
+          />
+        </Menu.Menu>
+      </Menu>
+      <Message error >
+        {nfcMessage}
+      </Message>
+
+      <Header as="h2" color="teal" textAlign="center">
+        租借登記頁
+          </Header>
+
+
+      <Form size="large">
+        <Grid columns={2} >
+          <Grid.Row>
+            <Grid.Column width={9}>
+              <Form.Field>
+                <label>租借日期</label>
+                <SemanticDatepicker readOnly={true} clearable={false} onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column width={3}>
+              <div>	&nbsp;</div>
+              <div>	&nbsp;</div>
+              <Form.Field>
+                <Checkbox label="後補" />
+              </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+        <Form.Field>
+          <label>預期歸還日期</label>
+          <SemanticDatepicker onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
+        </Form.Field>
+      </Form>
+      <Message>
+        New to us?  <a href="#">Sign Up {nfcMessage}</a>
+      </Message>
     </div>
   );
 };
