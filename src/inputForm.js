@@ -12,7 +12,7 @@ import {
   Image,
   Message,
   Segment,
-  Menu, 
+  Menu,
   Checkbox
 } from "semantic-ui-react";
 
@@ -60,23 +60,17 @@ const InputForm = () => {
 
 
       <Form size="large">
-        <Grid columns={2} >
-          <Grid.Row>
-            <Grid.Column width={9}>
-              <Form.Field>
-                <label>租借日期</label>
-                <SemanticDatepicker readOnly={true} clearable={false} onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column width={3}>
-              <div>	&nbsp;</div>
-              <div>	&nbsp;</div>
-              <Form.Field>
-                <Checkbox label="後補" />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+        <Form.Field>
+          <Form.Group>
+            <Form.Field>
+              <label>租借日期</label>
+              <SemanticDatepicker readOnly={true} clearable={false} onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
+            </Form.Field>
+            <Form.Field>
+                <Checkbox/>
+                </Form.Field>
+          </Form.Group>
+        </Form.Field>
         <Form.Field>
           <label>預期歸還日期</label>
           <SemanticDatepicker onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
@@ -85,7 +79,7 @@ const InputForm = () => {
       <Message>
         New to us?  <a href="#">Sign Up {nfcMessage}</a>
       </Message>
-    </div>
+    </div >
   );
 };
 
