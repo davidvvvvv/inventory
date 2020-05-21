@@ -1,6 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import { LoginContext } from "./loginContext";
+<<<<<<< HEAD
 import { loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
+=======
+import { loginWithGoogle, loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
+>>>>>>> 2020_05_21
 import { navigate } from "@reach/router";
 import {
   Button,
@@ -14,20 +18,43 @@ import {
 
 const LoginForm = () => {
   const [login, setLogin] = useContext(LoginContext);
-  const [isSummit, setIsSummit] = useState(false);
+  const [pwLoginWaiting, setPwLoginWaiting] = useState(false);
+  const [googleLoginWaiting, setGoogleLoginWaiting] = useState(false);
+  const [showMessageBox,setShowMessageBox] = useState("hidden");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
   const [test,setTest] = useState("null");
 
   useEffect(() => {
     console.log("loginForm_useEffect");
    // runNFC();
+=======
+  const [error, setError] = useState("");
+
+
+  useEffect(() => {
+    console.log("loginForm_useEffect");
+    if (login) navigate("/input");
+>>>>>>> 2020_05_21
   });
 
-  const handleClick = () => {
-    setIsSummit(false);
-    emailPwSignIn(email, password);
-    navigate("/input");
+  const pwLogin = async () => {
+    if (!(email === "" || password === "")) {
+      setPwLoginWaiting(true);
+      try {
+        await emailPwSignIn(email, password);
+        setShowMessageBox("hidden");
+      } catch (error) {
+        //console.log("loginForm_pwLogin_error.message",error.message);
+        setError(error.message);
+        setPwLoginWaiting(false);
+        setShowMessageBox("visible");
+      }
+    }else{
+      setError("請輸入適當資料");
+      setShowMessageBox("visible");
+    }
   };
 
   const inputChange = event => {
@@ -35,11 +62,11 @@ const LoginForm = () => {
     switch (name) {
       case "email":
         setEmail(value);
-        console.log("loginForm_email", value);
+        //console.log("loginForm_email", value);
         break;
       case "password":
         setPassword(value);
-        console.log("loginForm_password", value);
+        //console.log("loginForm_password", value);
         break;
       default:
         console.log("loginForm can't found input type");
@@ -47,9 +74,17 @@ const LoginForm = () => {
     }
   };
 
-  const googleLogin = () => {
+  const googleLogin = async() => {
     //loginWithGoogle();
-    loginWithGoogleRedirect();
+    setGoogleLoginWaiting(true);
+    setShowMessageBox("hidden");
+    try{
+      await loginWithGoogle();
+    } catch (error){
+      setError(error.message);
+      setGoogleLoginWaiting(false);
+      setShowMessageBox("visible");
+    }
   };
 
   const runNFC = async ()=>{
@@ -86,15 +121,20 @@ const LoginForm = () => {
     <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as="h2" color="teal" textAlign="center">
-          <Image src="/logo.png" /> Log-in to your account
+          <Image src="/logo.png" /> 余李慕芬簡易租借系統
         </Header>
+        <Message>
+          <Button {...{ loading: googleLoginWaiting }} color="facebook" fluid size="large" onClick={googleLogin}>
+            學校帳戶 - Google 登入
+          </Button>
+        </Message>
         <Form size="large">
           <Segment>
             <Form.Input
               fluid
               icon="user"
               iconPosition="left"
-              placeholder="E-mail address"
+              placeholder="電子郵件"
               name="email"
               onChange={inputChange}
             />
@@ -102,27 +142,25 @@ const LoginForm = () => {
               fluid
               icon="lock"
               iconPosition="left"
-              placeholder="Password"
+              placeholder="密碼"
               name="password"
               type="password"
               onChange={inputChange}
             />
             <Button
               color="teal"
-              {...{ loading: isSummit }}
+              {...{ loading: pwLoginWaiting }}
               fluid
               size="large"
-              onClick={handleClick}
+              onClick={pwLogin}
             >
-              Login{" "}{test}
+              臨時帳戶登入{" "}
             </Button>
+
           </Segment>
         </Form>
-        <Message>
-          Google User ? Here !
-          <Button color="facebook" fluid size="large" onClick={googleLogin}>
-            Google User Login
-          </Button>
+        <Message negative style={{visibility:showMessageBox}} >
+          {error}
         </Message>
       </Grid.Column>
     </Grid>

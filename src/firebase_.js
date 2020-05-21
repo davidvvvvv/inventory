@@ -28,22 +28,15 @@ googleProvider.setCustomParameters({
 */
 
 export const loginWithGoogle = () => {
-  auth.signInWithPopup(googleProvider)
-  .catch(error => {
-    console.log("loginWithGoogle_error", error.message);
-  });
+  return auth.signInWithPopup(googleProvider);
 };
 
 export const loginWithGoogleRedirect = () => {
-  auth.signInWithRedirect(googleProvider).catch(error => {
-    console.log("loginWithGoogle_error", error.message);
-  });
+  return auth.signInWithRedirect(googleProvider);
 };
 
 export const emailPwSignIn = (email, password) => {
-  auth.signInWithEmailAndPassword(email, password).catch(error => {
-    console.log("signInWithEmailAndPassword_error", error.message);
-  });
+  return auth.signInWithEmailAndPassword(email, password);//.then(authCreditial=>{console.log("authCreditial ",authCreditial)})
 };
 
 export const logoutAll = () => {

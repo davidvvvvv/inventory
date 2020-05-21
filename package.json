@@ -11,6 +11,7 @@
     "gh-pages": "^2.2.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-helmet": "^6.0.0",
     "react-scripts": "3.4.1",
     "react-semantic-ui-datepickers": "2.4.0",
     "semantic-ui-react": "0.88.2"
