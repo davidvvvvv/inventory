@@ -13,15 +13,25 @@ import {
   Message,
   Segment,
   Menu,
-  Checkbox
+  Checkbox,
+  Icon
 } from "semantic-ui-react";
+import { DateInput} from 'semantic-ui-calendar-react';
 
 const InputForm = () => {
-  const [currentDate, setNewDate] = useState(null);
+  const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+  const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today)
+  const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today)
+  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
+
+  const [rentDate, setRentDate] = useState(`${da}-${mo}-${ye}`);
+  const [expectReturnDate, setExpectReturnDate] = useState(`${da}-${mo}-${ye}`);
   const [nfcMessage, setNfcMessage] = useState("");
-  const onChange = (event, data) => setNewDate(data.value);
+  const onChange_Rent = (event, data) => setRentDate(data.value);
+  const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
+  
 
   const logoutAllFunction = () => {
     setActiveItem("logout");
@@ -41,7 +51,7 @@ const InputForm = () => {
 
   return (
     <div style={{ height: "100vh" }}>
-      <Menu pointing >
+      <Menu secondary pointing >
         <Menu.Menu position='right'>
           <Menu.Item
             name='logout'
@@ -50,34 +60,39 @@ const InputForm = () => {
           />
         </Menu.Menu>
       </Menu>
-      <Message error >
-        {nfcMessage}
-      </Message>
 
-      <Header as="h2" color="teal" textAlign="center">
-        租借登記頁
-          </Header>
+      <Header as="h1" color="teal" block textAlign="center">
+        <Icon name='edit' />
+        <Header.Content>租借登記頁</Header.Content>
+      </Header>
 
 
       <Form size="large">
         <Form.Field>
-          <Form.Group>
-            <Form.Field>
-              <label>租借日期</label>
-              <SemanticDatepicker readOnly={true} clearable={false} onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
-            </Form.Field>
-            <Form.Field>
-                <Checkbox/>
-                </Form.Field>
-          </Form.Group>
+          <label>租借日期</label>
+          <DateInput
+            name="rentDate"
+            placeholder="租借日期"
+            value={rentDate}
+            iconPosition="left"
+            onChange={onChange_Rent}
+            animation='none'
+          />
         </Form.Field>
         <Form.Field>
           <label>預期歸還日期</label>
-          <SemanticDatepicker onChange={onChange} value={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())} />
+          <DateInput
+            name="expectReturnDate"
+            placeholder="預期歸還日期"
+            value={expectReturnDate}
+            iconPosition="left"
+            onChange={onChange_Expect}
+            animation='none'
+          />
         </Form.Field>
       </Form>
-      <Message>
-        New to us?  <a href="#">Sign Up {nfcMessage}</a>
+      <Message error >
+        {nfcMessage}
       </Message>
     </div >
   );

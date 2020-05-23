@@ -9,7 +9,8 @@ import {
   Header,
   Image,
   Message,
-  Segment
+  Segment,
+  Divider
 } from "semantic-ui-react";
 
 const LoginForm = () => {
@@ -86,6 +87,7 @@ const LoginForm = () => {
             學校帳戶 - Google 登入
           </Button>
         </Segment>
+        <Divider horizontal>或</Divider>
         <Form size="large">
           <Segment>
             <Form.Input
