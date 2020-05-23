@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useMemo } from "react";
-import SemanticDatepicker from "react-semantic-ui-datepickers";
+//import SemanticDatepicker from "react-semantic-ui-datepickers";
+import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
 import { logoutAll } from "./firebase_";
@@ -14,9 +15,8 @@ import {
   Segment,
   Menu,
   Checkbox,
-  Icon
+  Icon, Label
 } from "semantic-ui-react";
-import { DateInput } from 'semantic-ui-calendar-react';
 
 const InputForm = () => {
   const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
@@ -35,6 +35,7 @@ const InputForm = () => {
   const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
+  
 
   const showTag = useMemo(() => {
     const newSetRentDate = new Date(rentDate).getTime();
@@ -52,7 +53,25 @@ const InputForm = () => {
 
   useEffect(() => {
     console.log("inputForm_useEffect");
-    readTag(setNfcMessage);
+    const reader = readTag(setNfcMessage);
+    if (reader) {
+      try {
+         reader.scan();
+        reader.onreading = event => {
+          const decoder = new TextDecoder();
+          const array=[];
+          for (const record of event.message.records) {
+            //setNfcMessage("Record type:  " + record.recordType);
+            //setNfcMessage("MIME type:    " + record.mediaType);
+            //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
+            array.push(decoder.decode(record.data));
+          }
+          //setNfcMessage(decoder.decode(event.message.records[0].data));
+        }
+      } catch (error) {
+        setNfcMessage(error.message);
+      }
+    }
     return () => {
       console.log("inputForm_useEffect_unsubscribe");
     };
@@ -77,8 +96,8 @@ const InputForm = () => {
 
       <Form size="large">
         <Form.Field>
-           <label style={{visibility:showTag}}>*abc</label>
-          <label>租借日期</label>
+          <Label color="teal">租借日期</Label>
+          <Label color="red" key="red" style={{ visibility: showTag }}>* 日期早於今天</Label>
           <DateInput
             name="rentDate"
             placeholder="租借日期"
@@ -88,10 +107,11 @@ const InputForm = () => {
             animation='none'
             maxDate={todayString}
             dateFormat="YYYY-MM-DD"
+            hideMobileKeyboard={true}
           />
         </Form.Field>
         <Form.Field>
-          <label>預期歸還日期</label>
+          <Label color="teal">預期歸還日期</Label>
           <DateInput
             name="expectReturnDate"
             placeholder="預期歸還日期"
@@ -101,6 +121,7 @@ const InputForm = () => {
             animation='none'
             minDate={rentDate}
             dateFormat="YYYY-MM-DD"
+            hideMobileKeyboard={true}
           />
         </Form.Field>
       </Form>

@@ -1,26 +1,30 @@
-export const readTag = async(setMessage)=> {
+export const readTag = setMessage=> {
     if ("NDEFReader" in window) {
           /*global NDEFReader*/
       const reader = new NDEFReader();
+      return reader;
+      /*
       try {
         await reader.scan();
         reader.onreading = event => {
           const decoder = new TextDecoder();
-          /*
           for (const record of event.message.records) {
             consoleLog("Record type:  " + record.recordType);
             consoleLog("MIME type:    " + record.mediaType);
             consoleLog("=== data ===\n" + decoder.decode(record.data));
-          }*/
+          }
           return decoder.decode(event.message.records[0].data);
         }
+        
+       
       } catch(error) {
         setMessage(error.message);
         return "error";
       }
+      */
     } else {
         setMessage("Web NFC 未能支援");
-        return "error";
+        return null;
     }
   }
   
