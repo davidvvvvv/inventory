@@ -20,13 +20,8 @@ const InputForm = () => {
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
-  const [itemsList, _setItemList] = useState([]);
-  const itemsListRef = React.useRef(itemsList);
-  const [num,setNum] = useState(0);
-  const setItemList = data => {
-    itemsListRef.current = data;
-    _setItemList(data);
-  };
+  const [itemsList, setItemList] = useState([]);
+  const [num,setNum] = useState('');
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
   const [nfcMessage, setNfcMessage] = useState("");
@@ -59,46 +54,32 @@ const InputForm = () => {
     //console.log(tempList);
   }
 
-  const addItem = (event) => {
+  const addItem = (event,_itemsList) => {
     const decoder = new TextDecoder();
    // for (const record of event.message.records) {
       //setNfcMessage("Record type:  " + record.recordType);
       //setNfcMessage("MIME type:    " + record.mediaType);
       //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
    // }
-    setItemList(itemsListRef);
     const tempArray = decoder.decode(event.message.records[0].data).split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
-    const tempInput = itemsList.some(item => {
+    const tempInput = _itemsList.some(item => {
       return item.refno == tempObject.refno;
     });
-    if (!tempInput) {
-      itemsList.push(tempObject);
-      const tempList = [...itemsList];
-      setItemList(tempList);
-    }
+    if (!tempInput) _itemsList.push(tempObject);
+    const tempList = [..._itemsList];
+    setItemList(tempList);
   }
 
   const addItem2 = (event) => {
-   // for (const record of event.message.records) {
-      //setNfcMessage("Record type:  " + record.recordType);
-      //setNfcMessage("MIME type:    " + record.mediaType);
-      //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
-   // }
-    setItemList(itemsListRef);
-    console.log("1",itemsList);
     const tempArray = event.message.records[0].data.split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
     const tempInput = itemsList.some(item => {
       return item.refno == tempObject.refno;
     });
-    
-    if (!tempInput) {
-      itemsList.push(tempObject);
-      const tempList = [...itemsList];
-      setItemList(tempList);
-    }
-    console.log("2",itemsList);
+    if (!tempInput) itemsList.push(tempObject);
+    const tempList = [...itemsList];
+    setItemList(tempList);
   }
 
   const showTag = useMemo(() => {
@@ -151,7 +132,7 @@ const InputForm = () => {
     if (reader) {
       try {
         reader.scan();
-        reader.onreading = (event)=>addItem(event);
+        reader.onreading = (event)=>addItem(event,itemsList);
       } catch (error) {
         setNfcMessage(error.message);
       }
@@ -221,18 +202,20 @@ const InputForm = () => {
             placeholder="租借人姓名"
             name="user"
             onChange={(event)=>{
-              const tempData=`${event.currentTarget.value},ipad`;
-              setNum(num+1);
-              const event2={};
-              event2.message={};
-              event2.message.records=[{data:tempData}];
-              addItem2(event2);
+              setNum(event.currentTarget.value);
             }}
           />
         </Form.Field>
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
+        <Button onClick={()=>{
+          const tempData=`${num},ipad`;
+          const event2={};
+          event2.message={};
+          event2.message.records=[{data:tempData}];
+          addItem2(event2);
+          }}>Submit</Button>
       </Form>
 
       <Message error >
