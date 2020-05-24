@@ -23,12 +23,12 @@ const ListGroup = (props)=> {
         style={{ overflow: "auto", maxHeight: 200 }}
       >
         {items.map((item,index) => (
-          <List.Item key={item.ref}>
+          <List.Item key={item.refno}>
             <Image
               avatar
               src={`https://react.semantic-ui.com/images/avatar/small/ade.jpg`}
             />
-            <List.Content header={item.ref} />
+            <List.Content header={item.refno} />
             <List.Content floated="right">
               <Button onClick={()=>handleRemove(index)}>移除</Button>
             </List.Content>

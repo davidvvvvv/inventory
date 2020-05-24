@@ -20,23 +20,86 @@ const InputForm = () => {
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
-  const [itemsList, setItemList] = useState([]);
+  const [itemsList, _setItemList] = useState([]);
+  const itemsListRef = React.useRef(itemsList);
+  const [num,setNum] = useState(0);
+  const setItemList = data => {
+    itemsListRef.current = data;
+    _setItemList(data);
+  };
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
   const [nfcMessage, setNfcMessage] = useState("");
-  //const [num, setNum] = useState(0);
   const onChange_Rent = (event, data) => {
     setRentDate(data.value);
     setExpectReturnDate(data.value);
+    /* test code for add items
+    const tempObject = {refno:data.value,type:'ipad'};
+    const tempInput=itemsList.some(item => {
+      return item.refno == tempObject.refno;
+    });
+    
+    if (!tempInput){
+      itemsList.push({ 'refno': tempObject.refno, 'type': tempObject.type });
+      const tempList = [...itemsList];
+      console.log('itemsList',itemsList);
+      console.log('tempList',tempList);
+      setItemList(tempList);
+    }
+    */
+   setNfcMessage("itemsList"+itemsList);
   }
   const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
+  
   const removeItem = index => {
     itemsList.splice(index, 1);
     const tempList = [...itemsList];
     setItemList(tempList);
+    setNfcMessage("remove_length" + itemsList.length)
     //console.log(tempList);
   }
 
+  const addItem = (event) => {
+    const decoder = new TextDecoder();
+   // for (const record of event.message.records) {
+      //setNfcMessage("Record type:  " + record.recordType);
+      //setNfcMessage("MIME type:    " + record.mediaType);
+      //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
+   // }
+    setItemList(itemsListRef);
+    const tempArray = decoder.decode(event.message.records[0].data).split(",");
+    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
+    const tempInput = itemsList.some(item => {
+      return item.refno == tempObject.refno;
+    });
+    if (!tempInput) {
+      itemsList.push(tempObject);
+      const tempList = [...itemsList];
+      setItemList(tempList);
+    }
+  }
+
+  const addItem2 = (event) => {
+   // for (const record of event.message.records) {
+      //setNfcMessage("Record type:  " + record.recordType);
+      //setNfcMessage("MIME type:    " + record.mediaType);
+      //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
+   // }
+    setItemList(itemsListRef);
+    console.log("1",itemsList);
+    const tempArray = event.message.records[0].data.split(",");
+    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
+    const tempInput = itemsList.some(item => {
+      return item.refno == tempObject.refno;
+    });
+    
+    if (!tempInput) {
+      itemsList.push(tempObject);
+      const tempList = [...itemsList];
+      setItemList(tempList);
+    }
+    console.log("2",itemsList);
+  }
 
   const showTag = useMemo(() => {
     const newSetRentDate = new Date(rentDate).getTime();
@@ -88,23 +151,7 @@ const InputForm = () => {
     if (reader) {
       try {
         reader.scan();
-        reader.onreading = event => {
-          const decoder = new TextDecoder();
-          const array = [];
-          for (const record of event.message.records) {
-            //setNfcMessage("Record type:  " + record.recordType);
-            //setNfcMessage("MIME type:    " + record.mediaType);
-            //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
-            array.push(decoder.decode(record.data));
-          }
-          const tempArray = decoder.decode(event.message.records[0].data).split(",");
-          //setNum(num + 1);
-          itemsList.push({ ref: tempArray[0], type: tempArray[1] });
-          const tempList = [...itemsList];
-          //console.log(tempList);
-          setItemList(tempList);
-          //console.log(itemsList);
-        }
+        reader.onreading = (event)=>addItem(event);
       } catch (error) {
         setNfcMessage(error.message);
       }
@@ -126,7 +173,7 @@ const InputForm = () => {
         </Menu.Menu>
       </Menu>
 
-      <Header as="h1" color="teal" block textAlign="center">
+      <Header as="h3" color="teal" block textAlign="center">
         <Icon name='edit' />
         <Header.Content>租借登記頁</Header.Content>
       </Header>
@@ -173,6 +220,14 @@ const InputForm = () => {
             iconPosition="left"
             placeholder="租借人姓名"
             name="user"
+            onChange={(event)=>{
+              const tempData=`${event.currentTarget.value},ipad`;
+              setNum(num+1);
+              const event2={};
+              event2.message={};
+              event2.message.records=[{data:tempData}];
+              addItem2(event2);
+            }}
           />
         </Form.Field>
         <Form.Field>
