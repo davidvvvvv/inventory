@@ -18,16 +18,25 @@ const InputForm = () => {
   const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
   const todayString = `${ye}-${mo}-${da}`;
 
+  const [login, setLogin] = useContext(LoginContext);
+  const [activeItem, setActiveItem] = useState("");
+  const [itemsList, setItemList] = useState([]);
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
   const [nfcMessage, setNfcMessage] = useState("");
+  //const [num, setNum] = useState(0);
   const onChange_Rent = (event, data) => {
     setRentDate(data.value);
     setExpectReturnDate(data.value);
   }
   const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
-  const [login, setLogin] = useContext(LoginContext);
-  const [activeItem, setActiveItem] = useState("");
+  const removeItem = index => {
+    itemsList.splice(index, 1);
+    const tempList = [...itemsList];
+    setItemList(tempList);
+    //console.log(tempList);
+  }
+
 
   const showTag = useMemo(() => {
     const newSetRentDate = new Date(rentDate).getTime();
@@ -88,7 +97,13 @@ const InputForm = () => {
             //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
             array.push(decoder.decode(record.data));
           }
-          //setNfcMessage(decoder.decode(event.message.records[0].data));
+          const tempArray = decoder.decode(event.message.records[0].data).split(",");
+          //setNum(num + 1);
+          itemsList.push({ ref: tempArray[0], type: tempArray[1] });
+          const tempList = [...itemsList];
+          //console.log(tempList);
+          setItemList(tempList);
+          //console.log(itemsList);
         }
       } catch (error) {
         setNfcMessage(error.message);
@@ -147,11 +162,21 @@ const InputForm = () => {
           />
         </Form.Field>
         <Form.Field>
-        <Label color="teal">地點</Label>
-          <Select placeholder='地點' options={location} size="mini"/>
+          <Label color="teal">地點</Label>
+          <Select placeholder='地點' options={location} size="mini" />
         </Form.Field>
         <Form.Field>
-          <ListGroup/>
+          <Label color="teal">租借人姓名</Label>
+          <Form.Input
+            fluid
+            icon="user"
+            iconPosition="left"
+            placeholder="租借人姓名"
+            name="user"
+          />
+        </Form.Field>
+        <Form.Field>
+          <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
       </Form>
 
