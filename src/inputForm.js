@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useMemo,useCallback ,useRef} from "react";
+import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } from "react";
 //import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
@@ -20,9 +20,15 @@ const InputForm = () => {
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
-  const [itemsList, setItemList] = useState([]);
-  const _itemsList=useRef(itemsList);
-  const [num,setNum] = useState('');
+  const [itemsList, _setItemList] = useState([]);
+
+  const _itemsList = useRef(itemsList);
+  const setItemList = data => {
+    _itemsList.current = data;
+    _setItemList(data);
+  };
+  const [inputType, setInputType] = useState('');
+  const [inputItem, setInputItem] = useState('');
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
   const [nfcMessage, setNfcMessage] = useState("");
@@ -43,28 +49,24 @@ const InputForm = () => {
       setItemList(tempList);
     }
     */
-   setNfcMessage("itemsList"+itemsList);
+    setNfcMessage("itemsList" + itemsList);
   }
   const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
-  
+
   const removeItem = index => {
     itemsList.splice(index, 1);
     const tempList = [...itemsList];
-    _itemsList.current=tempList;
+    //_itemsList.current=tempList; 
     setItemList(tempList);
-    
-    //setNfcMessage("_itemsList_length" + _itemsList.length)
-    //_itemsList.current=[...tempList];
-    //console.log(tempList);
   }
 
-  const addItem = (event,_itemsListCurrent) => {
+  const addItem = (event, _itemsListCurrent) => {
     const decoder = new TextDecoder();
-   // for (const record of event.message.records) {
-      //setNfcMessage("Record type:  " + record.recordType);
-      //setNfcMessage("MIME type:    " + record.mediaType);
-      //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
-   // }
+    // for (const record of event.message.records) {
+    //setNfcMessage("Record type:  " + record.recordType);
+    //setNfcMessage("MIME type:    " + record.mediaType);
+    //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
+    // }
     //setNfcMessage('tempItemsList.length '+event.itemsList.length);
     const tempArray = decoder.decode(event.message.records[0].data).split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
@@ -123,6 +125,12 @@ const InputForm = () => {
     { key: 'hall', value: 'hall', text: '禮堂' },
   ]
 
+  const itemType = [
+    { key: 'ipad', value: 'IPad', text: 'IPad' },
+    { key: 'camera', value: '相機', text: '相機' },
+    { key: 'notebook', value: '筆記本', text: '筆記本' },
+  ]
+
   const logoutAllFunction = () => {
     setActiveItem("logout");
     logoutAll();
@@ -137,10 +145,9 @@ const InputForm = () => {
     if (reader) {
       try {
         reader.scan();
-        reader.onreading = (event)=>{
-         // event.itemsList=_itemsList.current;
-          setNfcMessage('tempItemsList.length '+_itemsList.current.length);
-          addItem(event,_itemsList.current);
+        reader.onreading = (event) => {
+          setNfcMessage('tempItemsList.length ' + _itemsList.current.length);
+          addItem(event, _itemsList.current);
         };
       } catch (error) {
         setNfcMessage(error.message);
@@ -169,6 +176,17 @@ const InputForm = () => {
       </Header>
 
       <Form size="large">
+        <Form.Field>
+          <Label color="teal">租借人姓名</Label>
+          <Form.Input
+            fluid
+            icon="user"
+            iconPosition="left"
+            placeholder="租借人姓名"
+            name="user"
+          />
+        </Form.Field>
+
         <Form.Field>
           <Label color="teal">租借日期</Label>
           <Label color="red" key="red" style={{ visibility: showTag }}>* 日期早於今天</Label>
@@ -202,37 +220,57 @@ const InputForm = () => {
           <Label color="teal">地點</Label>
           <Select placeholder='地點' options={location} size="mini" />
         </Form.Field>
-        <Form.Field>
-          <Label color="teal">租借人姓名</Label>
-          <Form.Input
-            fluid
-            icon="user"
-            iconPosition="left"
-            placeholder="租借人姓名"
-            name="user"
-            onChange={(event)=>{
-              setNum(event.currentTarget.value);
-            }}
-          />
-        </Form.Field>
+
+        <Grid columns='equal'>
+
+          <Grid.Column width={7}>
+            <Form.Field>
+              <Label color="teal">租借物件</Label>
+              <Form.Input
+                fluid
+                icon="box"
+                iconPosition="left"
+                placeholder="租借物件"
+                name="item"
+                onChange={(event) => {
+                  setInputItem(event.currentTarget.value);
+                }}
+              />
+            </Form.Field>
+          </Grid.Column>
+
+          <Grid.Column width={6}>
+            <Form.Field>
+              <Label color="teal">種類</Label>
+              <Dropdown placeholder='種類' fluid search selection options={itemType} onChange={(event) => { setInputType(event.currentTarget.value) }} />
+            </Form.Field>
+          </Grid.Column>
+
+          <Grid.Column verticalAlign="bottom">
+            <Form.Field>
+              <Button style={{ width: 52 }}
+                onClick={() => {
+                  const tempData = `${inputItem},${inputType}`;
+                  const event2 = {};
+                  event2.message = {};
+                  event2.message.records = [{ data: tempData }];
+                  addItem2(event2);
+                }}><Icon name='add' /></Button>
+            </Form.Field>
+          </Grid.Column>
+
+        </Grid>
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={()=>{
-          const tempData=`${num},ipad`;
-          const event2={};
-          event2.message={};
-          event2.message.records=[{data:tempData}];
-          {console.log('itemsList 0',itemsList);}
-          addItem2(event2); 
-          }}>Submit</Button>
+        <Button >Submit</Button>
       </Form>
 
       <Message error >
         {nfcMessage}
       </Message>
       <Message error >
-        {'itemsList_real '+itemsList.length}
+        {'itemsList_real ***' + itemsList.length}
       </Message>
     </div >
   );
