@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useMemo } from "react";
+import React, { useState, useContext, useEffect, useMemo,useCallback ,useRef} from "react";
 //import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
@@ -21,6 +21,7 @@ const InputForm = () => {
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, setItemList] = useState([]);
+  const _itemsList=useRef(itemsList);
   const [num,setNum] = useState('');
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
@@ -49,25 +50,29 @@ const InputForm = () => {
   const removeItem = index => {
     itemsList.splice(index, 1);
     const tempList = [...itemsList];
+    _itemsList.current=tempList;
     setItemList(tempList);
-    setNfcMessage("remove_length" + itemsList.length)
+    
+    //setNfcMessage("_itemsList_length" + _itemsList.length)
+    //_itemsList.current=[...tempList];
     //console.log(tempList);
   }
 
-  const addItem = (event,_itemsList) => {
+  const addItem = (event,_itemsListCurrent) => {
     const decoder = new TextDecoder();
    // for (const record of event.message.records) {
       //setNfcMessage("Record type:  " + record.recordType);
       //setNfcMessage("MIME type:    " + record.mediaType);
       //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
    // }
+    //setNfcMessage('tempItemsList.length '+event.itemsList.length);
     const tempArray = decoder.decode(event.message.records[0].data).split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
-    const tempInput = _itemsList.some(item => {
+    const tempInput = _itemsListCurrent.some(item => {
       return item.refno == tempObject.refno;
     });
-    if (!tempInput) _itemsList.push(tempObject);
-    const tempList = [..._itemsList];
+    if (!tempInput) _itemsListCurrent.push(tempObject);
+    const tempList = [..._itemsListCurrent];
     setItemList(tempList);
   }
 
@@ -132,7 +137,11 @@ const InputForm = () => {
     if (reader) {
       try {
         reader.scan();
-        reader.onreading = (event)=>addItem(event,itemsList);
+        reader.onreading = (event)=>{
+         // event.itemsList=_itemsList.current;
+          setNfcMessage('tempItemsList.length '+_itemsList.current.length);
+          addItem(event,_itemsList.current);
+        };
       } catch (error) {
         setNfcMessage(error.message);
       }
@@ -214,12 +223,16 @@ const InputForm = () => {
           const event2={};
           event2.message={};
           event2.message.records=[{data:tempData}];
-          addItem2(event2);
+          {console.log('itemsList 0',itemsList);}
+          addItem2(event2); 
           }}>Submit</Button>
       </Form>
 
       <Message error >
         {nfcMessage}
+      </Message>
+      <Message error >
+        {'itemsList_real '+itemsList.length}
       </Message>
     </div >
   );
