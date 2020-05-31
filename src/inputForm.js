@@ -18,6 +18,42 @@ const InputForm = () => {
   const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
   const todayString = `${ye}-${mo}-${da}`;
 
+  const location = [
+    { key: 'g1', value: 'g1', text: '第1組' },
+    { key: 'g2', value: 'g2', text: '第2組' },
+    { key: 'g3', value: 'g3', text: '第3組' },
+    { key: 'g4', value: 'g4', text: '第4組' },
+    { key: 'g5', value: 'g5', text: '第5組' },
+    { key: 'g6', value: 'g6', text: '第6組' },
+    { key: 'g7', value: 'g7', text: '第7組' },
+    { key: 'g8a', value: 'g8a', text: '第8a組' },
+    { key: 'g8b', value: 'g8b', text: '第8b組' },
+    { key: 'g9', value: 'g9', text: '第9組' },
+    { key: 'g10', value: 'g10', text: '第10組' },
+    { key: 'g11a', value: 'g11a', text: '第11a組' },
+    { key: 'g11b', value: 'g11b', text: '第11b組' },
+    { key: 'g12', value: 'g12', text: '第12組' },
+    { key: 'teacher', value: 'teacher', text: '教員室' },
+    { key: 'computer', value: 'computer', text: '電腦室' },
+    { key: 'housekeeping', value: 'housekeeping', text: '家政室' },
+    { key: 'dt', value: 'dt', text: 'DT室' },
+    { key: 'music', value: 'music', text: '音樂室' },
+    { key: 'a_room', value: 'a_room', text: 'A仔室' },
+    { key: 'st', value: 'st', text: 'ST室' },
+    { key: 'ot', value: 'ot', text: '職業治療室' },
+    { key: 'library', value: 'library', text: '圖書室' },
+    { key: 'art', value: 'art', text: '視藝室' },
+    { key: 'grow', value: 'grow', text: '成長坊' },
+    { key: 'care', value: 'care', text: '治療室' },
+    { key: 'hall', value: 'hall', text: '禮堂' },
+  ]
+
+  const itemType = [
+    { key: 'ipad', value: 'IPad', text: 'IPad' },
+    { key: 'camera', value: '相機', text: '相機' },
+    { key: 'notebook', value: '筆記本', text: '筆記本' },
+  ]
+
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
@@ -60,76 +96,41 @@ const InputForm = () => {
     setItemList(tempList);
   }
 
-  const addItem = (event, _itemsListCurrent) => {
-    const decoder = new TextDecoder();
+  const addItem = (dataString) => {
+    //const decoder = new TextDecoder();
     // for (const record of event.message.records) {
     //setNfcMessage("Record type:  " + record.recordType);
     //setNfcMessage("MIME type:    " + record.mediaType);
     //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
     // }
     //setNfcMessage('tempItemsList.length '+event.itemsList.length);
-    const tempArray = decoder.decode(event.message.records[0].data).split(",");
+    //const tempArray = decoder.decode(event.message.records[0].data).split(",");
+    const tempArray=dataString.split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
-    const tempInput = _itemsListCurrent.some(item => {
+    const tempInput = _itemsList.current.some(item => {
       return item.refno == tempObject.refno;
     });
-    if (!tempInput) _itemsListCurrent.push(tempObject);
-    const tempList = [..._itemsListCurrent];
+    !tempInput ? _itemsList.current.push(tempObject): setNfcMessage("重覆輸入!");
+    const tempList = [..._itemsList.current];
     setItemList(tempList);
   }
-
-  const addItem2 = (event) => {
-    const tempArray = event.message.records[0].data.split(",");
+/*
+  const addItem2 = (dataString) => {
+    const tempArray = dataString.split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
     const tempInput = itemsList.some(item => {
       return item.refno == tempObject.refno;
     });
-    if (!tempInput) itemsList.push(tempObject);
+    !tempInput ? _itemsList.current.push(tempObject): setNfcMessage("重覆輸入!");
     const tempList = [...itemsList];
     setItemList(tempList);
   }
-
+*/
   const showTag = useMemo(() => {
     const newSetRentDate = new Date(rentDate).getTime();
     const todayStringDate = new Date(todayString).getTime();
     return todayStringDate > newSetRentDate ? "visible" : "hidden";
   }, [rentDate])
-
-  const location = [
-    { key: 'g1', value: 'g1', text: '第1組' },
-    { key: 'g2', value: 'g2', text: '第2組' },
-    { key: 'g3', value: 'g3', text: '第3組' },
-    { key: 'g4', value: 'g4', text: '第4組' },
-    { key: 'g5', value: 'g5', text: '第5組' },
-    { key: 'g6', value: 'g6', text: '第6組' },
-    { key: 'g7', value: 'g7', text: '第7組' },
-    { key: 'g8a', value: 'g8a', text: '第8a組' },
-    { key: 'g8b', value: 'g8b', text: '第8b組' },
-    { key: 'g9', value: 'g9', text: '第9組' },
-    { key: 'g10', value: 'g10', text: '第10組' },
-    { key: 'g11a', value: 'g11a', text: '第11a組' },
-    { key: 'g11b', value: 'g11b', text: '第11b組' },
-    { key: 'g12', value: 'g12', text: '第12組' },
-    { key: 'teacher', value: 'teacher', text: '教員室' },
-    { key: 'computer', value: 'computer', text: '電腦室' },
-    { key: 'housekeeping', value: 'housekeeping', text: '家政室' },
-    { key: 'dt', value: 'dt', text: 'DT室' },
-    { key: 'music', value: 'music', text: '音樂室' },
-    { key: 'a_room', value: 'a_room', text: 'A仔室' },
-    { key: 'st', value: 'st', text: 'ST室' },
-    { key: 'ot', value: 'ot', text: '職業治療室' },
-    { key: 'library', value: 'library', text: '圖書室' },
-    { key: 'art', value: 'art', text: '視藝室' },
-    { key: 'grow', value: 'grow', text: '成長坊' },
-    { key: 'care', value: 'care', text: '治療室' },
-    { key: 'hall', value: 'hall', text: '禮堂' },
-  ]
-
-  const itemType = [
-    { key: 'ipad', value: 'IPad', text: 'IPad' },
-    { key: 'camera', value: '相機', text: '相機' },
-    { key: 'notebook', value: '筆記本', text: '筆記本' },
-  ]
 
   const logoutAllFunction = () => {
     setActiveItem("logout");
@@ -139,6 +140,12 @@ const InputForm = () => {
 
   if (login == null) navigate("/");
 
+  useEffect(()=>{
+    console.log("inputForm_useEffect");
+    readTag(setNfcMessage,addItem);
+  },[]);
+
+  /*
   useEffect(() => {
     console.log("inputForm_useEffect");
     const reader = readTag(setNfcMessage);
@@ -146,8 +153,8 @@ const InputForm = () => {
       try {
         reader.scan();
         reader.onreading = (event) => {
-          setNfcMessage('tempItemsList.length ' + _itemsList.current.length);
-          addItem(event, _itemsList.current);
+          setNfcMessage('tempItemsList.length** ' + _itemsList.current.length);
+          addItem(event);
         };
       } catch (error) {
         setNfcMessage(error.message);
@@ -157,6 +164,8 @@ const InputForm = () => {
       console.log("inputForm_useEffect_unsubscribe");
     };
   }, []);
+  */
+
 
   return (
     <div style={{ height: "100vh" }}>
@@ -251,10 +260,10 @@ const InputForm = () => {
               <Button style={{ width: 52 }}
                 onClick={() => {
                   const tempData = `${inputItem},${inputType}`;
-                  const event2 = {};
-                  event2.message = {};
-                  event2.message.records = [{ data: tempData }];
-                  addItem2(event2);
+                 // const event2 = {};
+                 // event2.message = {};
+                 // event2.message.records = [{ data: tempData }];
+                  addItem(tempData);
                 }}><Icon name='add' /></Button>
             </Form.Field>
           </Grid.Column>
@@ -270,7 +279,7 @@ const InputForm = () => {
         {nfcMessage}
       </Message>
       <Message error >
-        {'itemsList_real ***' + itemsList.length}
+        {'itemsList_real $' + itemsList.length}
       </Message>
     </div >
   );
