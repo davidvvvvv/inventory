@@ -8,7 +8,7 @@ import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import {
   Button, Form, Grid, Header, Image, Message,
-  Segment, Menu, Checkbox, Icon, Label, Select, Dropdown
+  Segment, Menu, Checkbox, Icon, Label, Select, Dropdown,Popup
 } from "semantic-ui-react";
 
 const InputForm = () => {
@@ -105,27 +105,27 @@ const InputForm = () => {
     // }
     //setNfcMessage('tempItemsList.length '+event.itemsList.length);
     //const tempArray = decoder.decode(event.message.records[0].data).split(",");
-    const tempArray=dataString.split(",");
+    const tempArray = dataString.split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
     const tempInput = _itemsList.current.some(item => {
       return item.refno == tempObject.refno;
     });
-    !tempInput ? _itemsList.current.push(tempObject): setNfcMessage("重覆輸入!");
+    !tempInput ? _itemsList.current.push(tempObject) : setNfcMessage("重覆輸入!");
     const tempList = [..._itemsList.current];
     setItemList(tempList);
   }
-/*
-  const addItem2 = (dataString) => {
-    const tempArray = dataString.split(",");
-    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
-    const tempInput = itemsList.some(item => {
-      return item.refno == tempObject.refno;
-    });
-    !tempInput ? _itemsList.current.push(tempObject): setNfcMessage("重覆輸入!");
-    const tempList = [...itemsList];
-    setItemList(tempList);
-  }
-*/
+  /*
+    const addItem2 = (dataString) => {
+      const tempArray = dataString.split(",");
+      const tempObject = { 'refno': tempArray[0], 'type': tempArray[1] };
+      const tempInput = itemsList.some(item => {
+        return item.refno == tempObject.refno;
+      });
+      !tempInput ? _itemsList.current.push(tempObject): setNfcMessage("重覆輸入!");
+      const tempList = [...itemsList];
+      setItemList(tempList);
+    }
+  */
   const showTag = useMemo(() => {
     const newSetRentDate = new Date(rentDate).getTime();
     const todayStringDate = new Date(todayString).getTime();
@@ -140,10 +140,10 @@ const InputForm = () => {
 
   if (login == null) navigate("/");
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("inputForm_useEffect");
-    readTag(setNfcMessage,addItem);
-  },[]);
+    readTag(setNfcMessage, addItem);
+  }, []);
 
   /*
   useEffect(() => {
@@ -165,7 +165,6 @@ const InputForm = () => {
     };
   }, []);
   */
-
 
   return (
     <div style={{ height: "100vh" }}>
@@ -195,45 +194,49 @@ const InputForm = () => {
             name="user"
           />
         </Form.Field>
-
         <Form.Field>
-          <Label color="teal">租借日期</Label>
-          <Label color="red" key="red" style={{ visibility: showTag }}>* 日期早於今天</Label>
-          <DateInput
-            name="rentDate"
-            placeholder="租借日期"
-            value={rentDate}
-            iconPosition="left"
-            onChange={onChange_Rent}
-            animation='none'
-            maxDate={todayString}
-            dateFormat="YYYY-MM-DD"
-            hideMobileKeyboard={true}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Label color="teal">預期歸還日期</Label>
-          <DateInput
-            name="expectReturnDate"
-            placeholder="預期歸還日期"
-            value={expectReturnDate}
-            iconPosition="left"
-            onChange={onChange_Expect}
-            animation='none'
-            minDate={rentDate}
-            dateFormat="YYYY-MM-DD"
-            hideMobileKeyboard={true}
-          />
+        <Grid columns='equal'>
+          <Grid.Column>
+         
+              <Label color="teal">租借日期</Label>
+              <Label color="red" key="red" style={{ visibility: showTag }}>* 日期早於今天</Label>
+              <DateInput
+                name="rentDate"
+                placeholder="租借日期"
+                value={rentDate}
+                iconPosition="left"
+                onChange={onChange_Rent}
+                animation='none'
+                maxDate={todayString}
+                dateFormat="YYYY-MM-DD"
+                hideMobileKeyboard={true}
+              />
+         
+          </Grid.Column>
+          <Grid.Column>
+              <Label color="teal">預期歸還日期</Label>
+              <DateInput
+                name="expectReturnDate"
+                placeholder="預期歸還日期"
+                value={expectReturnDate}
+                iconPosition="left"
+                onChange={onChange_Expect}
+                animation='none'
+                minDate={rentDate}
+                dateFormat="YYYY-MM-DD"
+                hideMobileKeyboard={true}
+              />
+          </Grid.Column>
+        </Grid>
         </Form.Field>
         <Form.Field>
           <Label color="teal">地點</Label>
           <Select placeholder='地點' options={location} size="mini" />
         </Form.Field>
-
+        <Form.Field>
         <Grid columns='equal'>
 
           <Grid.Column width={7}>
-            <Form.Field>
               <Label color="teal">租借物件</Label>
               <Form.Input
                 fluid
@@ -245,40 +248,38 @@ const InputForm = () => {
                   setInputItem(event.currentTarget.value);
                 }}
               />
-            </Form.Field>
           </Grid.Column>
 
           <Grid.Column width={6}>
-            <Form.Field>
               <Label color="teal">種類</Label>
-              <Dropdown placeholder='種類' fluid search selection options={itemType} onChange={(event) => { setInputType(event.currentTarget.value) }} />
-            </Form.Field>
+              <Dropdown placeholder='種類' fluid search selection options={itemType} onChange={(event,result) => { setInputType(result.value) }} />
           </Grid.Column>
 
           <Grid.Column verticalAlign="bottom">
-            <Form.Field>
+           
               <Button style={{ width: 52 }}
                 onClick={() => {
                   const tempData = `${inputItem},${inputType}`;
-                 // const event2 = {};
-                 // event2.message = {};
-                 // event2.message.records = [{ data: tempData }];
+                  // const event2 = {};
+                  // event2.message = {};
+                  // event2.message.records = [{ data: tempData }];
                   addItem(tempData);
                 }}><Icon name='add' /></Button>
-            </Form.Field>
+         
           </Grid.Column>
-
         </Grid>
+        </Form.Field>
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
         <Button >Submit</Button>
       </Form>
+      <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
+      <Message error icon="warning sign" 
+      content={nfcMessage} hidden={true}
+      />
 
-      <Message error >
-        {nfcMessage}
-      </Message>
-      <Message error >
+      <Message error>
         {'itemsList_real $' + itemsList.length}
       </Message>
     </div >
