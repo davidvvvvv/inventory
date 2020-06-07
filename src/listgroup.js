@@ -14,6 +14,7 @@ const ListGroup = (props)=> {
 
   return (
     <div>
+      {console.log("ListGroup_return")}
       <Transition.Group
         as={List}
         duration={200}

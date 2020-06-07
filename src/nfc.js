@@ -14,7 +14,7 @@ export const readTag = (setMessage,addItem)=> {
     } else {
         setMessage("Web NFC 未能支援");
     }
-  }
+  } 
 /*
   export const readTag = (setMessage,addItem) => {
     if ("NDEFReader" in window) {

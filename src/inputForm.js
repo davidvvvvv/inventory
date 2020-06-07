@@ -7,8 +7,8 @@ import { logoutAll } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import {
-  Button, Form, Grid, Header, Image, Message,
-  Segment, Menu, Checkbox, Icon, Label, Select, Dropdown,Popup
+  Button, Form, Grid, Header, Image, Message, Transition,Confirm,
+  Segment, Menu, Checkbox, Icon, Label, Select, Dropdown, Popup
 } from "semantic-ui-react";
 
 const InputForm = () => {
@@ -68,26 +68,18 @@ const InputForm = () => {
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
   const [nfcMessage, setNfcMessage] = useState("");
+  const [nfcMessageVisible,setNfcMessageVisible] = useState(false)
   const onChange_Rent = (event, data) => {
     setRentDate(data.value);
     setExpectReturnDate(data.value);
-    /* test code for add items
-    const tempObject = {refno:data.value,type:'ipad'};
-    const tempInput=itemsList.some(item => {
-      return item.refno == tempObject.refno;
-    });
-    
-    if (!tempInput){
-      itemsList.push({ 'refno': tempObject.refno, 'type': tempObject.type });
-      const tempList = [...itemsList];
-      console.log('itemsList',itemsList);
-      console.log('tempList',tempList);
-      setItemList(tempList);
-    }
-    */
-    setNfcMessage("itemsList" + itemsList);
+    //setNfcMessage("itemsList" + itemsList);
   }
   const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
+
+  const setError = useCallback((message) => {
+    setNfcMessage(message);
+    setNfcMessageVisible(true);
+  },[])
 
   const removeItem = index => {
     itemsList.splice(index, 1);
@@ -110,7 +102,7 @@ const InputForm = () => {
     const tempInput = _itemsList.current.some(item => {
       return item.refno == tempObject.refno;
     });
-    !tempInput ? _itemsList.current.push(tempObject) : setNfcMessage("重覆輸入!");
+    !tempInput ? _itemsList.current.push(tempObject) : setError("😫 錯誤 : 重覆輸入!");
     const tempList = [..._itemsList.current];
     setItemList(tempList);
   }
@@ -142,32 +134,22 @@ const InputForm = () => {
 
   useEffect(() => {
     console.log("inputForm_useEffect");
-    readTag(setNfcMessage, addItem);
+    readTag(setError, addItem);
   }, []);
 
-  /*
-  useEffect(() => {
-    console.log("inputForm_useEffect");
-    const reader = readTag(setNfcMessage);
-    if (reader) {
-      try {
-        reader.scan();
-        reader.onreading = (event) => {
-          setNfcMessage('tempItemsList.length** ' + _itemsList.current.length);
-          addItem(event);
-        };
-      } catch (error) {
-        setNfcMessage(error.message);
-      }
-    }
-    return () => {
-      console.log("inputForm_useEffect_unsubscribe");
-    };
-  }, []);
-  */
+  useEffect(() =>{
+    console.log("inputForm_useEffect2");
+    const messageTimeout=setTimeout(()=>{
+      setNfcMessageVisible(false);
+    },3000)
+    return (()=>{
+      clearTimeout(messageTimeout);
+    })
+  },[nfcMessageVisible,nfcMessage]);
 
   return (
     <div style={{ height: "100vh" }}>
+      {console.log("inputForm_return")}
       <Menu secondary pointing >
         <Menu.Menu position='right'>
           <Menu.Item
@@ -195,9 +177,9 @@ const InputForm = () => {
           />
         </Form.Field>
         <Form.Field>
-        <Grid columns='equal'>
-          <Grid.Column>
-         
+          <Grid columns='equal'>
+            <Grid.Column>
+
               <Label color="teal">租借日期</Label>
               <Label color="red" key="red" style={{ visibility: showTag }}>* 日期早於今天</Label>
               <DateInput
@@ -211,9 +193,9 @@ const InputForm = () => {
                 dateFormat="YYYY-MM-DD"
                 hideMobileKeyboard={true}
               />
-         
-          </Grid.Column>
-          <Grid.Column>
+
+            </Grid.Column>
+            <Grid.Column>
               <Label color="teal">預期歸還日期</Label>
               <DateInput
                 name="expectReturnDate"
@@ -226,17 +208,17 @@ const InputForm = () => {
                 dateFormat="YYYY-MM-DD"
                 hideMobileKeyboard={true}
               />
-          </Grid.Column>
-        </Grid>
+            </Grid.Column>
+          </Grid>
         </Form.Field>
         <Form.Field>
           <Label color="teal">地點</Label>
           <Select placeholder='地點' options={location} size="mini" />
         </Form.Field>
         <Form.Field>
-        <Grid columns='equal'>
+          <Grid columns='equal'>
 
-          <Grid.Column width={7}>
+            <Grid.Column width={7}>
               <Label color="teal">租借物件</Label>
               <Form.Input
                 fluid
@@ -248,15 +230,15 @@ const InputForm = () => {
                   setInputItem(event.currentTarget.value);
                 }}
               />
-          </Grid.Column>
+            </Grid.Column>
 
-          <Grid.Column width={6}>
+            <Grid.Column width={6}>
               <Label color="teal">種類</Label>
-              <Dropdown placeholder='種類' fluid search selection options={itemType} onChange={(event,result) => { setInputType(result.value) }} />
-          </Grid.Column>
+              <Dropdown placeholder='種類' fluid search selection options={itemType} onChange={(event, result) => { setInputType(result.value) }} />
+            </Grid.Column>
 
-          <Grid.Column verticalAlign="bottom">
-           
+            <Grid.Column verticalAlign="bottom">
+
               <Button style={{ width: 52 }}
                 onClick={() => {
                   const tempData = `${inputItem},${inputType}`;
@@ -265,9 +247,9 @@ const InputForm = () => {
                   // event2.message.records = [{ data: tempData }];
                   addItem(tempData);
                 }}><Icon name='add' /></Button>
-         
-          </Grid.Column>
-        </Grid>
+
+            </Grid.Column>
+          </Grid>
         </Form.Field>
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
@@ -275,10 +257,12 @@ const InputForm = () => {
         <Button >Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
-      <Message error icon="warning sign" 
-      content={nfcMessage} hidden={true}
-      />
-
+      <Transition visible={nfcMessageVisible} duration={500}>
+        <Message error
+          content={nfcMessage}
+        />
+      </Transition>
+      
       <Message error>
         {'itemsList_real $' + itemsList.length}
       </Message>
