@@ -1,16 +1,16 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Button, Image, List, Transition } from "semantic-ui-react";
+import { Button, Image, List, Transition, Label, Icon } from "semantic-ui-react";
 
-const ListGroup = (props)=> {
+const ListGroup = (props) => {
 
-  const items=props.list;
-  const handleRemove = (index) =>{
-   props.remove(index);
+  const items = props.list;
+  const handleRemove = (index) => {
+    props.remove(index);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("listgroup_useEffect");
-  },[]);
+  }, []);
 
   return (
     <div>
@@ -19,26 +19,25 @@ const ListGroup = (props)=> {
         as={List}
         duration={200}
         divided
-        size="huge"
+
         verticalAlign="middle"
         style={{ overflow: "auto", maxHeight: 200 }}
       >
-        {items.map((item,index) => (
+        {items.map((item, index) => (
           <List.Item key={item.refno}>
             <Image
               avatar
               src={`https://react.semantic-ui.com/images/avatar/small/ade.jpg`}
             />
-            <List.Content header={item.refno} />
+            <List.Content header={item.refno} description="---- error ----</b>" />
             <List.Content floated="right">
-              <Button onClick={()=>handleRemove(index)}>移除</Button>
+              <Button onClick={() => handleRemove(index)}>移除</Button>
             </List.Content>
           </List.Item>
         ))}
       </Transition.Group>
-      </div>
+    </div>
   );
-  
 }
 
 export default ListGroup
