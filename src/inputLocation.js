@@ -1,6 +1,6 @@
-import React , {useState , useEffect , useMemo} from 'react';
-import { Dropdown} from "semantic-ui-react";
-import {getDBCol} from "./firebase_";
+import React, { useState, useEffect, useMemo } from 'react';
+import { Dropdown } from "semantic-ui-react";
+import { getDBCol } from "./firebase_";
 
 const location = [
     { key: 'g1', value: 'g1', text: '1組' },
@@ -30,20 +30,30 @@ const location = [
     { key: 'grow', value: 'grow', text: '成長坊' },
     { key: 'care', value: 'care', text: '治療室' },
     { key: 'hall', value: 'hall', text: '禮堂' },
-  ]
+]
 
-const Location=()=>{
+const Location = () => {
 
-    const [location2,setLocation2]=useState([]);
+    const [location2, setLocation2] = useState([]);
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log("inputLocation_Effect");
-        setLocation2(getDBCol('location'));
-        console.log(location2);
-    },[]);
+        const getLocation = async () => {
+            const querySnapshot = await getDBCol('location');
+            const temp = querySnapshot.docs.map(doc => {
+                return doc.data();
+            });
+            console.log(temp);
+            setLocation2(temp)
+        }
+        getLocation();
+        return ()=>{
+            getLocation=0;
+        }
+    }, []);
 
-    return(
-    <Dropdown placeholder='地點' options={location} fluid search selection />
+    return (
+        <Dropdown placeholder='地點' options={location} fluid search selection />
     )
 }
 

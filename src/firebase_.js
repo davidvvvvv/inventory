@@ -51,7 +51,7 @@ export const logoutAll = () => {
 export const getDBCol = async col => {
   const ref = firestore.collection(col);
   return await ref
-    .get()
+    .get().then(querySnapshot => querySnapshot)
     .catch(error => console.log("firebase_getDBCol", error.message));
 };
 
