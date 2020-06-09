@@ -29,7 +29,7 @@ const ListGroup = (props) => {
               avatar
               src={`https://react.semantic-ui.com/images/avatar/small/ade.jpg`}
             />
-            <List.Content header={item.refno} description="---- error ----</b>" />
+            <List.Content header={item.refno} description={item.desc} />
             <List.Content floated="right">
               <Button onClick={() => handleRemove(index)}>移除</Button>
             </List.Content>
