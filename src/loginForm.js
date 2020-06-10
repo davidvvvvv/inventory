@@ -22,7 +22,6 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-
   useEffect(() => {
     console.log("loginForm_useEffect");
     if (login) navigate("/input");
