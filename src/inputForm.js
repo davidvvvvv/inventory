@@ -11,6 +11,7 @@ import {
   Segment, Menu, Checkbox, Icon, Label, Select, Dropdown, Popup
 } from "semantic-ui-react";
 import Location from "./inputLocation"
+import InputType from "./inputType"
 
 const InputForm = () => {
   const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
@@ -19,16 +20,10 @@ const InputForm = () => {
   const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
   const todayString = `${ye}-${mo}-${da}`;
 
-  const itemType = [
-    { key: 'ipad', value: 'IPad', text: 'IPad' },
-    { key: 'camera', value: '相機', text: '相機' },
-    { key: 'notebook', value: '筆記本', text: '筆記本' },
-  ]
-
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
-  const [location,setLocation] = useState("");
+  const [location, setLocation] = useState("");
 
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
@@ -37,7 +32,7 @@ const InputForm = () => {
   };
   const [inputType, setInputType] = useState('');
   const [inputItem, setInputItem] = useState('');
-  
+
   const [inputTypeAlarm, setInputTypeAlarm] = useState("hidden");
   const [inputItemAlarm, setInputItemAlarm] = useState("hidden");
   const [rentDate, setRentDate] = useState(todayString);
@@ -178,7 +173,7 @@ const InputForm = () => {
 
         <Form.Field>
           <Label color="teal">地點</Label>
-          <Location setLocation={setLocation}/>
+          <Location setLocation={setLocation} />
         </Form.Field>
         <Form.Field>
           <Grid columns='equal'>
@@ -201,10 +196,7 @@ const InputForm = () => {
             <Grid.Column width={6}>
               <Label color="teal">種類</Label>
               <Label color="red" key="red" style={{ visibility: inputTypeAlarm }}>* 尚未設定</Label>
-              <Dropdown placeholder='種類' fluid search selection options={itemType} onChange={(event, result) => { 
-                setInputType(result.value)
-                event.currentTarget.value == '' ? setInputTypeAlarm('visible') : setInputTypeAlarm('hidden');
-                }} />
+              <InputType setInputType={setInputTypeAlarm} setInputTypeAlarm={setInputTypeAlarm} />
             </Grid.Column>
 
             <Grid.Column verticalAlign="bottom">
@@ -224,7 +216,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={console.log("location ",location)}>Submit</Button>
+        <Button onClick={console.log("location ", location)}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>

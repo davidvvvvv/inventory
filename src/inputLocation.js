@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dropdown } from "semantic-ui-react";
-import { getDBCol } from "./firebase_";
+import { getLocationCol } from "./firebase_";
 
 /*
 const locationxx = [
@@ -42,7 +42,7 @@ const Location = (props) => {
         let mount = true;
         let tempData;
         const getLocationList = async () => {
-            const querySnapshot = await getDBCol('location');
+            const querySnapshot = await getLocationCol('location');
             if (mount) {
                 tempData=querySnapshot.docs.map(doc => {
                     return doc.data();

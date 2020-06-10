@@ -48,11 +48,18 @@ export const logoutAll = () => {
     });
 };
 
-export const getDBCol = async col => {
+export const getLocationCol = async col => {
   const ref = firestore.collection(col);
-  return await ref
+  return await ref.orderBy('key','asc')
     .get().then(querySnapshot => querySnapshot)
-    .catch(error => console.log("firebase_getDBCol", error.message));
+    .catch(error => console.log("firebase_getLocationCol_error", error.message));
+};
+
+export const getTypeCol = async col => {
+  const ref = firestore.collection(col);
+  return await ref.orderBy('key','asc')
+    .get().then(querySnapshot => querySnapshot)
+    .catch(error => console.log("firebase_getTypeCol_error", error.message));
 };
 
 export const getDBDoc = async (col, doc) => {
