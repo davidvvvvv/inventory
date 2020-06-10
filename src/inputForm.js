@@ -28,6 +28,7 @@ const InputForm = () => {
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
+  const [location,setLocation] = useState("");
 
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
@@ -177,7 +178,7 @@ const InputForm = () => {
 
         <Form.Field>
           <Label color="teal">地點</Label>
-          <Location />
+          <Location setLocation={setLocation}/>
         </Form.Field>
         <Form.Field>
           <Grid columns='equal'>
@@ -223,7 +224,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button >Submit</Button>
+        <Button onClick={console.log("location ",location)}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>

@@ -34,34 +34,34 @@ const locationxx = [
 ]
 */
 
-const Location = () => {
-    const [location, setLocation] = useState([]);
+const Location = (props) => {
+    const [locationList, setLocationList] = useState([]);
 
     useEffect(() => {
         console.log("inputLocation_Effect");
         let mount = true;
         let tempData;
-        const getLocation = async () => {
+        const getLocationList = async () => {
             const querySnapshot = await getDBCol('location');
             if (mount) {
                 tempData=querySnapshot.docs.map(doc => {
                     return doc.data();
                 })
-                setLocation(tempData);
+                setLocationList(tempData);
             }
         }
-        getLocation();
-        return () => { 
+        getLocationList();
+        return () => {
             mount = false 
         };
     }, []);
     return (
         <Dropdown placeholder='地點' 
-        options={location} 
+        options={locationList} 
         fluid 
         search 
-        selection 
-        onChange={() => {console.log("location ",location)}}
+        selection
+        onChange={(event,result) => {props.setLocation(result.value)}}
         />
     )
 }
