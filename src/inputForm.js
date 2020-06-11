@@ -30,13 +30,14 @@ const InputForm = () => {
     _itemsList.current = data;
     _setItemList(data);
   };
+  const [borrowerName,setBorrowerName] = useState('');
   const [inputType, setInputType] = useState('');
   const [inputItem, setInputItem] = useState('');
-
   const [inputTypeAlarm, setInputTypeAlarm] = useState("hidden");
   const [inputItemAlarm, setInputItemAlarm] = useState("hidden");
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
+  
   const [nfcMessage, setNfcMessage] = useState("");
   const [nfcMessageVisible, setNfcMessageVisible] = useState(false)
   const onChange_Rent = (event, data) => {
@@ -133,6 +134,7 @@ const InputForm = () => {
             iconPosition="left"
             placeholder="租借人姓名"
             name="user"
+            onChange={(error,result)=>{setBorrowerName(result.value)}}
           />
         </Form.Field>
         <Form.Field>
@@ -196,7 +198,7 @@ const InputForm = () => {
             <Grid.Column width={6}>
               <Label color="teal">種類</Label>
               <Label color="red" key="red" style={{ visibility: inputTypeAlarm }}>* 尚未設定</Label>
-              <InputType setInputType={setInputTypeAlarm} setInputTypeAlarm={setInputTypeAlarm} />
+              <InputType setInputType={setInputType} setInputTypeAlarm={setInputTypeAlarm} />
             </Grid.Column>
 
             <Grid.Column verticalAlign="bottom">
@@ -216,7 +218,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={console.log("location ", location)}>Submit</Button>
+        <Button onClick={()=>{console.log(borrowerName,rentDate,expectReturnDate,location,itemsList)}}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>

@@ -69,6 +69,8 @@ export const getDBDoc = async (col, doc) => {
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
 
+/*export const addRecord = async (username,borrowDate,expectReturnDate,location,itemArray,)
+
 /*
 auth.getRedirectResult().then(function(result) {
   if (result.credential) {
