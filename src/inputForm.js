@@ -10,8 +10,9 @@ import {
   Button, Form, Grid, Header, Image, Message, Transition, Confirm,
   Segment, Menu, Checkbox, Icon, Label, Select, Dropdown, Popup
 } from "semantic-ui-react";
-import Location from "./inputLocation"
-import InputType from "./inputType"
+import Location from "./inputLocation";
+import InputType from "./inputType";
+import {addRecord} from "./firebase_"
 
 const InputForm = () => {
   const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
@@ -218,7 +219,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={()=>{console.log(borrowerName,rentDate,expectReturnDate,location,itemsList)}}>Submit</Button>
+        <Button onClick={()=>{addRecord(borrowerName,rentDate,expectReturnDate,location,itemsList)}}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>

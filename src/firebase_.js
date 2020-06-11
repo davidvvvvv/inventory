@@ -48,26 +48,38 @@ export const logoutAll = () => {
     });
 };
 
-export const getLocationCol = async col => {
+export const getLocationCol = col => {
   const ref = firestore.collection(col);
-  return await ref.orderBy('key','asc')
+  return ref.orderBy('key', 'asc')
     .get().then(querySnapshot => querySnapshot)
     .catch(error => console.log("firebase_getLocationCol_error", error.message));
 };
 
-export const getTypeCol = async col => {
+export const getTypeCol = col => {
   const ref = firestore.collection(col);
-  return await ref.orderBy('key','asc')
+  return ref.orderBy('key', 'asc')
     .get().then(querySnapshot => querySnapshot)
     .catch(error => console.log("firebase_getTypeCol_error", error.message));
 };
 
-export const getDBDoc = async (col, doc) => {
+export const getDBDoc = (col, doc) => {
   const ref = firestore.collection(col).doc(doc);
-  return await ref
+  return ref
     .get()
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
+
+export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList) => {
+  var ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
+   ref.set({
+    borrower,
+    borrowDate,
+    expectReturnDate,
+    localion
+  }).then(() => {
+    console.log('set data successful');
+  });
+}
 
 /*export const addRecord = async (username,borrowDate,expectReturnDate,location,itemArray,)
 
