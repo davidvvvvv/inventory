@@ -72,7 +72,7 @@ const InputForm = () => {
     const tempArray = dataString.split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': 'abc' };
     const tempInput = _itemsList.current.some(item => {
-      return item.refno == tempObject.refno;
+      return item.refno === tempObject.refno;
     });
     !tempInput ? _itemsList.current.push(tempObject) : setError("😫 錯誤 : 重覆輸入!");
     const tempList = [..._itemsList.current];
@@ -104,13 +104,14 @@ const InputForm = () => {
       setNfcMessageVisible(false);
     }, 3000)
     return (() => {
+      console.log("InputForm_useEffect2_return");
       clearTimeout(messageTimeout);
     })
   }, [nfcMessageVisible, nfcMessage]);
 
   return (
     <div style={{ height: "100vh" }}>
-      {console.log("inputForm_return")}
+      {console.log("inputForm_JSX")}
       <Menu secondary pointing >
         <Menu.Menu position='right'>
           <Menu.Item
@@ -191,7 +192,7 @@ const InputForm = () => {
                 name="item"
                 onChange={(event) => {
                   setInputItem(event.currentTarget.value);
-                  event.currentTarget.value == '' ? setInputItemAlarm('visible') : setInputItemAlarm('hidden');
+                  event.currentTarget.value === '' ? setInputItemAlarm('visible') : setInputItemAlarm('hidden');
                 }}
               />
             </Grid.Column>
@@ -205,9 +206,9 @@ const InputForm = () => {
             <Grid.Column verticalAlign="bottom">
               <Button style={{ width: 52 }}
                 onClick={() => {
-                  inputItem == '' ? setInputItemAlarm('visible') : setInputItemAlarm('hidden');
-                  inputType == '' ? setInputTypeAlarm('visible') : setInputTypeAlarm('hidden');
-                  if (!(inputItem == '' || inputType == '')) {
+                  inputItem === '' ? setInputItemAlarm('visible') : setInputItemAlarm('hidden');
+                  inputType === '' ? setInputTypeAlarm('visible') : setInputTypeAlarm('hidden');
+                  if (!(inputItem === '' || inputType === '')) {
                     const tempData = `${inputItem},${inputType}`;
                     addItem(tempData);
                   }
@@ -219,7 +220,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={()=>{addRecord(borrowerName,rentDate,expectReturnDate,location,itemsList)}}>Submit</Button>
+        <Button onClick={()=>{addRecord(borrowerName,new Date(rentDate),new Date(expectReturnDate),location,itemsList)}}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>

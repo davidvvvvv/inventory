@@ -22,6 +22,8 @@ const LoginContextProvider = props => {
         });
         */
         setLogin(userAuth);
+        //console.log('userAuth ',userAuth);
+        //console.log('auth.currentUser ',auth.currentUser);
       } else {
         console.log("The user is not logged in");
         setLogin(null);
@@ -29,6 +31,7 @@ const LoginContextProvider = props => {
     });
   };
 
+  /*
   const validAccountCheck = ()=>{
     const user=auth.currentUser;
     firestore.collection('users').doc(user.uid).set({
@@ -46,7 +49,7 @@ const LoginContextProvider = props => {
      //return false;
     })
   }
-
+ */
   useEffect(() => {
     console.log("loginContext_useEffect");
     const unsubscribe = ifAuthStateChange();

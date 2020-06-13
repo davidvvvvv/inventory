@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Dropdown } from "semantic-ui-react";
 import { getLocationCol } from "./firebase_";
 
@@ -36,23 +36,25 @@ const locationxx = [
 
 const Location = (props) => {
     const [locationList, setLocationList] = useState([]);
+    const tempDateRef=useRef([])
 
     useEffect(() => {
-        console.log("inputLocation_Effect");
         let mount = true;
-        let tempData;
         const getLocationList = async () => {
+            console.log("InputLocation_call_database");
             const querySnapshot = await getLocationCol('location');
             if (mount) {
-                tempData=querySnapshot.docs.map(doc => {
+                tempDateRef.current=querySnapshot.docs.map(doc => {
                     return doc.data();
                 })
-                setLocationList(tempData);
+                setLocationList(tempDateRef.current);
             }
         }
         getLocationList();
+        console.log("inputLocation_Effect");
         return () => {
             mount = false 
+            console.log("inputLocation_Effect_Return");
         };
     }, []);
     return (

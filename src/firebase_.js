@@ -71,20 +71,18 @@ export const getDBDoc = (col, doc) => {
 
 export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList) => {
   var ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
+  console.log('auth.currentUser ',auth.currentUser);
   itemList.forEach(element => {
-    console.log("element.itemType",element.type);
-    console.log("element.refno",element.refno);
-    console.log()
     ref.set({
-      //createdAt: firestore.FieldValue.serverTimestamp(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      created_at: firebase.firestore.FieldValue.serverTimestamp(),
       borrower,
       borrowDate,
       expectReturnDate,
       localion,
       item_type:element.type,
       item:element.refno,
-      return_date:""
+      return_date:"",
+      user:auth.currentUser.email
     }).then(() => {
       console.log('set data successful');
     }).catch(error => console.log("addRecord_error", error.message));
