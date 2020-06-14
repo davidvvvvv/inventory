@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import { logoutAll } from "./firebase_";
+import { logoutAll,addRecord,checkItemNotReturn } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import {
@@ -12,7 +12,6 @@ import {
 } from "semantic-ui-react";
 import Location from "./inputLocation";
 import InputType from "./inputType";
-import {addRecord} from "./firebase_"
 
 const InputForm = () => {
   const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
@@ -77,6 +76,14 @@ const InputForm = () => {
     !tempInput ? _itemsList.current.push(tempObject) : setError("😫 錯誤 : 重覆輸入!");
     const tempList = [..._itemsList.current];
     setItemList(tempList);
+    checkItemNotReturn(tempArray[0]).then(result=>{
+      if (result){
+        const [nonReturnItemRefno,nonReturnItemData]=result; 
+        _itemsList.current.forEach(item=>{
+          item.refno==nonReturnItemRefno && console.log(item.desc=`根據紀錄尚未歸還 , 租借人: ${nonReturnItemData.borrower} , 日期: ${nonReturnItemData.borrow_date}`);
+        })
+      }
+    })
   }
 
   const showTag = useMemo(() => {

@@ -70,25 +70,34 @@ export const getDBDoc = (col, doc) => {
 };
 
 export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList) => {
-  var ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
-  console.log('auth.currentUser ',auth.currentUser);
+  console.log("anc")
+  const ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
+  //console.log('auth.currentUser ',auth.currentUser);
   itemList.forEach(element => {
     ref.set({
       created_at: firebase.firestore.FieldValue.serverTimestamp(),
       borrower,
-      borrowDate,
-      expectReturnDate,
+      borrow_date:borrowDate,
+      expect_return_date:expectReturnDate,
       localion,
-      item_type:element.type,
-      item:element.refno,
-      return_date:"",
-      user:auth.currentUser.email
+      item_type: element.type,
+      item: element.refno,
+      return_date: new Date("9999/01/01"),
+      user: auth.currentUser.email
     }).then(() => {
       console.log('set data successful');
     }).catch(error => console.log("addRecord_error", error.message));
   });
-  
 }
+
+export const checkItemNotReturn = item => {
+  console.log('firebase_checkItemStatus');
+  const ref = firestore.collection('record');
+  return ref.where('item', '==', item).where('return_date','>',new Date("3000/01/01")).get()
+  .then(querySnapshot => {
+    return querySnapshot.docs.length>0 ?  [item,querySnapshot.docs[0].data()]:false;
+  });
+};
 
 /*export const addRecord = async (username,borrowDate,expectReturnDate,location,itemArray,)
 

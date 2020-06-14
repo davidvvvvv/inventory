@@ -25,7 +25,7 @@ const LoginForm = () => {
   useEffect(() => {
     console.log("loginForm_useEffect");
     if (login) navigate("/input");
-  });
+  },[login]);
 
   const pwLogin = () => {
     if (!(email === "" || password === "")) {
