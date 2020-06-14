@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import { logoutAll,addRecord,checkItemNotReturn } from "./firebase_";
+import { logoutAll, addRecord, checkItemNotReturn,getFormatToday,getFormatDate } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import {
@@ -14,11 +14,7 @@ import Location from "./inputLocation";
 import InputType from "./inputType";
 
 const InputForm = () => {
-  const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
-  const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today)
-  const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today)
-  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
-  const todayString = `${ye}-${mo}-${da}`;
+  const todayString = getFormatToday();
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
@@ -30,14 +26,14 @@ const InputForm = () => {
     _itemsList.current = data;
     _setItemList(data);
   };
-  const [borrowerName,setBorrowerName] = useState('');
+  const [borrowerName, setBorrowerName] = useState('');
   const [inputType, setInputType] = useState('');
   const [inputItem, setInputItem] = useState('');
   const [inputTypeAlarm, setInputTypeAlarm] = useState("hidden");
   const [inputItemAlarm, setInputItemAlarm] = useState("hidden");
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
-  
+
   const [nfcMessage, setNfcMessage] = useState("");
   const [nfcMessageVisible, setNfcMessageVisible] = useState(false)
   const onChange_Rent = (event, data) => {
@@ -69,19 +65,24 @@ const InputForm = () => {
     //setNfcMessage('tempItemsList.length '+event.itemsList.length);
     //const tempArray = decoder.decode(event.message.records[0].data).split(",");
     const tempArray = dataString.split(",");
-    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': 'abc' };
+    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': '', 'dbRefNo': '' };
     const tempInput = _itemsList.current.some(item => {
       return item.refno === tempObject.refno;
     });
     !tempInput ? _itemsList.current.push(tempObject) : setError("😫 錯誤 : 重覆輸入!");
     const tempList = [..._itemsList.current];
     setItemList(tempList);
-    checkItemNotReturn(tempArray[0]).then(result=>{
-      if (result){
-        const [nonReturnItemRefno,nonReturnItemData]=result; 
-        _itemsList.current.forEach(item=>{
-          item.refno==nonReturnItemRefno && console.log(item.desc=`根據紀錄尚未歸還 , 租借人: ${nonReturnItemData.borrower} , 日期: ${nonReturnItemData.borrow_date}`);
+    checkItemNotReturn(tempArray[0]).then(result => {
+      if (result) {
+        const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
+        _itemsList.current.forEach(item => {
+          if (item.refno == nonReturnItemRefno) {
+            item.desc = `應未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
+            item.dbRefNo = nonReturnDbRefNo;
+          }
         })
+        const tempList = [..._itemsList.current];
+        setItemList(tempList);
       }
     })
   }
@@ -143,7 +144,7 @@ const InputForm = () => {
             iconPosition="left"
             placeholder="租借人姓名"
             name="user"
-            onChange={(error,result)=>{setBorrowerName(result.value)}}
+            onChange={(error, result) => { setBorrowerName(result.value) }}
           />
         </Form.Field>
         <Form.Field>
@@ -227,7 +228,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={()=>{addRecord(borrowerName,new Date(rentDate),new Date(expectReturnDate),location,itemsList)}}>Submit</Button>
+        <Button onClick={() => { addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList) }}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>
