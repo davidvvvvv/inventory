@@ -219,7 +219,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={()=>{addRecord(borrowerName,rentDate,expectReturnDate,location,itemsList)}}>Submit</Button>
+        <Button onClick={()=>{addRecord(borrowerName,new Date(rentDate),new Date(expectReturnDate),location,itemsList)}}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>

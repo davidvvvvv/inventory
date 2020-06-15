@@ -21,6 +21,9 @@ export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
 const googleProvider = new firebase.auth.GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  hd: "plkylmf.edu.hk"
+});
 /*
 googleProvider.setCustomParameters({
   prompt: 'select_account'
@@ -72,12 +75,9 @@ export const getDBDoc = (col, doc) => {
 export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList) => {
   var ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
   itemList.forEach(element => {
-    console.log("element.itemType",element.type);
-    console.log("element.refno",element.refno);
-    console.log()
     ref.set({
       //createdAt: firestore.FieldValue.serverTimestamp(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      created_at: firebase.firestore.FieldValue.serverTimestamp(),
       borrower,
       borrowDate,
       expectReturnDate,
@@ -89,7 +89,6 @@ export const addRecord = (borrower, borrowDate, expectReturnDate, localion, item
       console.log('set data successful');
     }).catch(error => console.log("addRecord_error", error.message));
   });
-  
 }
 
 /*export const addRecord = async (username,borrowDate,expectReturnDate,location,itemArray,)
