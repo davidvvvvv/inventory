@@ -25,13 +25,13 @@ const LoginForm = () => {
   useEffect(() => {
     console.log("loginForm_useEffect");
     if (login) navigate("/input");
-  });
+  },[login]);
 
-  const pwLogin = async () => {
+  const pwLogin = () => {
     if (!(email === "" || password === "")) {
       setPwLoginWaiting(true);
       try {
-        await emailPwSignIn(email, password);
+       emailPwSignIn(email, password);
         setShowMessageBox("hidden");
       } catch (error) {
         //console.log("loginForm_pwLogin_error.message",error.message);
@@ -62,12 +62,12 @@ const LoginForm = () => {
     }
   };
 
-  const googleLogin = async() => {
+  const googleLogin = () => {
     //loginWithGoogle();
     setGoogleLoginWaiting(true);
     setShowMessageBox("hidden");
     try{
-      await loginWithGoogle();
+     loginWithGoogle();
     } catch (error){
       setError(error.message);
       setGoogleLoginWaiting(false);

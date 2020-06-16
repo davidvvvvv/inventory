@@ -15,6 +15,7 @@ const InputType = (props) =>{
     useEffect(()=>{
         let mount = true;
         const getItemType = async ()=>{
+            console.log("InputType_call_database");
             const querySnapshot=await getTypeCol('itemtype');
             if(mount){
                 setItemType(querySnapshot.docs.map(doc=>{
@@ -23,10 +24,12 @@ const InputType = (props) =>{
             }
         }
         getItemType();
+        console.log("InputType_useEffect");
         return ()=>{
             mount=false;
+            console.log("InputType_useEffect_Return");
         }
-    })
+    },[])
 
     return (
         <Dropdown placeholder='種類' 
@@ -36,7 +39,7 @@ const InputType = (props) =>{
         options={itemType} 
         onChange={(event, result) => { 
             props.setInputType(result.value)
-            event.currentTarget.value == '' ? props.setInputTypeAlarm('visible') : props.setInputTypeAlarm('hidden');
+            event.currentTarget.value === '' ? props.setInputTypeAlarm('visible') : props.setInputTypeAlarm('hidden');
             }} />
     )
 }

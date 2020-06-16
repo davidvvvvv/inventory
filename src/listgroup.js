@@ -10,11 +10,14 @@ const ListGroup = (props) => {
 
   useEffect(() => {
     console.log("listgroup_useEffect");
+    return ()=>{
+      console.log("Listgroup_useEffect_return")
+    }
   }, []);
 
   return (
     <div>
-      {console.log("ListGroup_return")}
+      {console.log("ListGroup_JSX")}
       <Transition.Group
         as={List}
         duration={200}

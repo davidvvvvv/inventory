@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import { logoutAll } from "./firebase_";
+import { logoutAll, addRecord, checkItemNotReturn,getFormatToday,getFormatDate } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import {
@@ -12,33 +12,31 @@ import {
 } from "semantic-ui-react";
 import Location from "./inputLocation";
 import InputType from "./inputType";
-import {addRecord} from "./firebase_"
 
 const InputForm = () => {
-  const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
-  const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today)
-  const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today)
-  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
-  const todayString = `${ye}-${mo}-${da}`;
+  const todayString = getFormatToday();
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
   const [location, setLocation] = useState("");
 
+
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
     _itemsList.current = data;
     _setItemList(data);
   };
-  const [borrowerName,setBorrowerName] = useState('');
+  const [borrowerName, setBorrowerName] = useState('');
   const [inputType, setInputType] = useState('');
   const [inputItem, setInputItem] = useState('');
-  const [inputTypeAlarm, setInputTypeAlarm] = useState("hidden");
-  const [inputItemAlarm, setInputItemAlarm] = useState("hidden");
+  const [showTypeTag, setShowTypeTag] = useState("hidden");
+  const [showItemTag, setShowItemTag] = useState("hidden");
+  const [showNameTag, setShowNameTag] = useState("hidden");
+  const [showLocationTag, setShowLocationTag] = useState("hidden");
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
-  
+
   const [nfcMessage, setNfcMessage] = useState("");
   const [nfcMessageVisible, setNfcMessageVisible] = useState(false)
   const onChange_Rent = (event, data) => {
@@ -70,20 +68,39 @@ const InputForm = () => {
     //setNfcMessage('tempItemsList.length '+event.itemsList.length);
     //const tempArray = decoder.decode(event.message.records[0].data).split(",");
     const tempArray = dataString.split(",");
-    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': 'abc' };
+    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': '', 'dbRefNo': '' };
     const tempInput = _itemsList.current.some(item => {
-      return item.refno == tempObject.refno;
+      return item.refno === tempObject.refno;
     });
     !tempInput ? _itemsList.current.push(tempObject) : setError("😫 錯誤 : 重覆輸入!");
     const tempList = [..._itemsList.current];
     setItemList(tempList);
+    checkItemNotReturn(tempArray[0]).then(result => {
+      if (result) {
+        const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
+        _itemsList.current.forEach(item => {
+          if (item.refno == nonReturnItemRefno) {
+            item.desc = `應未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
+            item.dbRefNo = nonReturnDbRefNo;
+          }
+        })
+        const tempList = [..._itemsList.current];
+        setItemList(tempList);
+      }
+    })
   }
 
-  const showTag = useMemo(() => {
+  const showDateTag = useMemo(() => {
     const newSetRentDate = new Date(rentDate).getTime();
     const todayStringDate = new Date(todayString).getTime();
     return todayStringDate > newSetRentDate ? "visible" : "hidden";
   }, [rentDate])
+
+  const submit = ()=>{
+    if (borrowerName==='') setShowNameTag('visible');
+    if (location==='') setShowLocationTag('visible');
+   // addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList)
+  }
 
   const logoutAllFunction = () => {
     setActiveItem("logout");
@@ -104,13 +121,14 @@ const InputForm = () => {
       setNfcMessageVisible(false);
     }, 3000)
     return (() => {
+      console.log("InputForm_useEffect2_return");
       clearTimeout(messageTimeout);
     })
   }, [nfcMessageVisible, nfcMessage]);
 
   return (
     <div style={{ height: "100vh" }}>
-      {console.log("inputForm_return")}
+      {console.log("inputForm_JSX")}
       <Menu secondary pointing >
         <Menu.Menu position='right'>
           <Menu.Item
@@ -129,13 +147,17 @@ const InputForm = () => {
       <Form size="large">
         <Form.Field>
           <Label color="teal">租借人姓名</Label>
+          <Label color="red" key="red" style={{ visibility: showNameTag }}>* 請輸入租借人姓名</Label>
           <Form.Input
             fluid
             icon="user"
             iconPosition="left"
             placeholder="租借人姓名"
             name="user"
-            onChange={(error,result)=>{setBorrowerName(result.value)}}
+            onChange={(event, result) => {
+              setBorrowerName(result.value)
+              result.value==='' ? setShowNameTag('visible'):setShowNameTag('hidden');
+             }}
           />
         </Form.Field>
         <Form.Field>
@@ -143,7 +165,7 @@ const InputForm = () => {
             <Grid.Column>
 
               <Label color="teal">租借日期</Label>
-              <Label color="red" key="red" style={{ visibility: showTag }}>* 日期早於今天</Label>
+              <Label color="red" key="red" style={{ visibility: showDateTag }}>* 日期早於今天</Label>
               <DateInput
                 name="rentDate"
                 placeholder="租借日期"
@@ -176,13 +198,16 @@ const InputForm = () => {
 
         <Form.Field>
           <Label color="teal">地點</Label>
-          <Location setLocation={setLocation} />
+          <Label color="red" key="red" style={{ visibility: showLocationTag }}>* 請輸入地點</Label>
+          <Location 
+          setLocation={setLocation} 
+          />
         </Form.Field>
         <Form.Field>
           <Grid columns='equal'>
             <Grid.Column width={7}>
               <Label color="teal">租借物件</Label>
-              <Label color="red" key="red" style={{ visibility: inputItemAlarm }}>* 尚未設定</Label>
+              <Label color="red" key="red" style={{ visibility: showItemTag }}>* 尚未設定</Label>
               <Form.Input
                 fluid
                 icon="box"
@@ -191,23 +216,23 @@ const InputForm = () => {
                 name="item"
                 onChange={(event) => {
                   setInputItem(event.currentTarget.value);
-                  event.currentTarget.value == '' ? setInputItemAlarm('visible') : setInputItemAlarm('hidden');
+                  event.currentTarget.value === '' ? setShowItemTag('visible') : setShowItemTag('hidden');
                 }}
               />
             </Grid.Column>
 
             <Grid.Column width={6}>
               <Label color="teal">種類</Label>
-              <Label color="red" key="red" style={{ visibility: inputTypeAlarm }}>* 尚未設定</Label>
-              <InputType setInputType={setInputType} setInputTypeAlarm={setInputTypeAlarm} />
+              <Label color="red" key="red" style={{ visibility: showTypeTag }}>* 尚未設定</Label>
+              <InputType setInputType={setInputType} setInputTypeAlarm={setShowTypeTag} />
             </Grid.Column>
 
             <Grid.Column verticalAlign="bottom">
               <Button style={{ width: 52 }}
                 onClick={() => {
-                  inputItem == '' ? setInputItemAlarm('visible') : setInputItemAlarm('hidden');
-                  inputType == '' ? setInputTypeAlarm('visible') : setInputTypeAlarm('hidden');
-                  if (!(inputItem == '' || inputType == '')) {
+                  inputItem === '' ? setShowItemTag('visible') : setShowItemTag('hidden');
+                  inputType === '' ? setShowTypeTag('visible') : setShowTypeTag('hidden');
+                  if (!(inputItem === '' || inputType === '')) {
                     const tempData = `${inputItem},${inputType}`;
                     addItem(tempData);
                   }
@@ -219,7 +244,7 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={()=>{addRecord(borrowerName,new Date(rentDate),new Date(expectReturnDate),location,itemsList)}}>Submit</Button>
+        <Button onClick={submit}>Submit</Button>
       </Form>
       <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>
