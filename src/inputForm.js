@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import { logoutAll, addRecord, checkItemNotReturn,getFormatToday,getFormatDate } from "./firebase_";
+import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import {
@@ -96,16 +96,20 @@ const InputForm = () => {
     return todayStringDate > newSetRentDate ? "visible" : "hidden";
   }, [rentDate])
 
-  const submit = ()=>{
-    if (borrowerName==='') setShowNameTag('visible');
-    if (location==='') setShowLocationTag('visible');
-    if (itemsList.length===0) setError("😫 錯誤 : 請輸入租借物件");
-  //  borrowerName !=='' && location !=='' && itemsList.length > 0 && addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList,setError)
-    setBorrowerName('');
-    setLocation('');
-    setItemList([]);
-    setRentDate(todayString);
-    setExpectReturnDate(todayString);
+  const submit = () => {
+    
+    if (borrowerName === '') setShowNameTag('visible');
+    if (location === '') setShowLocationTag('visible');
+    if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
+    if (borrowerName !== '' && location !== '' && itemsList.length > 0) {
+      addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
+      setBorrowerName('');
+      setBorrowerName('');
+      setLocation('');
+      setItemList([]);
+      setRentDate(todayString);
+      setExpectReturnDate(todayString);
+    }
   }
 
   const logoutAllFunction = () => {
@@ -163,8 +167,8 @@ const InputForm = () => {
             value={borrowerName}
             onChange={(event, result) => {
               setBorrowerName(result.value)
-              result.value==='' ? setShowNameTag('visible'):setShowNameTag('hidden');
-             }}
+              result.value === '' ? setShowNameTag('visible') : setShowNameTag('hidden');
+            }}
           />
         </Form.Field>
         <Form.Field>
@@ -206,8 +210,8 @@ const InputForm = () => {
         <Form.Field>
           <Label color="teal">地點</Label>
           <Label color="red" key="red" style={{ visibility: showLocationTag }}>* 請輸入地點</Label>
-          <Location 
-          setLocation={setLocation} setShowLocationTag={setShowLocationTag} location={location}
+          <Location
+            setLocation={setLocation} setShowLocationTag={setShowLocationTag} location={location}
           />
         </Form.Field>
         <Form.Field>
