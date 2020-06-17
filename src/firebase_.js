@@ -72,7 +72,7 @@ export const getDBDoc = (col, doc) => {
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
 
-export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList) => {
+export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList,setError) => {
  // const ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
   //console.log('auth.currentUser ',auth.currentUser);
   itemList.forEach(element => {
@@ -97,7 +97,10 @@ export const addRecord = (borrower, borrowDate, expectReturnDate, localion, item
       user: auth.currentUser.email
     }).then(() => {
       console.log('addRecord successful');
-    }).catch(error => console.log("addRecord_error", error.message));
+    }).catch(error => {
+      console.log("addRecord_error", error.message);
+      setError("😫 錯誤 : error.message");
+    });
   });
 }
 

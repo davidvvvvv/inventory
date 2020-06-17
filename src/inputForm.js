@@ -99,7 +99,13 @@ const InputForm = () => {
   const submit = ()=>{
     if (borrowerName==='') setShowNameTag('visible');
     if (location==='') setShowLocationTag('visible');
-   // addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList)
+    if (itemsList.length===0) setError("😫 錯誤 : 請輸入租借物件");
+  //  borrowerName !=='' && location !=='' && itemsList.length > 0 && addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList,setError)
+    setBorrowerName('');
+    setLocation('');
+    setItemList([]);
+    setRentDate(todayString);
+    setExpectReturnDate(todayString);
   }
 
   const logoutAllFunction = () => {
@@ -154,6 +160,7 @@ const InputForm = () => {
             iconPosition="left"
             placeholder="租借人姓名"
             name="user"
+            value={borrowerName}
             onChange={(event, result) => {
               setBorrowerName(result.value)
               result.value==='' ? setShowNameTag('visible'):setShowNameTag('hidden');
@@ -200,7 +207,7 @@ const InputForm = () => {
           <Label color="teal">地點</Label>
           <Label color="red" key="red" style={{ visibility: showLocationTag }}>* 請輸入地點</Label>
           <Location 
-          setLocation={setLocation} 
+          setLocation={setLocation} setShowLocationTag={setShowLocationTag} location={location}
           />
         </Form.Field>
         <Form.Field>

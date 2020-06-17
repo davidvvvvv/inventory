@@ -12,7 +12,7 @@ export const readTag = (setMessage,addItem)=> {
         setMessage(error.message);
       }
     } else {
-        setMessage("Web NFC 未能支援");
+        setMessage("😫 錯誤 : Web NFC 未能支援");
     }
   } 
 /*

@@ -63,7 +63,10 @@ const Location = (props) => {
         fluid 
         search 
         selection
-        onChange={(event,result) => {props.setLocation(result.value)}}
+        onChange={(event,result) => {
+            props.setLocation(result.value)
+            result.value==='' ? props.setShowLocationTag('visible') : props.setShowLocationTag('hidden');
+        }}
         />
     )
 }
