@@ -36,7 +36,8 @@ const InputType = (props) =>{
         fluid 
         search 
         selection 
-        options={itemType} 
+        options={itemType}
+        value={props.inputType}
         onChange={(event, result) => { 
             props.setInputType(result.value)
             event.currentTarget.value === '' ? props.setInputTypeAlarm('visible') : props.setInputTypeAlarm('hidden');

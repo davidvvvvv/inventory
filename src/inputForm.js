@@ -106,6 +106,8 @@ const InputForm = () => {
       setBorrowerName('');
       setBorrowerName('');
       setLocation('');
+      setInputItem('');
+      setInputType('');
       setItemList([]);
       setRentDate(todayString);
       setExpectReturnDate(todayString);
@@ -225,6 +227,7 @@ const InputForm = () => {
                 iconPosition="left"
                 placeholder="租借物件"
                 name="item"
+                value={inputItem}
                 onChange={(event) => {
                   setInputItem(event.currentTarget.value);
                   event.currentTarget.value === '' ? setShowItemTag('visible') : setShowItemTag('hidden');
@@ -235,7 +238,7 @@ const InputForm = () => {
             <Grid.Column width={6}>
               <Label color="teal">種類</Label>
               <Label color="red" key="red" style={{ visibility: showTypeTag }}>* 尚未設定</Label>
-              <InputType setInputType={setInputType} setInputTypeAlarm={setShowTypeTag} />
+              <InputType setInputType={setInputType} setInputTypeAlarm={setShowTypeTag} inputType={inputType} />
             </Grid.Column>
 
             <Grid.Column verticalAlign="bottom">
