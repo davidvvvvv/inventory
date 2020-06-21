@@ -258,18 +258,14 @@ const InputForm = () => {
         <Form.Field>
           <ListGroup list={itemsList} remove={removeItem} />
         </Form.Field>
-        <Button onClick={submit}>Submit</Button>
+              <Button onClick={submit} attached="bottom" >遞交 (數量 : {itemsList.length} 件)</Button>
       </Form>
-      <Popup content='Add users to your feed###' trigger={<Button icon='add' />} />
       <Transition visible={nfcMessageVisible} duration={500}>
         <Message error
           content={nfcMessage}
         />
       </Transition>
-
-      <Message error>
-        {'itemsList_real $' + itemsList.length}
-      </Message>
+      
     </div >
   );
 };
