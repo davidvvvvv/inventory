@@ -138,10 +138,27 @@ const InputForm = () => {
     })
   }, [nfcMessageVisible, nfcMessage]);
 
+  
+
   return (
     <div style={{ height: "100vh" }}>
       {console.log("inputForm_JSX")}
-      <Menu secondary pointing >
+      <Menu  pointing >
+      <Menu.Item
+            name='Return Page'
+            active={activeItem === 'Return Page'}
+            onClick={()=>{navigate("/return")}}
+          />
+          <Menu.Item
+            name='messages'
+            active={activeItem === 'messages'}
+            //onClick={handleItemClick}
+          />
+          <Menu.Item
+            name='friends'
+            active={activeItem === 'friends'}
+            //onClick={handleItemClick}
+          />
         <Menu.Menu position='right'>
           <Menu.Item
             name='logout'
