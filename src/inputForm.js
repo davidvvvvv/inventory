@@ -6,12 +6,23 @@ import { navigate } from "@reach/router";
 import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
-import {
-  Button, Form, Grid, Header, Image, Message, Transition, Confirm,
-  Segment, Menu, Checkbox, Icon, Label, Select, Dropdown, Popup
-} from "semantic-ui-react";
+
 import Location from "./inputLocation";
 import InputType from "./inputType";
+
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+
+
+
+
 
 const InputForm = () => {
   const todayString = getFormatToday();
@@ -37,8 +48,10 @@ const InputForm = () => {
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
 
+  const [selectedDate,setSelectedDate]= useState();
+
   const [nfcMessage, setNfcMessage] = useState("");
-  const [nfcMessageVisible, setNfcMessageVisible] = useState(false)
+  const [nfcMessageVisible, setNfcMessageVisible] = useState(false);
   const onChange_Rent = (event, data) => {
     setRentDate(data.value);
     setExpectReturnDate(data.value);
@@ -97,7 +110,6 @@ const InputForm = () => {
   }, [rentDate])
 
   const submit = () => {
-    
     if (borrowerName === '') setShowNameTag('visible');
     if (location === '') setShowLocationTag('visible');
     if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
@@ -138,150 +150,77 @@ const InputForm = () => {
     })
   }, [nfcMessageVisible, nfcMessage]);
 
-  
+
 
   return (
     <div style={{ height: "100vh" }}>
       {console.log("inputForm_JSX")}
-      <Menu  pointing >
-      <Menu.Item
-            name='Return Page'
-            active={activeItem === 'Return Page'}
-            onClick={()=>{navigate("/return")}}
+
+
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            required
+            name="firstName"
+            type="text"
+            label="租借人姓名"
           />
-          <Menu.Item
-            name='messages'
-            active={activeItem === 'messages'}
-            //onClick={handleItemClick}
-          />
-          <Menu.Item
-            name='friends'
-            active={activeItem === 'friends'}
-            //onClick={handleItemClick}
-          />
-        <Menu.Menu position='right'>
-          <Menu.Item
-            name='logout'
-            active={activeItem === 'logout'}
-            onClick={logoutAllFunction}
-          />
-        </Menu.Menu>
-      </Menu>
-
-      <Header as="h3" color="teal" block textAlign="center">
-        <Icon name='edit' />
-        <Header.Content>租借登記頁</Header.Content>
-      </Header>
-
-      <Form size="large">
-        <Form.Field>
-          <Label color="teal">租借人姓名</Label>
-          <Label color="red" key="red" style={{ visibility: showNameTag }}>* 請輸入租借人姓名</Label>
-          <Form.Input
-            fluid
-            icon="user"
-            iconPosition="left"
-            placeholder="租借人姓名"
-            name="user"
-            value={borrowerName}
-            onChange={(event, result) => {
-              setBorrowerName(result.value)
-              result.value === '' ? setShowNameTag('visible') : setShowNameTag('hidden');
-            }}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Grid columns='equal'>
-            <Grid.Column>
-
-              <Label color="teal">租借日期</Label>
-              <Label color="red" key="red" style={{ visibility: showDateTag }}>* 日期早於今天</Label>
-              <DateInput
-                name="rentDate"
-                placeholder="租借日期"
-                value={rentDate}
-                iconPosition="left"
-                onChange={onChange_Rent}
-                animation='none'
-                maxDate={todayString}
-                dateFormat="YYYY-MM-DD"
-                hideMobileKeyboard={true}
-              />
-            </Grid.Column>
-
-            <Grid.Column>
-              <Label color="teal">預期歸還日期</Label>
-              <DateInput
-                name="expectReturnDate"
-                placeholder="預期歸還日期"
-                value={expectReturnDate}
-                iconPosition="left"
-                onChange={onChange_Expect}
-                animation='none'
-                minDate={rentDate}
-                dateFormat="YYYY-MM-DD"
-                hideMobileKeyboard={true}
-              />
-            </Grid.Column>
-          </Grid>
-        </Form.Field>
-
-        <Form.Field>
-          <Label color="teal">地點</Label>
-          <Label color="red" key="red" style={{ visibility: showLocationTag }}>* 請輸入地點</Label>
-          <Location
-            setLocation={setLocation} setShowLocationTag={setShowLocationTag} location={location}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Grid columns='equal'>
-            <Grid.Column width={7}>
-              <Label color="teal">租借物件</Label>
-              <Label color="red" key="red" style={{ visibility: showItemTag }}>* 尚未設定</Label>
-              <Form.Input
-                fluid
-                icon="box"
-                iconPosition="left"
-                placeholder="租借物件"
-                name="item"
-                value={inputItem}
-                onChange={(event) => {
-                  setInputItem(event.currentTarget.value);
-                  event.currentTarget.value === '' ? setShowItemTag('visible') : setShowItemTag('hidden');
-                }}
-              />
-            </Grid.Column>
-
-            <Grid.Column width={6}>
-              <Label color="teal">種類</Label>
-              <Label color="red" key="red" style={{ visibility: showTypeTag }}>* 尚未設定</Label>
-              <InputType setInputType={setInputType} setInputTypeAlarm={setShowTypeTag} inputType={inputType} />
-            </Grid.Column>
-
-            <Grid.Column verticalAlign="bottom">
-              <Button style={{ width: 52 }}
-                onClick={() => {
-                  inputItem === '' ? setShowItemTag('visible') : setShowItemTag('hidden');
-                  inputType === '' ? setShowTypeTag('visible') : setShowTypeTag('hidden');
-                  if (!(inputItem === '' || inputType === '')) {
-                    const tempData = `${inputItem},${inputType}`;
-                    addItem(tempData);
-                  }
-                }}><Icon name='add' /></Button>
-
-            </Grid.Column>
-          </Grid>
-        </Form.Field>
-        <Form.Field>
-          <ListGroup list={itemsList} remove={removeItem} />
-        </Form.Field>
-              <Button onClick={submit} attached="bottom" >遞交 (數量 : {itemsList.length} 件)</Button>
-      </Form>
-      <Transition visible={nfcMessageVisible} duration={500}>
-        <Message error
-          content={nfcMessage}
+        </Grid>
+        
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Grid container justify="space-around">
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="date-picker-inline"
+          label="Date picker inline"
+          value={selectedDate}
+         // onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
         />
-      </Transition>
+        <KeyboardDatePicker
+          margin="normal"
+          id="date-picker-dialog"
+          label="Date picker dialog"
+          format="MM/dd/yyyy"
+          value={selectedDate}
+         // onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        <KeyboardTimePicker
+          margin="normal"
+          id="time-picker"
+          label="Time picker"
+          value={selectedDate}
+         // onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change time',
+          }}
+        />
+      </Grid>
+    </MuiPickersUtilsProvider>
+        
+        <Grid item xs={6}>
+          <TextField id="outlined-basic2" label="預期歸還日期" variant="outlined" />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField id="outlined-basic2" label="地點" variant="outlined" />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField id="outlined-basic2" label="租借物件" variant="outlined" />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField id="outlined-basic2" label="種類" variant="outlined" />
+        </Grid>
+      </Grid>
+
       
     </div >
   );
