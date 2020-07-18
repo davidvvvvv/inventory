@@ -10,15 +10,16 @@ import ListGroup from "./listgroup";
 import Location from "./inputLocation";
 import InputType from "./inputType";
 
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
+
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
+import { TextField, CssBaseline, Grid, Typography } from '@material-ui/core';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+
 
 
 
@@ -48,7 +49,7 @@ const InputForm = () => {
   const [rentDate, setRentDate] = useState(todayString);
   const [expectReturnDate, setExpectReturnDate] = useState(todayString);
 
-  const [selectedDate,setSelectedDate]= useState();
+  const [selectedDate, setSelectedDate] = useState();
 
   const [nfcMessage, setNfcMessage] = useState("");
   const [nfcMessageVisible, setNfcMessageVisible] = useState(false);
@@ -154,8 +155,12 @@ const InputForm = () => {
 
   return (
     <div style={{ height: "100vh" }}>
+      <CssBaseline />
       {console.log("inputForm_JSX")}
 
+      <Typography variant="h3" gutterBottom color="primary">
+        租借登記頁
+      </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -167,46 +172,34 @@ const InputForm = () => {
             label="租借人姓名"
           />
         </Grid>
-        
+
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          label="Date picker inline"
-          value={selectedDate}
-         // onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        <KeyboardDatePicker
-          margin="normal"
-          id="date-picker-dialog"
-          label="Date picker dialog"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-         // onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          label="Time picker"
-          value={selectedDate}
-         // onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}
-        />
-      </Grid>
-    </MuiPickersUtilsProvider>
-        
+          <Grid container justify="space-around">
+            <KeyboardDatePicker
+              margin="normal"
+              id="date-picker-dialog"
+              label="租借日期"
+              format="MM/dd/yyyy"
+              // value={selectedDate}
+              // onChange={handleDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+            <KeyboardDatePicker
+              margin="normal"
+              id="date-picker-dialog2"
+              label="預期歸還日期"
+              format="MM/dd/yyyy"
+              // value={selectedDate}
+              // onChange={handleDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+          </Grid>
+        </MuiPickersUtilsProvider>
+
         <Grid item xs={6}>
           <TextField id="outlined-basic2" label="預期歸還日期" variant="outlined" />
         </Grid>
@@ -221,7 +214,7 @@ const InputForm = () => {
         </Grid>
       </Grid>
 
-      
+
     </div >
   );
 };
