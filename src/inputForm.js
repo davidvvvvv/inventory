@@ -11,7 +11,7 @@ import InputType from "./inputType";
 
 //import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import { TextField, CssBaseline, Grid, Typography } from '@material-ui/core';
+import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl } from '@material-ui/core';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -20,7 +20,15 @@ import {
 } from '@material-ui/pickers';
 
 
-
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 
 
@@ -150,7 +158,17 @@ const InputForm = () => {
     })
   }, [nfcMessageVisible, nfcMessage]);
 
-
+  const [groupOpen, setGroupOpen] = useState(false);
+  const [groupNo, setGroupNo] = useState();
+  const groupHandleClose = () => {
+    setGroupOpen(false);
+  };
+  const groupHandleOpen = () => {
+    setGroupOpen(true);
+  };
+  const groupNoChange = (event) => {
+    setGroupNo(event.target.value);
+  };
 
   return (
     <div style={{ height: "100vh" }}>
@@ -162,6 +180,28 @@ const InputForm = () => {
       </Typography>
 
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <FormControl className={{minWidth: 120}}>
+            <InputLabel htmlFor="group">組別</InputLabel>
+            <Select
+              minWidth={120}
+              labelId="group"
+              id="group"
+              open={groupOpen}
+              onClose={groupHandleClose}
+              onOpen={groupHandleOpen}
+              value={groupNo}
+              onChange={groupNoChange}
+            >
+              <MenuItem value={0}>
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={1}>1組</MenuItem>
+              <MenuItem value={2}>2組</MenuItem>
+              <MenuItem value={3}>3組</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth
@@ -190,7 +230,7 @@ const InputForm = () => {
         </MuiPickersUtilsProvider>
 
         <Grid item xs={12}>
-        <TextField
+          <TextField
             fullWidth
             required
             name="location"
