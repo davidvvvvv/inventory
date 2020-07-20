@@ -12,6 +12,7 @@ import InputType from "./inputType";
 //import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -22,8 +23,16 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
+    //margin: theme.spacing(1),
+    margin: 0,
+    display: 'flex',
+    wrap: 'nowrap'
+  },
+  itemInput: {
+    //margin: theme.spacing(1),
+    marginTop: 0,
+    display: 'flex',
+    wrap: 'nowrap'
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -39,7 +48,6 @@ const InputForm = () => {
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
   const [location, setLocation] = useState("");
-
 
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
@@ -158,6 +166,9 @@ const InputForm = () => {
     })
   }, [nfcMessageVisible, nfcMessage]);
 
+
+  const classes = useStyles();
+
   const [groupOpen, setGroupOpen] = useState(false);
   const [groupNo, setGroupNo] = useState();
   const groupHandleClose = () => {
@@ -180,11 +191,11 @@ const InputForm = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <FormControl className={{minWidth: 120}}>
+        <Grid item xs={6}>
+          <FormControl className={classes.formControl}>
             <InputLabel htmlFor="group">組別</InputLabel>
             <Select
-              minWidth={120}
+              autoWidth={true}
               labelId="group"
               id="group"
               open={groupOpen}
@@ -202,27 +213,44 @@ const InputForm = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required
-            name="firstName"
-            type="text"
-            label="租借人姓名"
-          />
+        <Grid item xs={6}>
+          <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="borrower">租借者姓名</InputLabel>
+            <Select
+              autoWidth={true}
+              labelId="borrower"
+              id="borrower"
+              open={groupOpen}
+              onClose={groupHandleClose}
+              onOpen={groupHandleOpen}
+              value={groupNo}
+              onChange={groupNoChange}
+            >
+              <MenuItem value={0}>
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={1}>1組</MenuItem>
+              <MenuItem value={2}>2組</MenuItem>
+              <MenuItem value={3}>3組</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
 
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <Grid container justify="space-around">
+          <Grid item xs={6}>
             <DatePicker
               variant="dialog"
               label="租借日期"
+              fullWidth
             // value={selectedDate}
             //  onChange={handleDateChange}
             />
+          </Grid>
+          <Grid item xs={6}>
             <DatePicker
               variant="dialog"
               label="預期歸還日期"
+              fullWidth
             // value={selectedDate}
             //  onChange={handleDateChange}
             />
@@ -230,19 +258,54 @@ const InputForm = () => {
         </MuiPickersUtilsProvider>
 
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required
-            name="location"
-            type="text"
-            label="地點"
-          />
+          <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="location">地點</InputLabel>
+            <Select
+              autoWidth={true}
+              labelId="location"
+              id="location"
+              open={groupOpen}
+              onClose={groupHandleClose}
+              onOpen={groupHandleOpen}
+              value={groupNo}
+              onChange={groupNoChange}
+            >
+              <MenuItem value={0}>
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={1}>1組</MenuItem>
+              <MenuItem value={2}>2組</MenuItem>
+              <MenuItem value={3}>3組</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={6}>
-          <TextField id="outlined-basic2" label="租借物件" variant="outlined" />
+          <FormControl className={classes.itemInput}>
+            <TextField label="租借物件" id="rentItem" required>
+            </TextField>
+          </FormControl>
         </Grid>
         <Grid item xs={6}>
-          <TextField id="outlined-basic2" label="種類" variant="outlined" />
+          <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="itemType">種類</InputLabel>
+            <Select
+              autoWidth={true}
+              labelId="itemType"
+              id="itemType"
+              open={groupOpen}
+              onClose={groupHandleClose}
+              onOpen={groupHandleOpen}
+              value={groupNo}
+              onChange={groupNoChange}
+            >
+              <MenuItem value={0}>
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={1}>1組</MenuItem>
+              <MenuItem value={2}>2組</MenuItem>
+              <MenuItem value={3}>3組</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
       </Grid>
 
