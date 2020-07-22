@@ -19,6 +19,8 @@ import {
   KeyboardDatePicker,
   DatePicker,
 } from '@material-ui/pickers';
+import useFetch from 'use-http'
+import { isConstructorDeclaration } from "typescript";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -47,14 +49,14 @@ const InputForm = () => {
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
-  const [location, setLocation] = useState("");
+  //const [location, setLocation] = useState("");
 
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
     _itemsList.current = data;
     _setItemList(data);
   };
-  const [borrowerName, setBorrowerName] = useState('');
+  //const [borrowerName, setBorrowerName] = useState('');
   const [inputType, setInputType] = useState('');
   const [inputItem, setInputItem] = useState('');
   const [showTypeTag, setShowTypeTag] = useState("hidden");
@@ -170,21 +172,73 @@ const InputForm = () => {
   const classes = useStyles();
 
   const [groupOpen, setGroupOpen] = useState(false);
-  const [groupNo, setGroupNo] = useState();
-  const groupHandleClose = () => {
-    setGroupOpen(false);
-  };
-  const groupHandleOpen = () => {
-    setGroupOpen(true);
+  const [groupNo, setGroupNo] = useState("");
+  const [borrowerOpen, setBorrowerOpen] = useState(false);
+  const [borrowerName, setBorrowerName] = useState("");
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [location, setLocation] = useState("");
+  const [itemTypeOpen, setItemTypeOpen] = useState(false);
+  const [itemType, setItemType] = useState("");
+  //const { loading, error, data = [] } = useFetch('data.json',[]);
+  const [selectGroup, setSelectGroup] = useState([]);
+  const [selectLocation, setSelectLocation] = useState([]);
+  const { get, post, response, loading, error } = useFetch('.')
+  const [fetchPath, setFetchPath] = useState('/data.json');
+
+
+
+  const groupHandle = () => {
+    setGroupOpen(!groupOpen);
   };
   const groupNoChange = (event) => {
     setGroupNo(event.target.value);
   };
 
+  const borrowerHandle = () => {
+    setBorrowerOpen(!borrowerOpen);
+  };
+  const borrowerNameChange = (event) => {
+    setBorrowerName(event.target.value);
+  };
+
+  const localtionHandle = () => {
+    setLocationOpen(!locationOpen);
+  };
+  const locationChange = (event) => {
+    setLocation(event.target.value);
+  };
+
+  const itemTypeHandle = () => {
+    setItemTypeOpen(!itemTypeOpen);
+  };
+  const itemTypeChange = (event) => {
+    setItemType(event.target.value);
+  };
+
+  useEffect(() => { initSelect() }, [fetchPath])
+
+  async function initSelect() {
+    const initSelectData = await get(fetchPath);
+    if (response.ok) {
+      //console.log(initSelectData.groups);
+      setSelectGroup(initSelectData.groups);
+      setSelectLocation(initSelectData.location);
+    }
+  }
+
+  const selectBorrowerArray = useMemo(() => {
+    const temp = selectGroup.find(object => {
+      return object.group === groupNo
+    })
+    return temp !== undefined ? temp.staff : [];
+  }, [groupNo])
+
   return (
     <div style={{ height: "100vh" }}>
       <CssBaseline />
-      {console.log("inputForm_JSX")}
+      {
+        //console.log(selectBorrowerArray)
+      }
 
       <Typography variant="h3" gutterBottom color="primary">
         租借登記頁
@@ -199,17 +253,16 @@ const InputForm = () => {
               labelId="group"
               id="group"
               open={groupOpen}
-              onClose={groupHandleClose}
-              onOpen={groupHandleOpen}
+              onClose={groupHandle}
+              onOpen={groupHandle}
               value={groupNo}
               onChange={groupNoChange}
             >
-              <MenuItem value={0}>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={1}>1組</MenuItem>
-              <MenuItem value={2}>2組</MenuItem>
-              <MenuItem value={3}>3組</MenuItem>
+              {
+                selectGroup.map((group) => {
+                  return <MenuItem key={group.group} value={group.group}>{group.group}</MenuItem>
+                })
+              }
             </Select>
           </FormControl>
         </Grid>
@@ -220,18 +273,17 @@ const InputForm = () => {
               autoWidth={true}
               labelId="borrower"
               id="borrower"
-              open={groupOpen}
-              onClose={groupHandleClose}
-              onOpen={groupHandleOpen}
-              value={groupNo}
-              onChange={groupNoChange}
+              open={borrowerOpen}
+              onClose={borrowerHandle}
+              onOpen={borrowerHandle}
+              value={borrowerName}
+              onChange={borrowerNameChange}
             >
-              <MenuItem value={0}>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={1}>1組</MenuItem>
-              <MenuItem value={2}>2組</MenuItem>
-              <MenuItem value={3}>3組</MenuItem>
+              {
+                selectBorrowerArray.map(borrower=>{
+                  return <MenuItem key={borrower} value={borrower}>{borrower}</MenuItem>
+                })
+              }
             </Select>
           </FormControl>
         </Grid>
@@ -264,11 +316,11 @@ const InputForm = () => {
               autoWidth={true}
               labelId="location"
               id="location"
-              open={groupOpen}
-              onClose={groupHandleClose}
-              onOpen={groupHandleOpen}
-              value={groupNo}
-              onChange={groupNoChange}
+              open={locationOpen}
+              onClose={localtionHandle}
+              onOpen={localtionHandle}
+              value={location}
+              onChange={locationChange}
             >
               <MenuItem value={0}>
                 <em>None</em>
@@ -292,11 +344,11 @@ const InputForm = () => {
               autoWidth={true}
               labelId="itemType"
               id="itemType"
-              open={groupOpen}
-              onClose={groupHandleClose}
-              onOpen={groupHandleOpen}
-              value={groupNo}
-              onChange={groupNoChange}
+              open={itemTypeOpen}
+              onClose={itemTypeHandle}
+              onOpen={itemTypeHandle}
+              value={itemType}
+              onChange={itemTypeChange}
             >
               <MenuItem value={0}>
                 <em>None</em>

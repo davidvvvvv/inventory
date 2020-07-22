@@ -22,7 +22,8 @@
     "react-scripts": "3.4.1",
     "react-semantic-ui-datepickers": "2.4.0",
     "semantic-ui-calendar-react": "^0.15.3",
-    "semantic-ui-react": "0.88.2"
+    "semantic-ui-react": "0.88.2",
+    "use-http": "^1.0.13"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
