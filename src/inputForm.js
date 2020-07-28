@@ -11,8 +11,9 @@ import InputType from "./inputType";
 
 //import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl } from '@material-ui/core';
+import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl,Button,Fab } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -21,7 +22,6 @@ import {
 } from '@material-ui/pickers';
 import useFetch from 'use-http'
 import { isConstructorDeclaration } from "typescript";
-
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
 }));
-
 
 
 const InputForm = () => {
@@ -179,9 +178,10 @@ const InputForm = () => {
   const [location, setLocation] = useState("");
   const [itemTypeOpen, setItemTypeOpen] = useState(false);
   const [itemType, setItemType] = useState("");
-  //const { loading, error, data = [] } = useFetch('data.json',[]);
   const [selectGroup, setSelectGroup] = useState([]);
   const [selectLocation, setSelectLocation] = useState([]);
+  const [selectType,setSelectType] = useState([]);
+  //const { loading, error, data = [] } = useFetch('data.json',[]);
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
 
@@ -223,6 +223,7 @@ const InputForm = () => {
       //console.log(initSelectData.groups);
       setSelectGroup(initSelectData.groups);
       setSelectLocation(initSelectData.location);
+      setSelectType(initSelectData.type);
     }
   }
 
@@ -322,22 +323,21 @@ const InputForm = () => {
               value={location}
               onChange={locationChange}
             >
-              <MenuItem value={0}>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={1}>1組</MenuItem>
-              <MenuItem value={2}>2組</MenuItem>
-              <MenuItem value={3}>3組</MenuItem>
+              {
+                selectLocation.map((sLocation) => {
+                  return <MenuItem key={sLocation} value={sLocation}>{sLocation}</MenuItem>
+                })
+              }
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <FormControl className={classes.itemInput}>
             <TextField label="租借物件" id="rentItem" required>
             </TextField>
           </FormControl>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <FormControl className={classes.formControl}>
             <InputLabel htmlFor="itemType">種類</InputLabel>
             <Select
@@ -350,18 +350,20 @@ const InputForm = () => {
               value={itemType}
               onChange={itemTypeChange}
             >
-              <MenuItem value={0}>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={1}>1組</MenuItem>
-              <MenuItem value={2}>2組</MenuItem>
-              <MenuItem value={3}>3組</MenuItem>
+              {
+                selectType.map((type) => {
+                  return <MenuItem key={type} value={type}>{type}</MenuItem>
+                })
+              }
             </Select>
           </FormControl>
         </Grid>
+        <Grid item xs={2}>
+        <Fab size="small" color="primary">
+          <AddIcon />
+        </Fab>
+        </Grid>
       </Grid>
-
-
     </div >
   );
 };
