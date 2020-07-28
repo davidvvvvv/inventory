@@ -11,8 +11,9 @@ import InputType from "./inputType";
 
 //import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl,Button,Fab } from '@material-ui/core';
+import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl, Button, Fab } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddIcon from '@material-ui/icons/Add';
 import {
   MuiPickersUtilsProvider,
@@ -55,6 +56,7 @@ const InputForm = () => {
     _itemsList.current = data;
     _setItemList(data);
   };
+
   //const [borrowerName, setBorrowerName] = useState('');
   const [inputType, setInputType] = useState('');
   const [inputItem, setInputItem] = useState('');
@@ -170,9 +172,7 @@ const InputForm = () => {
 
   const classes = useStyles();
 
-  const [groupOpen, setGroupOpen] = useState(false);
   const [groupNo, setGroupNo] = useState("");
-  const [borrowerOpen, setBorrowerOpen] = useState(false);
   const [borrowerName, setBorrowerName] = useState("");
   const [locationOpen, setLocationOpen] = useState(false);
   const [location, setLocation] = useState("");
@@ -180,25 +180,18 @@ const InputForm = () => {
   const [itemType, setItemType] = useState("");
   const [selectGroup, setSelectGroup] = useState([]);
   const [selectLocation, setSelectLocation] = useState([]);
-  const [selectType,setSelectType] = useState([]);
+  const [selectType, setSelectType] = useState([]);
   //const { loading, error, data = [] } = useFetch('data.json',[]);
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
 
-
-
-  const groupHandle = () => {
-    setGroupOpen(!groupOpen);
-  };
-  const groupNoChange = (event) => {
-    setGroupNo(event.target.value);
+  const groupNoChange = (event, value) => {
+    console.log(value);
+    setGroupNo(value);
   };
 
-  const borrowerHandle = () => {
-    setBorrowerOpen(!borrowerOpen);
-  };
-  const borrowerNameChange = (event) => {
-    setBorrowerName(event.target.value);
+  const borrowerNameChange = (event,value) => {
+    setBorrowerName(value);
   };
 
   const localtionHandle = () => {
@@ -247,46 +240,25 @@ const InputForm = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={6}>
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="group">組別</InputLabel>
-            <Select
-              autoWidth={true}
-              labelId="group"
-              id="group"
-              open={groupOpen}
-              onClose={groupHandle}
-              onOpen={groupHandle}
-              value={groupNo}
-              onChange={groupNoChange}
-            >
-              {
-                selectGroup.map((group) => {
-                  return <MenuItem key={group.group} value={group.group}>{group.group}</MenuItem>
-                })
-              }
-            </Select>
-          </FormControl>
+          <Autocomplete
+            id="group"
+            options={selectGroup.map((group) => group.group)}
+            onInputChange={groupNoChange}
+            renderInput={(params) => (
+              <TextField {...params} label="組別" margin="normal" />
+            )}
+          />
         </Grid>
         <Grid item xs={6}>
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="borrower">租借者姓名</InputLabel>
-            <Select
-              autoWidth={true}
-              labelId="borrower"
-              id="borrower"
-              open={borrowerOpen}
-              onClose={borrowerHandle}
-              onOpen={borrowerHandle}
-              value={borrowerName}
-              onChange={borrowerNameChange}
-            >
-              {
-                selectBorrowerArray.map(borrower=>{
-                  return <MenuItem key={borrower} value={borrower}>{borrower}</MenuItem>
-                })
-              }
-            </Select>
-          </FormControl>
+          <Autocomplete
+            id="borrower"
+            freeSolo
+            options={selectBorrowerArray.map((borrower) => borrower)}
+            onInputChange={borrowerNameChange}
+            renderInput={(params) => (
+              <TextField {...params} label="租借者姓名" margin="normal" />
+            )}
+          />
         </Grid>
 
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -359,9 +331,9 @@ const InputForm = () => {
           </FormControl>
         </Grid>
         <Grid item xs={2}>
-        <Fab size="small" color="primary">
-          <AddIcon />
-        </Fab>
+          <Fab size="small" color="primary">
+            <AddIcon />
+          </Fab>
         </Grid>
       </Grid>
     </div >
