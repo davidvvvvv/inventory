@@ -3,9 +3,11 @@ import "./styles.css";
 import LoginContextProvider from "./loginContext";
 import MainPage from "./mainPage";
 import { Helmet } from "react-helmet";
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const App = () => {
   return (
+    <CssBaseline>
     <LoginContextProvider>
       <Helmet>
         <meta charSet="utf-8" />
@@ -17,6 +19,7 @@ const App = () => {
       </Helmet>
       <MainPage />
     </LoginContextProvider>
+    </CssBaseline>
   );
 };
 

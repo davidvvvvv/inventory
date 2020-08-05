@@ -24,7 +24,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     console.log("loginForm_useEffect");
-    if (login) navigate("/input");
+    if (login) navigate("/switch");
   },[login]);
 
   const pwLogin = () => {

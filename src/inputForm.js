@@ -14,15 +14,16 @@ import DateFnsUtils from '@date-io/date-fns';
 import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl, Button, Fab, IconButton, Paper, FormHelperText, AppBar, Tabs, Tab } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import AddBox from '@material-ui/icons/AddBox';
+import Archive from '@material-ui/icons/Archive';
+import AddAPhoto from '@material-ui/icons/AddAPhoto';
+
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
   DatePicker,
 } from '@material-ui/pickers';
-import useFetch from 'use-http'
-import { isConstructorDeclaration } from "typescript";
+import useFetch from 'use-http';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "100vh"
+
   },
   itemInput: {
     //margin: theme.spacing(1),
@@ -41,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     height: "100%",
-    width:"100vw",
-    padding: 10,
+    padding: "0px 10px",
+    flexGrow: 1,
   }
 }));
 
@@ -233,19 +234,11 @@ const InputForm = () => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{width:'100vw'}}>
-        <Tabs aria-label="simple tabs example">
-          <Tab label="租借登記頁" />
-          <Tab label="Item Two" />
-          <Tab label="Item Three" />
-        </Tabs>
-      </AppBar>
       <div className={classes.content}>
         <Typography variant="h6" gutterBottom color="primary">
           租借登記頁
       </Typography>
         <Grid container spacing={3} >
-
           <Grid item xs={6}>
             <Autocomplete
               id="group"
@@ -274,8 +267,8 @@ const InputForm = () => {
                 variant="dialog"
                 label="租借日期"
                 fullWidth
-              // value={selectedDate}
-              //  onChange={handleDateChange}
+              // value={selectBorrowDate}
+              //  onChange={handleBorrowDateChange}
               />
             </Grid>
             <Grid item xs={6}>
@@ -283,12 +276,12 @@ const InputForm = () => {
                 variant="dialog"
                 label="預期歸還日期"
                 fullWidth
-              // value={selectedDate}
-              //  onChange={handleDateChange}
+              // value={selectPredictDate}
+                //onChange={handlePredictDateChange}
               />
             </Grid>
           </MuiPickersUtilsProvider>
-          <Grid item xs={12}>
+          <Grid item xs={10}>
             <Autocomplete
               id="location"
               freeSolo
@@ -299,11 +292,20 @@ const InputForm = () => {
               )}
             />
           </Grid>
+          <Grid item xs={2}>
+            <Grid container
+              direction="row"
+              justify="space-evenly"
+              alignItems="center"
+            >
+              <IconButton color="primary" aria-label="plus">
+                <AddAPhoto fontSize="large" />
+              </IconButton>
+            </Grid>
+          </Grid>
           <Grid item xs={5}>
-
             <TextField label="租借物件" id="rentItem" margin="none" fullWidth required>
             </TextField>
-
           </Grid>
           <Grid item xs={5}>
             <Autocomplete
@@ -323,13 +325,13 @@ const InputForm = () => {
               alignItems="center"
             >
               <IconButton color="primary" aria-label="plus">
-                <AddBox fontSize="large"/>
+                <Archive fontSize="large" />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
       </div>
-      </div>
+    </div>
   );
 };
 
