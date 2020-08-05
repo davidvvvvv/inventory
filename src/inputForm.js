@@ -11,10 +11,10 @@ import InputType from "./inputType";
 
 //import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl, Button, Fab } from '@material-ui/core';
+import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl, Button, Fab, IconButton, Paper, FormHelperText, AppBar, Tabs, Tab } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import AddIcon from '@material-ui/icons/Add';
+import AddBox from '@material-ui/icons/AddBox';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -25,21 +25,25 @@ import useFetch from 'use-http'
 import { isConstructorDeclaration } from "typescript";
 
 const useStyles = makeStyles((theme) => ({
-  formControl: {
-    //margin: theme.spacing(1),
-    margin: 0,
-    display: 'flex',
-    wrap: 'nowrap'
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh"
   },
   itemInput: {
     //margin: theme.spacing(1),
-    marginTop: 0,
-    display: 'flex',
-    wrap: 'nowrap'
+    marginTop: 16,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  content: {
+    height: "100%",
+    width:"100vw",
+    padding: 10,
+  }
 }));
 
 
@@ -190,7 +194,7 @@ const InputForm = () => {
     setGroupNo(value);
   };
 
-  const borrowerNameChange = (event,value) => {
+  const borrowerNameChange = (event, value) => {
     setBorrowerName(value);
   };
 
@@ -228,115 +232,104 @@ const InputForm = () => {
   }, [groupNo])
 
   return (
-    <div style={{ height: "100vh" }}>
-      <CssBaseline />
-      {
-        //console.log(selectBorrowerArray)
-      }
-
-      <Typography variant="h3" gutterBottom color="primary">
-        租借登記頁
+    <div className={classes.root}>
+      <AppBar position="static" style={{width:'100vw'}}>
+        <Tabs aria-label="simple tabs example">
+          <Tab label="租借登記頁" />
+          <Tab label="Item Two" />
+          <Tab label="Item Three" />
+        </Tabs>
+      </AppBar>
+      <div className={classes.content}>
+        <Typography variant="h6" gutterBottom color="primary">
+          租借登記頁
       </Typography>
+        <Grid container spacing={3} >
 
-      <Grid container spacing={3}>
-        <Grid item xs={6}>
-          <Autocomplete
-            id="group"
-            options={selectGroup.map((group) => group.group)}
-            onInputChange={groupNoChange}
-            renderInput={(params) => (
-              <TextField {...params} label="組別" margin="normal" />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Autocomplete
-            id="borrower"
-            freeSolo
-            options={selectBorrowerArray.map((borrower) => borrower)}
-            onInputChange={borrowerNameChange}
-            renderInput={(params) => (
-              <TextField {...params} label="租借者姓名" margin="normal" />
-            )}
-          />
-        </Grid>
-
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <Grid item xs={6}>
-            <DatePicker
-              variant="dialog"
-              label="租借日期"
-              fullWidth
-            // value={selectedDate}
-            //  onChange={handleDateChange}
+            <Autocomplete
+              id="group"
+              options={selectGroup.map((group) => group.group)}
+              onInputChange={groupNoChange}
+              renderInput={(params) => (
+                <TextField {...params} label="組別" margin="none" />
+              )}
             />
           </Grid>
           <Grid item xs={6}>
-            <DatePicker
-              variant="dialog"
-              label="預期歸還日期"
-              fullWidth
-            // value={selectedDate}
-            //  onChange={handleDateChange}
+            <Autocomplete
+              id="borrower"
+              freeSolo
+              options={selectBorrowerArray.map((borrower) => borrower)}
+              onInputChange={borrowerNameChange}
+              renderInput={(params) => (
+                <TextField {...params} label="租借者姓名" margin="none" />
+              )}
             />
           </Grid>
-        </MuiPickersUtilsProvider>
 
-        <Grid item xs={12}>
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="location">地點</InputLabel>
-            <Select
-              autoWidth={true}
-              labelId="location"
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid item xs={6}>
+              <DatePicker
+                variant="dialog"
+                label="租借日期"
+                fullWidth
+              // value={selectedDate}
+              //  onChange={handleDateChange}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <DatePicker
+                variant="dialog"
+                label="預期歸還日期"
+                fullWidth
+              // value={selectedDate}
+              //  onChange={handleDateChange}
+              />
+            </Grid>
+          </MuiPickersUtilsProvider>
+          <Grid item xs={12}>
+            <Autocomplete
               id="location"
-              open={locationOpen}
-              onClose={localtionHandle}
-              onOpen={localtionHandle}
-              value={location}
-              onChange={locationChange}
-            >
-              {
-                selectLocation.map((sLocation) => {
-                  return <MenuItem key={sLocation} value={sLocation}>{sLocation}</MenuItem>
-                })
-              }
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={5}>
-          <FormControl className={classes.itemInput}>
-            <TextField label="租借物件" id="rentItem" required>
+              freeSolo
+              options={selectLocation.map((sLocation) => sLocation)}
+              onInputChange={locationChange}
+              renderInput={(params) => (
+                <TextField {...params} label="地點" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={5}>
+
+            <TextField label="租借物件" id="rentItem" margin="none" fullWidth required>
             </TextField>
-          </FormControl>
-        </Grid>
-        <Grid item xs={5}>
-          <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="itemType">種類</InputLabel>
-            <Select
-              autoWidth={true}
-              labelId="itemType"
+
+          </Grid>
+          <Grid item xs={5}>
+            <Autocomplete
               id="itemType"
-              open={itemTypeOpen}
-              onClose={itemTypeHandle}
-              onOpen={itemTypeHandle}
-              value={itemType}
-              onChange={itemTypeChange}
+              freeSolo
+              options={selectType.map((type) => type)}
+              onInputChange={itemTypeChange}
+              renderInput={(params) => (
+                <TextField {...params} label="種類" margin="none" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <Grid container
+              direction="row"
+              justify="space-evenly"
+              alignItems="center"
             >
-              {
-                selectType.map((type) => {
-                  return <MenuItem key={type} value={type}>{type}</MenuItem>
-                })
-              }
-            </Select>
-          </FormControl>
+              <IconButton color="primary" aria-label="plus">
+                <AddBox fontSize="large"/>
+              </IconButton>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={2}>
-          <Fab size="small" color="primary">
-            <AddIcon />
-          </Fab>
-        </Grid>
-      </Grid>
-    </div >
+      </div>
+      </div>
   );
 };
 
