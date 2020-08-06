@@ -8,9 +8,10 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import InputForm from "./inputForm";
 import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const { children, value, index,...other } = props;
 
     return (
         <div
@@ -21,9 +22,11 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box p={3}>
-                    <Typography>{children}</Typography>
-                </Box>
+                <Container>
+                    <Box>
+                        {children}
+                    </Box>
+                </Container>
             )}
         </div>
     );
@@ -69,9 +72,9 @@ export default function SwitchPage() {
                     <Tab label="租借登記頁" {...a11yProps(0)} />
                     <Tab label="Item Two" {...a11yProps(1)} />
                     <Tab label="Item Three" {...a11yProps(2)} />
-                   
+
                 </Tabs>
-                
+
             </AppBar>
             <TabPanel value={value} index={0}>
                 <InputForm />
