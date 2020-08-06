@@ -9,9 +9,10 @@ import Box from "@material-ui/core/Box";
 import InputForm from "./inputForm";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
 
 function TabPanel(props) {
-    const { children, value, index,...other } = props;
+    const { children, value, index, ...other } = props;
 
     return (
         <div
@@ -64,17 +65,22 @@ export default function SwitchPage() {
     return (
         <div className={classes.root}>
             <AppBar position="static">
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    aria-label="Tabs"
-                >
-                    <Tab label="租借登記頁" {...a11yProps(0)} />
-                    <Tab label="Item Two" {...a11yProps(1)} />
-                    <Tab label="Item Three" {...a11yProps(2)} />
-
-                </Tabs>
-
+                <Grid container>
+                    <Grid item xs={9}>
+                        <Tabs
+                            value={value}
+                            onChange={handleChange}
+                            aria-label="Tabs"
+                        >
+                            <Tab label="租借登記頁" {...a11yProps(0)} />
+                            <Tab label="Item Two" {...a11yProps(1)} />
+                            <Tab label="Item Three" {...a11yProps(2)} />
+                        </Tabs>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Button>登出</Button>
+                    </Grid>
+                </Grid>
             </AppBar>
             <TabPanel value={value} index={0}>
                 <InputForm />
