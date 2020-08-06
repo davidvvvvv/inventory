@@ -51,6 +51,12 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper
     },
+    login:{
+        display:"flex",
+    alignItems: "center",
+    justifyContent: "center",
+
+    }
 }));
 
 export default function SwitchPage() {
@@ -78,7 +84,9 @@ export default function SwitchPage() {
                         </Tabs>
                     </Grid>
                     <Grid item xs={3}>
-                        <Button>登出</Button>
+                        <div className={classes.login}>
+                        <Button style={{textAlign:"center", marginLeft:"auto"}}>登出</Button>
+                        </div>
                     </Grid>
                 </Grid>
             </AppBar>
