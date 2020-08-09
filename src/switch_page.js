@@ -6,10 +6,13 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import Toolbar from "@material-ui/core/Toolbar";
 import InputForm from "./inputForm";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/Grid";
+import AccountBox from '@material-ui/icons/AccountBox';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -23,11 +26,9 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Container>
-                    <Box>
-                        {children}
-                    </Box>
-                </Container>
+                <Box>
+                    {children}
+                </Box>
             )}
         </div>
     );
@@ -51,11 +52,8 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper
     },
-    login:{
-        display:"flex",
-    alignItems: "center",
-    justifyContent: "center",
-
+    toolbar: {
+        justifyContent: "space-between",
     }
 }));
 
@@ -71,24 +69,20 @@ export default function SwitchPage() {
     return (
         <div className={classes.root}>
             <AppBar position="static">
-                <Grid container>
-                    <Grid item xs={9}>
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            aria-label="Tabs"
-                        >
-                            <Tab label="租借登記頁" {...a11yProps(0)} />
-                            <Tab label="Item Two" {...a11yProps(1)} />
-                            <Tab label="Item Three" {...a11yProps(2)} />
-                        </Tabs>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <div className={classes.login}>
-                        <Button style={{textAlign:"center", marginLeft:"auto"}}>登出</Button>
-                        </div>
-                    </Grid>
-                </Grid>
+                <Toolbar className={classes.toolbar}>
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        aria-label="Tabs"
+                    >
+                        <Tab label="租借登記頁" {...a11yProps(0)} />
+                        <Tab label="Item Two" {...a11yProps(1)} />
+                        <Tab label="Item Three" {...a11yProps(2)} />
+                    </Tabs>
+                    <IconButton aria-label="account">
+                <AccountBox />
+              </IconButton>
+                </Toolbar>
             </AppBar>
             <TabPanel value={value} index={0}>
                 <InputForm />

@@ -11,12 +11,14 @@ import InputType from "./inputType";
 
 //import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import { TextField, CssBaseline, Grid, Typography, InputLabel, Select, MenuItem, FormControl, Button, Fab, IconButton, Paper, FormHelperText, AppBar, Tabs, Tab } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import {makeStyles } from "@material-ui/core/styles";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Archive from '@material-ui/icons/Archive';
 import AddAPhoto from '@material-ui/icons/AddAPhoto';
-
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -329,6 +331,7 @@ const InputForm = () => {
               </IconButton>
             </Grid>
           </Grid>
+          <ListGroup />
         </Grid>
       </div>
     </div>
