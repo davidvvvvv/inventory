@@ -105,7 +105,7 @@ const tableStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2)
     },
     container: {
-        maxHeight: 200
+        height: 600
     },
     table: {
         width: "100%"
@@ -125,7 +125,6 @@ const tableStyles = makeStyles((theme) => ({
 
 export default function ListGroup() {
     const classes = tableStyles();
-
     const [selected, setSelected] = React.useState([]);
     const [dense, setDense] = React.useState(true);
 
@@ -145,7 +144,6 @@ export default function ListGroup() {
                 selected.slice(selectedIndex + 1)
             );
         }
-
         setSelected(newSelected);
     };
 
@@ -156,7 +154,7 @@ export default function ListGroup() {
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
     return (
-        <div style={{width:"100%"}}>
+        <div >
             <EnhancedTableToolbar numSelected={selected.length} />
             <TableContainer className={classes.container}>
                 <Table
