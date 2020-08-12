@@ -49,8 +49,9 @@ function a11yProps(index) {
 
 const useStyles = makeStyles(theme => ({
     root: {
-        flexGrow: 1,
+        height:'8vh',
         backgroundColor: theme.palette.background.paper
+
     },
     toolbar: {
         justifyContent: "space-between",

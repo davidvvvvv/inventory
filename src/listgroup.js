@@ -25,7 +25,8 @@ const rows = [
     createData("Donut", 452, 25.0, 51, 4.9),
     createData("Eclair", 262, 16.0, 24, 6.0),
     createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
- createData("Gingerbread", 356, 16.0, 49, 3.9),
+    createData("Gingerbread", 356, 16.0, 49, 3.9),
+    
 ];
 
 const useToolbarStyles = makeStyles((theme) => ({
@@ -45,7 +46,7 @@ const useToolbarStyles = makeStyles((theme) => ({
             },
     title: {
         flex: "1 1 100%"
-    }
+    },
 }));
 
 const EnhancedTableToolbar = (props) => {
@@ -105,7 +106,9 @@ const tableStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2)
     },
     container: {
-        height: 600
+        display: "flex",
+        flexDirection: "column",
+        height:'38vh'
     },
     table: {
         width: "100%"
@@ -120,7 +123,10 @@ const tableStyles = makeStyles((theme) => ({
         position: "absolute",
         top: 20,
         width: 1
-    }
+    },
+    root: { 
+       
+    },
 }));
 
 export default function ListGroup() {
@@ -154,7 +160,7 @@ export default function ListGroup() {
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
     return (
-        <div >
+        <div className={classes.root} >
             <EnhancedTableToolbar numSelected={selected.length} />
             <TableContainer className={classes.container}>
                 <Table
