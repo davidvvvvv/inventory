@@ -234,7 +234,7 @@ const InputForm = () => {
 
   return (
     <div className={classes.root}>
-      <div>
+      <div style={{display:'flex',flexDirection:'column'}}>
         <Typography variant="h6" gutterBottom color="primary">
           租借登記頁
         </Typography>
@@ -332,10 +332,10 @@ const InputForm = () => {
           </Grid>
         </Grid>
       </div>
-      <div>
-        <ListGroup style={{width:'100%',height:'50%'}}/>
+      <div style={{display:'flex',flexDirection:'column',height:'45%'}}>
+        <ListGroup/>
       </div>
-      <div style={{width:'100%',height:'10%'}}>
+      <div style={{display:'flex',flexDirection:'column',height:'10%'}}>
       <Button variant="contained" color="primary" className={classes.submitButton}>確定</Button>
       </div>
     </div>

@@ -26,6 +26,7 @@ const rows = [
     createData("Eclair", 262, 16.0, 24, 6.0),
     createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
     createData("Gingerbread", 356, 16.0, 49, 3.9),
+   
     
 ];
 
@@ -101,17 +102,13 @@ EnhancedTableToolbar.propTypes = {
 };
 
 const tableStyles = makeStyles((theme) => ({
-    paper: {
-        width: "100%",
-        marginBottom: theme.spacing(2)
-    },
     container: {
         display: "flex",
         flexDirection: "column",
-        height:'38vh'
+        height:'100%'
     },
     table: {
-        width: "100%"
+        //width: "100%"
     },
     visuallyHidden: {
         border: 0,
@@ -125,7 +122,9 @@ const tableStyles = makeStyles((theme) => ({
         width: 1
     },
     root: { 
-       
+        display: "flex",
+        flexDirection: "column",
+        height:'100%'
     },
 }));
 
