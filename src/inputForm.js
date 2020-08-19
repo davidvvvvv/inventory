@@ -54,7 +54,6 @@ const InputForm = () => {
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
-  //const [location, setLocation] = useState("");
 
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
@@ -62,26 +61,8 @@ const InputForm = () => {
     _setItemList(data);
   };
 
-  //const [borrowerName, setBorrowerName] = useState('');
-  const [inputType, setInputType] = useState('');
-  const [inputItem, setInputItem] = useState('');
-  const [showTypeTag, setShowTypeTag] = useState("hidden");
-  const [showItemTag, setShowItemTag] = useState("hidden");
-  const [showNameTag, setShowNameTag] = useState("hidden");
-  const [showLocationTag, setShowLocationTag] = useState("hidden");
-  const [rentDate, setRentDate] = useState(todayString);
-  const [expectReturnDate, setExpectReturnDate] = useState(todayString);
-
-  const [selectedDate, setSelectedDate] = useState();
-
   const [nfcMessage, setNfcMessage] = useState("");
   const [nfcMessageVisible, setNfcMessageVisible] = useState(false);
-  const onChange_Rent = (event, data) => {
-    setRentDate(data.value);
-    setExpectReturnDate(data.value);
-    //setNfcMessage("itemsList" + itemsList);
-  }
-  const onChange_Expect = (event, data) => setExpectReturnDate(data.value);
 
   const setError = useCallback((message) => {
     setNfcMessage(message);
@@ -127,27 +108,10 @@ const InputForm = () => {
     })
   }
 
-  const showDateTag = useMemo(() => {
-    const newSetRentDate = new Date(rentDate).getTime();
-    const todayStringDate = new Date(todayString).getTime();
-    return todayStringDate > newSetRentDate ? "visible" : "hidden";
-  }, [rentDate])
-
   const submit = () => {
-    if (borrowerName === '') setShowNameTag('visible');
-    if (location === '') setShowLocationTag('visible');
-    if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
-    if (borrowerName !== '' && location !== '' && itemsList.length > 0) {
-      addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
-      setBorrowerName('');
-      setBorrowerName('');
-      setLocation('');
-      setInputItem('');
-      setInputType('');
-      setItemList([]);
-      setRentDate(todayString);
-      setExpectReturnDate(todayString);
-    }
+    //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
+     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
+   // }
   }
 
   const logoutAllFunction = () => {
@@ -176,7 +140,7 @@ const InputForm = () => {
 
 
   const classes = useStyles();
-
+  const todayDate =new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const [groupNo, setGroupNo] = useState("");
   const [borrowerName, setBorrowerName] = useState("");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -186,6 +150,8 @@ const InputForm = () => {
   const [selectGroup, setSelectGroup] = useState([]);
   const [selectLocation, setSelectLocation] = useState([]);
   const [selectType, setSelectType] = useState([]);
+  const [selectBorrowDate,setSelectBorrowDate] = useState(todayDate);
+  const [predictReturnDate,setPredictReturnDate] = useState(todayDate);
   //const { loading, error, data = [] } = useFetch('data.json',[]);
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
@@ -198,17 +164,19 @@ const InputForm = () => {
   const borrowerNameChange = (event, value) => {
     setBorrowerName(value);
   };
-
+/*
   const localtionHandle = () => {
     setLocationOpen(!locationOpen);
   };
+  */
   const locationChange = (event) => {
     setLocation(event.target.value);
   };
-
+/*
   const itemTypeHandle = () => {
     setItemTypeOpen(!itemTypeOpen);
   };
+  */
   const itemTypeChange = (event) => {
     setItemType(event.target.value);
   };
@@ -222,6 +190,7 @@ const InputForm = () => {
       setSelectGroup(initSelectData.groups);
       setSelectLocation(initSelectData.location);
       setSelectType(initSelectData.type);
+      console.log("selectBorrowDate",selectBorrowDate);
     }
   }
 
@@ -265,21 +234,27 @@ const InputForm = () => {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid item xs={6}>
               <DatePicker
+              autoOk
                 variant="dialog"
                 label="租借日期"
                 fullWidth
-              // value={selectBorrowDate}
-              //  onChange={handleBorrowDateChange}
+                disableFuture
+                format="dd/MM/yyyy"
+               value={selectBorrowDate}
+                onChange={setSelectBorrowDate}
               />
             </Grid>
             <Grid item xs={6}>
               <DatePicker
+              autoOk
                 variant="dialog"
                 label="預期歸還日期"
+                format="dd/MM/yyyy"
                 fullWidth
-              // value={selectPredictDate}
-              //onChange={handlePredictDateChange}
-              />
+                disablePast
+                value={predictReturnDate}
+                onChange={setPredictReturnDate}
+              /> 
             </Grid>
           </MuiPickersUtilsProvider>
           <Grid item xs={10}>
@@ -332,10 +307,10 @@ const InputForm = () => {
           </Grid>
         </Grid>
       </div>
-      <div style={{display:'flex',flexDirection:'column',height:'45%'}}>
+      <div style={{display:'flex',flexDirection:'column',flex:'1'}}>
         <ListGroup/>
       </div>
-      <div style={{display:'flex',flexDirection:'column',height:'10%'}}>
+      <div style={{display:'flex',flexDirection:'column'}}>
       <Button variant="contained" color="primary" className={classes.submitButton}>確定</Button>
       </div>
     </div>
