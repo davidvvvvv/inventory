@@ -20,7 +20,7 @@ function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
 }
 
-const rows = [
+const rows2 = [
     createData("Cupcake", 305, 3.7, 67, 4.3),
     createData("Donut", 452, 25.0, 51, 4.9),
     createData("Eclair", 262, 16.0, 24, 6.0),
@@ -75,14 +75,16 @@ const EnhancedTableToolbar = (props) => {
                         variant="h6"
                         id="tableTitle"
                         component="div"
+                        align="center"
+                        color="primary"
                     >
-                        Nutrition
+                    租借物品表
                     </Typography>
                 )}
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton aria-label="delete">
+                    <IconButton aria-label="delete" >
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
@@ -128,10 +130,11 @@ const tableStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ListGroup() {
+export default function ListGroup(props) {
+    const {itemList}=props;
     const classes = tableStyles();
     const [selected, setSelected] = React.useState([]);
-    const [dense, setDense] = React.useState(true);
+    const [dense, setDense] = React.useState(false);
 
     const handleClick = (event, name) => {
         const selectedIndex = selected.indexOf(name);
@@ -169,18 +172,18 @@ export default function ListGroup() {
                     aria-label="enhanced table"
                 >
                     <TableBody>
-                        {rows.map((row, index) => {
-                            const isItemSelected = isSelected(row.name);
+                        {itemList.map((row, index) => {
+                            const isItemSelected = isSelected(row.refno);
                             const labelId = `enhanced-table-checkbox-${index}`;
 
                             return (
                                 <TableRow
                                     hover
-                                    onClick={(event) => handleClick(event, row.name)}
+                                    onClick={(event) => handleClick(event, row.refno)}
                                     role="checkbox"
                                     aria-checked={isItemSelected}
                                     tabIndex={-1}
-                                    key={row.name}
+                                    key={row.refno+row.type}
                                     selected={isItemSelected}
                                 >
                                     <TableCell padding="checkbox">
@@ -195,9 +198,9 @@ export default function ListGroup() {
                                         scope="row"
                                         padding="none"
                                     >
-                                        {row.name}
+                                        {row.refno}
                                     </TableCell>
-                                    <TableCell align="right">{row.calories}</TableCell>
+                                    <TableCell align="right">{row.type}</TableCell>
                                 </TableRow>
                             );
                         })}

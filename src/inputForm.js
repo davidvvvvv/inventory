@@ -20,6 +20,8 @@ import AddAPhoto from '@material-ui/icons/AddAPhoto';
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
+import SnackbarContent from "@material-ui/core/SnackbarContent";
 import Box from '@material-ui/core/Box';
 import { flexbox } from '@material-ui/system';
 import {
@@ -43,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   submitButton: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    width:'100%'
+    width: '100%'
   }
 }));
 
@@ -61,12 +63,12 @@ const InputForm = () => {
     _setItemList(data);
   };
 
-  const [nfcMessage, setNfcMessage] = useState("");
-  const [nfcMessageVisible, setNfcMessageVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageVisible, setErrorMessageVisible] = useState(false);
 
   const setError = useCallback((message) => {
-    setNfcMessage(message);
-    setNfcMessageVisible(true);
+    setErrorMessage(message);
+    setErrorMessageVisible(true);
   }, [])
 
   const removeItem = index => {
@@ -110,8 +112,8 @@ const InputForm = () => {
 
   const submit = () => {
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
-     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
-   // }
+    //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
+    // }
   }
 
   const logoutAllFunction = () => {
@@ -127,59 +129,62 @@ const InputForm = () => {
     readTag(setError, addItem);
   }, []);
 
+  /*
   useEffect(() => {
     console.log("inputForm_useEffect2");
     const messageTimeout = setTimeout(() => {
-      setNfcMessageVisible(false);
+      setErrorMessageVisible(false);
     }, 3000)
     return (() => {
       console.log("InputForm_useEffect2_return");
       clearTimeout(messageTimeout);
     })
   }, [nfcMessageVisible, nfcMessage]);
-
+*/
 
   const classes = useStyles();
-  const todayDate =new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+  const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const [groupNo, setGroupNo] = useState("");
   const [borrowerName, setBorrowerName] = useState("");
-  const [locationOpen, setLocationOpen] = useState(false);
+  // const [locationOpen, setLocationOpen] = useState(false);
   const [location, setLocation] = useState("");
-  const [itemTypeOpen, setItemTypeOpen] = useState(false);
+  //const [itemTypeOpen, setItemTypeOpen] = useState(false);
   const [itemType, setItemType] = useState("");
+  const [itemInput, setItemInput] = useState("");
   const [selectGroup, setSelectGroup] = useState([]);
   const [selectLocation, setSelectLocation] = useState([]);
   const [selectType, setSelectType] = useState([]);
-  const [selectBorrowDate,setSelectBorrowDate] = useState(todayDate);
-  const [predictReturnDate,setPredictReturnDate] = useState(todayDate);
+  const [selectBorrowDate, setSelectBorrowDate] = useState(todayDate);
+  const [predictReturnDate, setPredictReturnDate] = useState(todayDate);
   //const { loading, error, data = [] } = useFetch('data.json',[]);
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
 
   const groupNoChange = (event, value) => {
-    console.log(value);
+    //console.log(value);
     setGroupNo(value);
   };
 
   const borrowerNameChange = (event, value) => {
     setBorrowerName(value);
   };
-/*
-  const localtionHandle = () => {
-    setLocationOpen(!locationOpen);
-  };
-  */
+  /*
+    const localtionHandle = () => {
+      setLocationOpen(!locationOpen);
+    };
+    */
   const locationChange = (event) => {
     setLocation(event.target.value);
   };
-/*
-  const itemTypeHandle = () => {
-    setItemTypeOpen(!itemTypeOpen);
-  };
-  */
+  /*
+    const itemTypeHandle = () => {
+      setItemTypeOpen(!itemTypeOpen);
+    };
+    */
+
   const itemTypeChange = (event) => {
-    setItemType(event.target.value);
-  };
+    setItemType(event.target.innerText || event.target.value)
+  }
 
   useEffect(() => { initSelect() }, [fetchPath])
 
@@ -190,7 +195,7 @@ const InputForm = () => {
       setSelectGroup(initSelectData.groups);
       setSelectLocation(initSelectData.location);
       setSelectType(initSelectData.type);
-      console.log("selectBorrowDate",selectBorrowDate);
+      //console.log("selectBorrowDate",selectBorrowDate);
     }
   }
 
@@ -201,9 +206,27 @@ const InputForm = () => {
     return temp !== undefined ? temp.staff : [];
   }, [groupNo])
 
+  const inputListFunction = () => {
+    if (itemInput && itemType) {
+      console.log(`${itemInput},${itemType}`);
+      addItem(`${itemInput},${itemType}`);
+    } else {
+      setError("請輸入 租借物件編號 及 租借種類");
+    }
+  }
+
+  const itemInputFunction = (event) => {
+    setItemInput(event.target.value);
+  }
+
   return (
     <div className={classes.root}>
-      <div style={{display:'flex',flexDirection:'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+        <Snackbar open={errorMessageVisible} autoHideDuration={3000} onClose={()=>{setErrorMessageVisible(false)}}>
+          <SnackbarContent style={{ backgroundColor: 'orange', fontSize:'1rem' }} message={errorMessage} />
+        </Snackbar>
+
         <Typography variant="h6" gutterBottom color="primary">
           租借登記頁
         </Typography>
@@ -234,19 +257,19 @@ const InputForm = () => {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid item xs={6}>
               <DatePicker
-              autoOk
+                autoOk
                 variant="dialog"
                 label="租借日期"
                 fullWidth
                 disableFuture
                 format="dd/MM/yyyy"
-               value={selectBorrowDate}
+                value={selectBorrowDate}
                 onChange={setSelectBorrowDate}
               />
             </Grid>
             <Grid item xs={6}>
               <DatePicker
-              autoOk
+                autoOk
                 variant="dialog"
                 label="預期歸還日期"
                 format="dd/MM/yyyy"
@@ -254,7 +277,7 @@ const InputForm = () => {
                 disablePast
                 value={predictReturnDate}
                 onChange={setPredictReturnDate}
-              /> 
+              />
             </Grid>
           </MuiPickersUtilsProvider>
           <Grid item xs={10}>
@@ -280,7 +303,7 @@ const InputForm = () => {
             </Grid>
           </Grid>
           <Grid item xs={5}>
-            <TextField label="租借物件" id="rentItem" margin="none" fullWidth required>
+            <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" fullWidth required>
             </TextField>
           </Grid>
           <Grid item xs={5}>
@@ -290,7 +313,7 @@ const InputForm = () => {
               options={selectType.map((type) => type)}
               onInputChange={itemTypeChange}
               renderInput={(params) => (
-                <TextField {...params} label="種類" margin="none" />
+                <TextField {...params} label="租借種類" margin="none" />
               )}
             />
           </Grid>
@@ -300,18 +323,18 @@ const InputForm = () => {
               justify="space-evenly"
               alignItems="center"
             >
-              <IconButton color="primary" aria-label="plus">
+              <IconButton onClick={inputListFunction} color="primary" aria-label="plus">
                 <Archive fontSize="large" />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
       </div>
-      <div style={{display:'flex',flexDirection:'column',flex:'1'}}>
-        <ListGroup/>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
+        <ListGroup itemList={itemsList}/>
       </div>
-      <div style={{display:'flex',flexDirection:'column'}}>
-      <Button variant="contained" color="primary" className={classes.submitButton}>確定</Button>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Button variant="contained" color="primary" className={classes.submitButton}>確定</Button>
       </div>
     </div>
   );
