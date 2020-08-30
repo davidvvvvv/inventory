@@ -5,8 +5,8 @@ import { navigate } from "@reach/router";
 import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
 import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
-import Location from "./inputLocation";
-import InputType from "./inputType";
+//import Location from "./_inputLocation";
+//import InputType from "./inputType";
 
 
 //import 'date-fns';
@@ -334,7 +334,7 @@ const InputForm = () => {
         <ListGroup itemList={itemsList}/>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button variant="contained" color="primary" className={classes.submitButton}>確定</Button>
+        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>
       </div>
     </div>
   );

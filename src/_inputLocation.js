@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Dropdown } from "semantic-ui-react";
+//import { Dropdown } from "semantic-ui-react";
 import { getLocationCol } from "./firebase_";
 
 /*

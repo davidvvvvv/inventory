@@ -1,5 +1,4 @@
 import React, { useState, useEffect, createContext } from "react";
-import { Container } from "semantic-ui-react";
 import { auth,firestore } from "./firebase_";
 
 export const LoginContext = createContext();
@@ -60,11 +59,11 @@ const LoginContextProvider = props => {
   }, []);
 
   return (
-    <Container>
+    <div>
       <LoginContext.Provider value={[login, setLogin]}>
         {props.children}
       </LoginContext.Provider>
-    </Container>
+    </div>
   );
 };
 

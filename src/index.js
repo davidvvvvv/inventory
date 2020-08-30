@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import App from "./App";
-import "react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css";
+//import "react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css";
 
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";

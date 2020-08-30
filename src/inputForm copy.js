@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } from "react";
 //import SemanticDatepicker from "react-semantic-ui-datepickers";
-import { DateInput } from 'semantic-ui-calendar-react';
+//import { DateInput } from 'semantic-ui-calendar-react';
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
 import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
