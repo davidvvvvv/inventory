@@ -144,6 +144,14 @@ const InputForm = () => {
 
   const classes = useStyles();
   const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+
+
+  const tempObject = { groupNo:"",borrowerName:"",location:"", itemType:"",
+  itemInput:"",selectGroup:[],selectLocation:[],selectType:[],
+  selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
+
+  const [submitObject,setSubmitObject] = useState({})
+
   const [groupNo, setGroupNo] = useState("");
   const [borrowerName, setBorrowerName] = useState("");
   // const [locationOpen, setLocationOpen] = useState(false);
