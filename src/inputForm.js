@@ -150,7 +150,8 @@ const InputForm = () => {
   itemInput:"",selectGroup:[],selectLocation:[],selectType:[],
   selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
 
-  const [submitObject,setSubmitObject] = useState({})
+  const [submitObject,setSubmitObject] = useState(tempObject);
+  const {groupNo,borrowerName,location,itemType,itemInput,selectGroup,selectLocation,selectType,selectBorrowDate,predictReturnDate}=submitObject
 
   const [groupNo, setGroupNo] = useState("");
   const [borrowerName, setBorrowerName] = useState("");
