@@ -146,13 +146,15 @@ const InputForm = () => {
   const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
 
 
-  const tempObject = { groupNo:"",borrowerName:"",location:"", itemType:"",
+  const initObject = { groupNo:"",borrowerName:"",location:"", itemType:"",
   itemInput:"",selectGroup:[],selectLocation:[],selectType:[],
   selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
 
-  const [submitObject,setSubmitObject] = useState(tempObject);
-  const {groupNo,borrowerName,location,itemType,itemInput,selectGroup,selectLocation,selectType,selectBorrowDate,predictReturnDate}=submitObject
+  const [submitObject,setSubmitObject] = useState(initObject);
+  const {groupNo,borrowerName,location,itemType,itemInput,selectBorrowDate,predictReturnDate}=submitObject;
 
+
+/*
   const [groupNo, setGroupNo] = useState("");
   const [borrowerName, setBorrowerName] = useState("");
   // const [locationOpen, setLocationOpen] = useState(false);
@@ -160,22 +162,32 @@ const InputForm = () => {
   //const [itemTypeOpen, setItemTypeOpen] = useState(false);
   const [itemType, setItemType] = useState("");
   const [itemInput, setItemInput] = useState("");
-  const [selectGroup, setSelectGroup] = useState([]);
-  const [selectLocation, setSelectLocation] = useState([]);
-  const [selectType, setSelectType] = useState([]);
+  
   const [selectBorrowDate, setSelectBorrowDate] = useState(todayDate);
   const [predictReturnDate, setPredictReturnDate] = useState(todayDate);
   //const { loading, error, data = [] } = useFetch('data.json',[]);
+  */
+  const [selectGroup, setSelectGroup] = useState([]);
+  const [selectLocation, setSelectLocation] = useState([]);
+  const [selectType, setSelectType] = useState([]);
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
 
   const groupNoChange = (event, value) => {
     //console.log(value);
-    setGroupNo(value);
+    //setGroupNo(value);
+    setSubmitObject({
+      ...submitObject,
+      groupNo:value,
+    });
   };
 
   const borrowerNameChange = (event, value) => {
-    setBorrowerName(value);
+    //setBorrowerName(value);
+    setSubmitObject({
+      ...submitObject,
+      borrowerName:value,
+    })
   };
   /*
     const localtionHandle = () => {
@@ -183,7 +195,11 @@ const InputForm = () => {
     };
     */
   const locationChange = (event) => {
-    setLocation(event.target.value);
+    //setLocation(event.target.value);
+    setSubmitObject({
+      ...submitObject,
+      location:event.target.value,
+    })
   };
   /*
     const itemTypeHandle = () => {
@@ -192,7 +208,11 @@ const InputForm = () => {
     */
 
   const itemTypeChange = (event) => {
-    setItemType(event.target.innerText || event.target.value)
+    //setItemType(event.target.innerText || event.target.value)
+    setSubmitObject({
+      ...submitObject,
+      itemType:event.target.innerText || event.target.value,
+    })
   }
 
   useEffect(() => { initSelect() }, [fetchPath])
