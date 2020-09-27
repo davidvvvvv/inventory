@@ -147,8 +147,7 @@ const InputForm = () => {
 
 
   const initObject = { groupNo:"",borrowerName:"",location:"", itemType:"",
-  itemInput:"",selectGroup:[],selectLocation:[],selectType:[],
-  selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
+  itemInput:"",selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
 
   const [submitObject,setSubmitObject] = useState(initObject);
   const {groupNo,borrowerName,location,itemType,itemInput,selectBorrowDate,predictReturnDate}=submitObject;
@@ -245,7 +244,8 @@ const InputForm = () => {
   }
 
   const itemInputFunction = (event) => {
-    setItemInput(event.target.value);
+    //setItemInput(event.target.value);
+    setSubmitObject({...submitObject, itemInput:event.target.value});
   }
 
   return (
@@ -262,27 +262,20 @@ const InputForm = () => {
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <Autocomplete
-              id="group"
-              options={selectGroup.map((group) => group.group)}
-              onInputChange={groupNoChange}
-              renderInput={(params) => (
-                <TextField {...params} label="組別" margin="none" />
-              )}
-            />
+            <TextField onChange={itemInputFunction} label="租借者姓名" id="borrower" margin="none" required>
+            </TextField>
           </Grid>
           <Grid item xs={6}>
             <Autocomplete
-              id="borrower"
+              id="location"
               freeSolo
-              options={selectBorrowerArray.map((borrower) => borrower)}
-              onInputChange={borrowerNameChange}
+              options={selectLocation.map((sLocation) => sLocation)}
+              onInputChange={locationChange}
               renderInput={(params) => (
-                <TextField {...params} label="租借者姓名" margin="none" />
+                <TextField {...params} label="地點" />
               )}
             />
           </Grid>
-
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid item xs={6}>
               <DatePicker
@@ -293,7 +286,9 @@ const InputForm = () => {
                 disableFuture
                 format="dd/MM/yyyy"
                 value={selectBorrowDate}
-                onChange={setSelectBorrowDate}
+                onChange={//setSelectBorrowDate
+                  (arg)=>setSubmitObject({...submitObject,selectBorrowDate:arg})
+                }
               />
             </Grid>
             <Grid item xs={6}>
@@ -305,32 +300,12 @@ const InputForm = () => {
                 fullWidth
                 disablePast
                 value={predictReturnDate}
-                onChange={setPredictReturnDate}
+                onChange={//setPredictReturnDate
+                  (arg)=>setSubmitObject({...submitObject,predictReturnDate:arg})
+                }
               />
             </Grid>
           </MuiPickersUtilsProvider>
-          <Grid item xs={10}>
-            <Autocomplete
-              id="location"
-              freeSolo
-              options={selectLocation.map((sLocation) => sLocation)}
-              onInputChange={locationChange}
-              renderInput={(params) => (
-                <TextField {...params} label="地點" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <Grid container
-              direction="row"
-              justify="space-evenly"
-              alignItems="center"
-            >
-              <IconButton color="primary" aria-label="plus">
-                <AddAPhoto fontSize="large" />
-              </IconButton>
-            </Grid>
-          </Grid>
           <Grid item xs={5}>
             <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" fullWidth required>
             </TextField>
@@ -339,7 +314,7 @@ const InputForm = () => {
             <Autocomplete
               id="itemType"
               freeSolo
-              options={selectType.map((type) => type)}
+              options = {selectType} // {selectType.map((type) => type)}
               onInputChange={itemTypeChange}
               renderInput={(params) => (
                 <TextField {...params} label="租借種類" margin="none" />
