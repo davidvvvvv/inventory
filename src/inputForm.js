@@ -146,11 +146,11 @@ const InputForm = () => {
   const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
 
 
-  const initObject = { groupNo:"",borrowerName:"",location:"", itemType:"",
+  const initObject = {borrowerName:"",location:"", itemType:"",
   itemInput:"",selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
 
   const [submitObject,setSubmitObject] = useState(initObject);
-  const {groupNo,borrowerName,location,itemType,itemInput,selectBorrowDate,predictReturnDate}=submitObject;
+  const {borrowerName,location,itemType,itemInput,selectBorrowDate,predictReturnDate}=submitObject;
 
 
 /*
@@ -166,20 +166,11 @@ const InputForm = () => {
   const [predictReturnDate, setPredictReturnDate] = useState(todayDate);
   //const { loading, error, data = [] } = useFetch('data.json',[]);
   */
-  const [selectGroup, setSelectGroup] = useState([]);
+
   const [selectLocation, setSelectLocation] = useState([]);
   const [selectType, setSelectType] = useState([]);
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
-
-  const groupNoChange = (event, value) => {
-    //console.log(value);
-    //setGroupNo(value);
-    setSubmitObject({
-      ...submitObject,
-      groupNo:value,
-    });
-  };
 
   const borrowerNameChange = (event, value) => {
     //setBorrowerName(value);
@@ -220,19 +211,11 @@ const InputForm = () => {
     const initSelectData = await get(fetchPath);
     if (response.ok) {
       //console.log(initSelectData.groups);
-      setSelectGroup(initSelectData.groups);
       setSelectLocation(initSelectData.location);
       setSelectType(initSelectData.type);
       //console.log("selectBorrowDate",selectBorrowDate);
     }
   }
-
-  const selectBorrowerArray = useMemo(() => {
-    const temp = selectGroup.find(object => {
-      return object.group === groupNo
-    })
-    return temp !== undefined ? temp.staff : [];
-  }, [groupNo])
 
   const inputListFunction = () => {
     if (itemInput && itemType) {
@@ -262,7 +245,7 @@ const InputForm = () => {
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <TextField onChange={itemInputFunction} label="租借者姓名" id="borrower" margin="none" required>
+            <TextField onChange={borrowerNameChange} label="租借者姓名" id="borrower" margin="none" required>
             </TextField>
           </Grid>
           <Grid item xs={6}>
