@@ -63,6 +63,10 @@ const InputForm = () => {
     _setItemList(data);
   };
 
+  const ListGroupMemo=React.memo(ListGroup);
+
+  const [itemsMap,setItemsMap]=useState(new Map());
+
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessageVisible, setErrorMessageVisible] = useState(false);
 
@@ -70,12 +74,20 @@ const InputForm = () => {
     setErrorMessage(message);
     setErrorMessageVisible(true);
   }, [])
+  
 
+  // old array code
+  /*
   const removeItem = index => {
     itemsList.splice(index, 1);
     const tempList = [...itemsList];
     //_itemsList.current=tempList; 
     setItemList(tempList);
+  }
+  */
+
+  const removeItem =key =>{
+    itemsMap.delete(key);
   }
 
   const addItem = (dataString) => {
@@ -89,12 +101,12 @@ const InputForm = () => {
     //const tempArray = decoder.decode(event.message.records[0].data).split(",");
     const tempArray = dataString.split(",");
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': '', 'dbRefNo': '' };
-    const tempInput = _itemsList.current.some(item => {
-      return item.refno === tempObject.refno;
-    });
-    !tempInput ? _itemsList.current.push(tempObject) : setError("😫 錯誤 : 重覆輸入!");
-    const tempList = [..._itemsList.current];
-    setItemList(tempList);
+    // old array code   const tempList = [..._itemsList.current,tempObject];
+    // old array code   setItemList(tempList);
+    setItemsMap(new Map(itemsMap.set(tempArray[0],tempObject)));
+    //setItemsMap([{refno:'a',type:'b'},{refno:'c',type:'d'}]);                         
+    console.log(itemsMap);
+    /*
     checkItemNotReturn(tempArray[0]).then(result => {
       if (result) {
         const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
@@ -107,10 +119,10 @@ const InputForm = () => {
         const tempList = [..._itemsList.current];
         setItemList(tempList);
       }
-    })
+    })*/
   }
 
-  const submit = () => {
+  const submit = () => {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
@@ -219,7 +231,7 @@ const InputForm = () => {
 
   const inputListFunction = () => {
     if (itemInput && itemType) {
-      console.log(`${itemInput},${itemType}`);
+      //console.log(`${itemInput},${itemType}`);
       addItem(`${itemInput},${itemType}`);
     } else {
       setError("請輸入 租借物件編號 及 租借種類");
@@ -318,7 +330,7 @@ const InputForm = () => {
         </Grid>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
-        <ListGroup itemList={itemsList}/>
+        <ListGroupMemo itemsMap={itemsMap}/> 
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>

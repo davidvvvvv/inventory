@@ -26,8 +26,6 @@ const rows2 = [
     createData("Eclair", 262, 16.0, 24, 6.0),
     createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
     createData("Gingerbread", 356, 16.0, 49, 3.9),
-   
-    
 ];
 
 const useToolbarStyles = makeStyles((theme) => ({
@@ -131,7 +129,10 @@ const tableStyles = makeStyles((theme) => ({
 }));
 
 export default function ListGroup(props) {
-    const {itemList}=props;
+    const {itemsMap}=props;
+
+    console.log(itemsMap);
+    const itemsList=[...itemsMap.values()];
     const classes = tableStyles();
     const [selected, setSelected] = React.useState([]);
     const [dense, setDense] = React.useState(false);
@@ -172,7 +173,7 @@ export default function ListGroup(props) {
                     aria-label="enhanced table"
                 >
                     <TableBody>
-                        {itemList.map((row, index) => {
+                        {itemsList.map((row, index) => {
                             const isItemSelected = isSelected(row.refno);
                             const labelId = `enhanced-table-checkbox-${index}`;
 
