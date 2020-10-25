@@ -103,8 +103,7 @@ const InputForm = () => {
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': '', 'dbRefNo': '' };
     // old array code   const tempList = [..._itemsList.current,tempObject];
     // old array code   setItemList(tempList);
-    setItemsMap(new Map(itemsMap.set(tempArray[0],tempObject)));
-    //setItemsMap([{refno:'a',type:'b'},{refno:'c',type:'d'}]);                         
+    setItemsMap(new Map(itemsMap.set(tempArray[0],tempObject)));                        
     console.log(itemsMap);
     /*
     checkItemNotReturn(tempArray[0]).then(result => {

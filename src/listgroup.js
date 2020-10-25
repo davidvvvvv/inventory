@@ -76,7 +76,7 @@ const EnhancedTableToolbar = (props) => {
                         align="center"
                         color="primary"
                     >
-                    租借物品表
+                        租借物品表
                     </Typography>
                 )}
 
@@ -105,7 +105,7 @@ const tableStyles = makeStyles((theme) => ({
     container: {
         display: "flex",
         flexDirection: "column",
-        height:'100%'
+        height: '100%'
     },
     table: {
         //width: "100%"
@@ -121,18 +121,18 @@ const tableStyles = makeStyles((theme) => ({
         top: 20,
         width: 1
     },
-    root: { 
+    root: {
         display: "flex",
         flexDirection: "column",
-        height:'100%'
+        height: '100%'
     },
 }));
 
 export default function ListGroup(props) {
-    const {itemsMap}=props;
+    const { itemsMap } = props;
 
     console.log(itemsMap);
-    const itemsList=[...itemsMap.values()];
+    const itemsList = [...itemsMap.values()];
     const classes = tableStyles();
     const [selected, setSelected] = React.useState([]);
     const [dense, setDense] = React.useState(false);
@@ -184,7 +184,7 @@ export default function ListGroup(props) {
                                     role="checkbox"
                                     aria-checked={isItemSelected}
                                     tabIndex={-1}
-                                    key={row.refno+row.type}
+                                    key={row.refno + row.type}
                                     selected={isItemSelected}
                                 >
                                     <TableCell padding="checkbox">
