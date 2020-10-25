@@ -49,7 +49,7 @@ function a11yProps(index) {
 
 const useStyles = makeStyles(theme => ({
     root: {
-        height:'8vh',
+        height: '8vh',
         backgroundColor: theme.palette.background.paper
 
     },
@@ -63,7 +63,7 @@ export default function SwitchPage() {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
-        console.log(newValue);
+        //console.log(newValue);
         setValue(newValue);
     };
 
@@ -81,8 +81,8 @@ export default function SwitchPage() {
                         <Tab label="Item Three" {...a11yProps(2)} />
                     </Tabs>
                     <IconButton aria-label="account">
-                <AccountBox />
-              </IconButton>
+                        <AccountBox />
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             <TabPanel value={value} index={0}>

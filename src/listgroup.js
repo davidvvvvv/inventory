@@ -50,7 +50,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { numSelected } = props;
+    const { numSelected,deleteSelected,removeItem } = props;
 
     return (
         <Toolbar
@@ -76,7 +76,7 @@ const EnhancedTableToolbar = (props) => {
                         align="center"
                         color="primary"
                     >
-                        租借物品表
+                    租借物品表
                     </Typography>
                 )}
 
@@ -105,7 +105,7 @@ const tableStyles = makeStyles((theme) => ({
     container: {
         display: "flex",
         flexDirection: "column",
-        height: '100%'
+        height:'100%'
     },
     table: {
         //width: "100%"
@@ -121,22 +121,23 @@ const tableStyles = makeStyles((theme) => ({
         top: 20,
         width: 1
     },
-    root: {
+    root: { 
         display: "flex",
         flexDirection: "column",
-        height: '100%'
+        height:'100%'
     },
 }));
 
 export default function ListGroup(props) {
-    const { itemsMap } = props;
 
-    console.log(itemsMap);
-    const itemsList = [...itemsMap.values()];
+    const {itemsMap,removeItem} =props;
+    const itemsList=[...itemsMap.values()];
     const classes = tableStyles();
-    const [selected, setSelected] = React.useState([]);
+    //const [selected, setSelected] = React.useState([]);
     const [dense, setDense] = React.useState(false);
+    const [selected,setSelected]=React.useState(new Map());
 
+    /*
     const handleClick = (event, name) => {
         const selectedIndex = selected.indexOf(name);
         let newSelected = [];
@@ -155,16 +156,28 @@ export default function ListGroup(props) {
         }
         setSelected(newSelected);
     };
+    */
+
+    const deleteSelected = (name)=>{
+        if (selected.delete(name)){
+            return setSelected(new Map(selected));
+        }
+    }
+
+    const handleClick = (event,name) => {
+        selected.has(name) ? deleteSelected(name) : setSelected(new Map(selected.set(name)));
+    }
 
     const handleChangeDense = (event) => {
         setDense(event.target.checked);
     };
 
-    const isSelected = (name) => selected.indexOf(name) !== -1;
+    //const isSelected = (name) => selected.indexOf(name) !== -1;
+    const isSelected = (name) => selected.has(name);
 
     return (
         <div className={classes.root} >
-            <EnhancedTableToolbar numSelected={selected.length} />
+            <EnhancedTableToolbar numSelected={selected.size} deleteSelected={deleteSelected} removeItem={removeItem}/>
             <TableContainer className={classes.container}>
                 <Table
                     className={classes.table}
@@ -184,7 +197,7 @@ export default function ListGroup(props) {
                                     role="checkbox"
                                     aria-checked={isItemSelected}
                                     tabIndex={-1}
-                                    key={row.refno + row.type}
+                                    key={row.refno+row.type}
                                     selected={isItemSelected}
                                 >
                                     <TableCell padding="checkbox">

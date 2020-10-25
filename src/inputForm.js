@@ -34,13 +34,15 @@ import useFetch from 'use-http';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    //paddingLeft: theme.spacing(1),
-    //paddingRight: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
     height: '92vh',
     minHeight: '100%',
     display: 'flex',
     flexDirection: 'column',
+    
     //justifyContent:'space-between'
+    //alignItems:'center',
   },
   submitButton: {
     marginTop: theme.spacing(2),
@@ -74,7 +76,7 @@ const InputForm = () => {
     setErrorMessage(message);
     setErrorMessageVisible(true);
   }, [])
-  
+
 
   // old array code
   /*
@@ -244,7 +246,7 @@ const InputForm = () => {
 
   return (
     <div className={classes.root}>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', flexDirection: 'column'}}>
 
         <Snackbar open={errorMessageVisible} autoHideDuration={3000} onClose={()=>{setErrorMessageVisible(false)}}>
           <SnackbarContent style={{ backgroundColor: 'orange', fontSize:'1rem' }} message={errorMessage} />
@@ -256,7 +258,7 @@ const InputForm = () => {
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <TextField onChange={borrowerNameChange} label="租借者姓名" id="borrower" margin="none" required>
+            <TextField onChange={borrowerNameChange} label="租借者姓名" id="borrower" margin="none" fullWidth required>
             </TextField>
           </Grid>
           <Grid item xs={6}>
@@ -329,7 +331,7 @@ const InputForm = () => {
         </Grid>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
-        <ListGroupMemo itemsMap={itemsMap}/> 
+        <ListGroupMemo itemsMap={itemsMap} removeItem={removeItem}/> 
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>
