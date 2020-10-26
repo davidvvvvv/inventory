@@ -58,17 +58,23 @@ const InputForm = () => {
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
-  const [itemsList, _setItemList] = useState([]);
-
   const [readTag,writeTag]=nfc_react();
 
+  const [itemsList, _setItemList] = useState([]);
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
     _itemsList.current = data;
     _setItemList(data);
   };
 
-  const [itemsMap,setItemsMap]=useState(new Map());
+  const [itemsMap,_setItemsMap]=useState(new Map());
+  const _itemsMap = useRef(itemsMap);
+  const setItemsMap = data => {
+    _itemsMap.current= data;
+    //_setItemsMap(data);
+    _setItemsMap(new Map(itemsMap.set(data)));
+  }
+
 
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessageVisible, setErrorMessageVisible] = useState(false);
@@ -107,7 +113,7 @@ const InputForm = () => {
     // old array code   const tempList = [..._itemsList.current,tempObject];
     // old array code   setItemList(tempList);
     setItemsMap(new Map(itemsMap.set(tempArray[0],tempObject)));                        
-    console.log(itemsMap);
+    //console.log(itemsMap);
 
     /*
     checkItemNotReturn(tempArray[0]).then(result => {
