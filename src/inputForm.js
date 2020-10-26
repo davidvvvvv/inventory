@@ -3,8 +3,9 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
 import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
-import { readTag } from "./nfc";
+//import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
+import nfc_react from "./nfc_react";
 //import Location from "./_inputLocation";
 //import InputType from "./inputType";
 
@@ -59,13 +60,13 @@ const InputForm = () => {
   const [activeItem, setActiveItem] = useState("");
   const [itemsList, _setItemList] = useState([]);
 
+  const [readTag,writeTag]=nfc_react();
+
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
     _itemsList.current = data;
     _setItemList(data);
   };
-
-  const ListGroupMemo=React.memo(ListGroup);
 
   const [itemsMap,setItemsMap]=useState(new Map());
 
@@ -89,7 +90,7 @@ const InputForm = () => {
   */
 
   const removeItem =key =>{
-    itemsMap.delete(key);
+    if (itemsMap.delete(key)) setItemsMap(new Map(itemsMap));
   }
 
   const addItem = (dataString) => {
@@ -107,6 +108,7 @@ const InputForm = () => {
     // old array code   setItemList(tempList);
     setItemsMap(new Map(itemsMap.set(tempArray[0],tempObject)));                        
     console.log(itemsMap);
+
     /*
     checkItemNotReturn(tempArray[0]).then(result => {
       if (result) {
@@ -234,6 +236,7 @@ const InputForm = () => {
     if (itemInput && itemType) {
       //console.log(`${itemInput},${itemType}`);
       addItem(`${itemInput},${itemType}`);
+      //addItemCallBack(`${itemInput},${itemType}`);
     } else {
       setError("請輸入 租借物件編號 及 租借種類");
     }
@@ -331,7 +334,7 @@ const InputForm = () => {
         </Grid>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
-        <ListGroupMemo itemsMap={itemsMap} removeItem={removeItem}/> 
+        <ListGroup itemsMap={itemsMap} removeItem={removeItem}/> 
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>

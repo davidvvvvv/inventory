@@ -50,7 +50,15 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { numSelected,deleteSelected,removeItem } = props;
+    const { numSelected,selected,removeItem,deleteSelected } = props;
+
+    const deleteItem = () =>{
+        const items=[...selected.keys()];
+        items.forEach((item)=>{
+            removeItem(item);
+            deleteSelected(item);
+        })
+    }
 
     return (
         <Toolbar
@@ -82,7 +90,7 @@ const EnhancedTableToolbar = (props) => {
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton aria-label="delete" >
+                    <IconButton aria-label="delete" onClick={deleteItem} >
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
@@ -159,9 +167,7 @@ export default function ListGroup(props) {
     */
 
     const deleteSelected = (name)=>{
-        if (selected.delete(name)){
-            return setSelected(new Map(selected));
-        }
+        if (selected.delete(name)) setSelected(new Map(selected));
     }
 
     const handleClick = (event,name) => {
@@ -177,7 +183,7 @@ export default function ListGroup(props) {
 
     return (
         <div className={classes.root} >
-            <EnhancedTableToolbar numSelected={selected.size} deleteSelected={deleteSelected} removeItem={removeItem}/>
+            <EnhancedTableToolbar numSelected={selected.size} selected={selected} removeItem={removeItem} deleteSelected={deleteSelected}/>
             <TableContainer className={classes.container}>
                 <Table
                     className={classes.table}
