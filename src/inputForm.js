@@ -73,13 +73,11 @@ const InputForm = () => {
   const [itemsMap, setItemsMap] = useState(new Map());
   const _itemsMap = useRef(itemsMap);
   const refreshItemsMap = ()=>{
-    setItemsMap(new Map(itemsMap))
-    _itemsMap.current = itemsMap;
+    setItemsMap(new Map(_itemsMap.current))
   }
   const addItemsMap = (key, value) => {
     //_setItemsMap(data);
-    setItemsMap(new Map(itemsMap.set(key, value)));
-    _itemsMap.current = itemsMap;
+    setItemsMap(new Map(_itemsMap.current.set(key, value)));
   }
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -102,7 +100,7 @@ const InputForm = () => {
   */
 
   const removeItem = key => {
-    if (itemsMap.delete(key)) refreshItemsMap();
+    if (_itemsMap.current.delete(key)) refreshItemsMap();
   }
 
   const addItem = (dataString) => {
@@ -351,7 +349,7 @@ const InputForm = () => {
         <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>
+        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定1</Button>
       </div>
     </div>
   );
