@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '100%',
     display: 'flex',
     flexDirection: 'column',
-    
+
     //justifyContent:'space-between'
     //alignItems:'center',
   },
@@ -58,23 +58,29 @@ const InputForm = () => {
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
-  const [readTag,writeTag]=nfc_react();
+  const [readTag, writeTag] = nfc_react();
 
+  // old array code
+  /*
   const [itemsList, _setItemList] = useState([]);
   const _itemsList = useRef(itemsList);
   const setItemList = data => {
     _itemsList.current = data;
     _setItemList(data);
   };
+*/
 
-  const [itemsMap,_setItemsMap]=useState(new Map());
+  const [itemsMap, setItemsMap] = useState(new Map());
   const _itemsMap = useRef(itemsMap);
-  const setItemsMap = data => {
-    _itemsMap.current= data;
-    //_setItemsMap(data);
-    _setItemsMap(new Map(itemsMap.set(data)));
+  const refreshItemsMap = ()=>{
+    setItemsMap(new Map(itemsMap))
+    _itemsMap.current = itemsMap;
   }
-
+  const addItemsMap = (key, value) => {
+    //_setItemsMap(data);
+    setItemsMap(new Map(itemsMap.set(key, value)));
+    _itemsMap.current = itemsMap;
+  }
 
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessageVisible, setErrorMessageVisible] = useState(false);
@@ -95,8 +101,8 @@ const InputForm = () => {
   }
   */
 
-  const removeItem =key =>{
-    if (itemsMap.delete(key)) setItemsMap(new Map(itemsMap));
+  const removeItem = key => {
+    if (itemsMap.delete(key)) refreshItemsMap();
   }
 
   const addItem = (dataString) => {
@@ -112,7 +118,7 @@ const InputForm = () => {
     const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': '', 'dbRefNo': '' };
     // old array code   const tempList = [..._itemsList.current,tempObject];
     // old array code   setItemList(tempList);
-    setItemsMap(new Map(itemsMap.set(tempArray[0],tempObject)));                        
+    addItemsMap(tempArray[0], tempObject);
     //console.log(itemsMap);
 
     /*
@@ -131,7 +137,7 @@ const InputForm = () => {
     })*/
   }
 
-  const submit = () => {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+  const submit = () => {
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
@@ -167,26 +173,28 @@ const InputForm = () => {
   const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
 
 
-  const initObject = {borrowerName:"",location:"", itemType:"",
-  itemInput:"",selectBorrowDate:todayDate,predictReturnDate:todayDate}; 
+  const initObject = {
+    borrowerName: "", location: "", itemType: "",
+    itemInput: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
+  };
 
-  const [submitObject,setSubmitObject] = useState(initObject);
-  const {borrowerName,location,itemType,itemInput,selectBorrowDate,predictReturnDate}=submitObject;
+  const [submitObject, setSubmitObject] = useState(initObject);
+  const { borrowerName, location, itemType, itemInput, selectBorrowDate, predictReturnDate } = submitObject;
 
 
-/*
-  const [groupNo, setGroupNo] = useState("");
-  const [borrowerName, setBorrowerName] = useState("");
-  // const [locationOpen, setLocationOpen] = useState(false);
-  const [location, setLocation] = useState("");
-  //const [itemTypeOpen, setItemTypeOpen] = useState(false);
-  const [itemType, setItemType] = useState("");
-  const [itemInput, setItemInput] = useState("");
-  
-  const [selectBorrowDate, setSelectBorrowDate] = useState(todayDate);
-  const [predictReturnDate, setPredictReturnDate] = useState(todayDate);
-  //const { loading, error, data = [] } = useFetch('data.json',[]);
-  */
+  /*
+    const [groupNo, setGroupNo] = useState("");
+    const [borrowerName, setBorrowerName] = useState("");
+    // const [locationOpen, setLocationOpen] = useState(false);
+    const [location, setLocation] = useState("");
+    //const [itemTypeOpen, setItemTypeOpen] = useState(false);
+    const [itemType, setItemType] = useState("");
+    const [itemInput, setItemInput] = useState("");
+    
+    const [selectBorrowDate, setSelectBorrowDate] = useState(todayDate);
+    const [predictReturnDate, setPredictReturnDate] = useState(todayDate);
+    //const { loading, error, data = [] } = useFetch('data.json',[]);
+    */
 
   const [selectLocation, setSelectLocation] = useState([]);
   const [selectType, setSelectType] = useState([]);
@@ -197,7 +205,7 @@ const InputForm = () => {
     //setBorrowerName(value);
     setSubmitObject({
       ...submitObject,
-      borrowerName:value,
+      borrowerName: value,
     })
   };
   /*
@@ -209,7 +217,7 @@ const InputForm = () => {
     //setLocation(event.target.value);
     setSubmitObject({
       ...submitObject,
-      location:event.target.value,
+      location: event.target.value,
     })
   };
   /*
@@ -222,7 +230,7 @@ const InputForm = () => {
     //setItemType(event.target.innerText || event.target.value)
     setSubmitObject({
       ...submitObject,
-      itemType:event.target.innerText || event.target.value,
+      itemType: event.target.innerText || event.target.value,
     })
   }
 
@@ -250,15 +258,15 @@ const InputForm = () => {
 
   const itemInputFunction = (event) => {
     //setItemInput(event.target.value);
-    setSubmitObject({...submitObject, itemInput:event.target.value});
+    setSubmitObject({ ...submitObject, itemInput: event.target.value });
   }
 
   return (
     <div className={classes.root}>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
 
-        <Snackbar open={errorMessageVisible} autoHideDuration={3000} onClose={()=>{setErrorMessageVisible(false)}}>
-          <SnackbarContent style={{ backgroundColor: 'orange', fontSize:'1rem' }} message={errorMessage} />
+        <Snackbar open={errorMessageVisible} autoHideDuration={3000} onClose={() => { setErrorMessageVisible(false) }}>
+          <SnackbarContent style={{ backgroundColor: 'orange', fontSize: '1rem' }} message={errorMessage} />
         </Snackbar>
 
         <Typography variant="h6" gutterBottom color="primary">
@@ -292,7 +300,7 @@ const InputForm = () => {
                 format="dd/MM/yyyy"
                 value={selectBorrowDate}
                 onChange={//setSelectBorrowDate
-                  (arg)=>setSubmitObject({...submitObject,selectBorrowDate:arg})
+                  (arg) => setSubmitObject({ ...submitObject, selectBorrowDate: arg })
                 }
               />
             </Grid>
@@ -306,7 +314,7 @@ const InputForm = () => {
                 disablePast
                 value={predictReturnDate}
                 onChange={//setPredictReturnDate
-                  (arg)=>setSubmitObject({...submitObject,predictReturnDate:arg})
+                  (arg) => setSubmitObject({ ...submitObject, predictReturnDate: arg })
                 }
               />
             </Grid>
@@ -319,7 +327,7 @@ const InputForm = () => {
             <Autocomplete
               id="itemType"
               freeSolo
-              options = {selectType} // {selectType.map((type) => type)}
+              options={selectType} // {selectType.map((type) => type)}
               onInputChange={itemTypeChange}
               renderInput={(params) => (
                 <TextField {...params} label="租借種類" margin="none" />
@@ -340,7 +348,7 @@ const InputForm = () => {
         </Grid>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
-        <ListGroup itemsMap={itemsMap} removeItem={removeItem}/> 
+        <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>
