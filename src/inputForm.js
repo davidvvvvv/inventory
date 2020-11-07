@@ -59,7 +59,7 @@ const InputForm = () => {
   const [itemUIValueCtl,setItemUIValueCtl]=useState(initItemUIValueObject);
 
   const [login, setLogin] = useContext(LoginContext);
-  const [activeItem, setActiveItem] = useState("");
+  //const [activeItem, setActiveItem] = useState("");
   const [readTag, writeTag] = nfc_react();
 
 
@@ -145,7 +145,7 @@ const InputForm = () => {
   }
 
   const logoutAllFunction = () => {
-    setActiveItem("logout");
+    //setActiveItem("logout");
     logoutAll();
     navigate("/");
   };
@@ -252,11 +252,15 @@ const InputForm = () => {
     if (itemInput && itemType) {
       //console.log(`${itemInput},${itemType}`);
       addItem(`${itemInput},${itemType}`);
-      setItemUIValueCtl({itemInput:"",itemType:""});
+      clearItemUIValue()
       //addItemCallBack(`${itemInput},${itemType}`);
     } else {
       setError("請輸入 租借物件編號 及 租借種類");
     }
+  }
+
+  const clearItemUIValue=()=>{
+    setItemUIValueCtl({itemInput:"",itemType:""});
   }
 
   const itemInputFunction = (event) => {
