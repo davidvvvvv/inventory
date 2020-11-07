@@ -55,10 +55,13 @@ const useStyles = makeStyles((theme) => ({
 
 const InputForm = () => {
   const todayString = getFormatToday();
+  const initItemUIValueObject={itemInput:"",itemType:""};
+  const [itemUIValueCtl,setItemUIValueCtl]=useState(initItemUIValueObject);
 
   const [login, setLogin] = useContext(LoginContext);
   const [activeItem, setActiveItem] = useState("");
   const [readTag, writeTag] = nfc_react();
+
 
   // old array code
   /*
@@ -224,12 +227,13 @@ const InputForm = () => {
     };
     */
 
-  const itemTypeChange = (event) => {
+  const itemTypeChange = (event,value) => {
     //setItemType(event.target.innerText || event.target.value)
     setSubmitObject({
       ...submitObject,
-      itemType: event.target.innerText || event.target.value,
+      itemType: value
     })
+    setItemUIValueCtl({...itemUIValueCtl,itemType:value});
   }
 
   useEffect(() => { initSelect() }, [fetchPath])
@@ -248,6 +252,7 @@ const InputForm = () => {
     if (itemInput && itemType) {
       //console.log(`${itemInput},${itemType}`);
       addItem(`${itemInput},${itemType}`);
+      setItemUIValueCtl({itemInput:"",itemType:""});
       //addItemCallBack(`${itemInput},${itemType}`);
     } else {
       setError("請輸入 租借物件編號 及 租借種類");
@@ -257,6 +262,7 @@ const InputForm = () => {
   const itemInputFunction = (event) => {
     //setItemInput(event.target.value);
     setSubmitObject({ ...submitObject, itemInput: event.target.value });
+    setItemUIValueCtl({...itemUIValueCtl,itemInput:event.target.value});
   }
 
   return (
@@ -318,15 +324,17 @@ const InputForm = () => {
             </Grid>
           </MuiPickersUtilsProvider>
           <Grid item xs={5}>
-            <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" fullWidth required>
+            <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemUIValueCtl.itemInput} fullWidth required>
             </TextField>
           </Grid>
           <Grid item xs={5}>
             <Autocomplete
+              value={itemUIValueCtl.itemType}
               id="itemType"
               freeSolo
               options={selectType} // {selectType.map((type) => type)}
-              onInputChange={itemTypeChange}
+              //onInputChange={itemTypeChange}
+              onChange={itemTypeChange}
               renderInput={(params) => (
                 <TextField {...params} label="租借種類" margin="none" />
               )}
@@ -349,7 +357,7 @@ const InputForm = () => {
         <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定1</Button>
+        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>
       </div>
     </div>
   );
