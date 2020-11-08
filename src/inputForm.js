@@ -57,6 +57,16 @@ const InputForm = () => {
   const todayString = getFormatToday();
   const initItemUIValueObject={itemInput:"",itemType:""};
   const [itemUIValueCtl,setItemUIValueCtl]=useState(initItemUIValueObject);
+  
+  const initObject = {
+    borrowerName: "", location: "", itemType: "",
+    itemInput: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
+  };
+
+  const [submitObject, setSubmitObject] = useState(initObject);
+  const { borrowerName, location, itemType, itemInput, selectBorrowDate, predictReturnDate } = submitObject;
+
+  const initDataValueObject={}
 
   const [login, setLogin] = useContext(LoginContext);
   //const [activeItem, setActiveItem] = useState("");
@@ -139,6 +149,7 @@ const InputForm = () => {
   }
 
   const submit = () => {
+    console.log("abc");
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
@@ -173,14 +184,6 @@ const InputForm = () => {
   const classes = useStyles();
   const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
 
-
-  const initObject = {
-    borrowerName: "", location: "", itemType: "",
-    itemInput: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
-  };
-
-  const [submitObject, setSubmitObject] = useState(initObject);
-  const { borrowerName, location, itemType, itemInput, selectBorrowDate, predictReturnDate } = submitObject;
 
 
   /*
@@ -361,7 +364,7 @@ const InputForm = () => {
         <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button variant="contained" color="primary" className={classes.submitButton} type="submit">確定</Button>
+        <Button variant="contained" color="primary" className={classes.submitButton} type="submit" onClick={submit}>確定</Button>
       </div>
     </div>
   );
