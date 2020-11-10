@@ -55,23 +55,26 @@ const useStyles = makeStyles((theme) => ({
 
 const InputForm = () => {
   const todayString = getFormatToday();
-  const initItemUIValueObject={itemInput:"",itemType:""};
-  const [itemUIValueCtl,setItemUIValueCtl]=useState(initItemUIValueObject);
-  
+  const initItemUIValueObject = { itemInput: "", itemType: "" };
+  const [itemUIValueCtl, setItemUIValueCtl] = useState(initItemUIValueObject);
+  const { itemInput, itemType } = itemUIValueCtl;
+  const classes = useStyles();
+  const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+
   const initObject = {
-    borrowerName: "", location: "", itemType: "",
-    itemInput: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
+    borrowerName: "", location: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
   };
 
   const [submitObject, setSubmitObject] = useState(initObject);
-  const { borrowerName, location, itemType, itemInput, selectBorrowDate, predictReturnDate } = submitObject;
+  const { borrowerName, location, selectBorrowDate, predictReturnDate } = submitObject;
 
-  const initDataValueObject={}
+  const initDataValueObject = {};
 
   const [login, setLogin] = useContext(LoginContext);
   //const [activeItem, setActiveItem] = useState("");
   const [readTag, writeTag] = nfc_react();
 
+  if (login == null) navigate("/");
 
   // old array code
   /*
@@ -85,8 +88,8 @@ const InputForm = () => {
 
   const [itemsMap, setItemsMap] = useState(new Map());
   const _itemsMap = useRef(itemsMap);
-  const refreshItemsMap = ()=>{
-    setItemsMap(new Map(_itemsMap.current))
+  const refreshItemsMap = () => {
+    setItemsMap(new Map(_itemsMap.current));
   }
   const addItemsMap = (key, value) => {
     //_setItemsMap(data);
@@ -149,10 +152,22 @@ const InputForm = () => {
   }
 
   const submit = () => {
-    console.log("abc");
+    if (itemsMap.size > 0) {
+      addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError);
+      //resetSubmitObject();
+      //clearItemUIValue();
+    }else{
+      setError("😫 錯誤 : 請輸入適當資料");
+    }
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
+
+  }
+
+  const resetSubmitObject = () => {
+    //borrowerName: "", location: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
+    setSubmitObject(initObject)
   }
 
   const logoutAllFunction = () => {
@@ -160,9 +175,6 @@ const InputForm = () => {
     logoutAll();
     navigate("/");
   };
-
-  if (login == null) navigate("/");
-
   useEffect(() => {
     console.log("inputForm_useEffect");
     readTag(setError, addItem);
@@ -181,8 +193,6 @@ const InputForm = () => {
   }, [nfcMessageVisible, nfcMessage]);
 */
 
-  const classes = useStyles();
-  const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
 
 
 
@@ -205,11 +215,11 @@ const InputForm = () => {
   const { get, post, response, loading, error } = useFetch('.')
   const [fetchPath, setFetchPath] = useState('/data.json');
 
-  const borrowerNameChange = (event, value) => {
+  const borrowerNameChange = (event) => {
     //setBorrowerName(value);
     setSubmitObject({
       ...submitObject,
-      borrowerName: value,
+      borrowerName: event.target.value,
     })
   };
   /*
@@ -219,10 +229,9 @@ const InputForm = () => {
     */
   const locationChange = (event) => {
     //setLocation(event.target.value);
-    setSubmitObject({
-      ...submitObject,
-      location: event.target.value,
-    })
+    if (event) {
+      setSubmitObject({ ...submitObject, location: event.target.innerText || event.target.value });
+    }
   };
   /*
     const itemTypeHandle = () => {
@@ -230,13 +239,10 @@ const InputForm = () => {
     };
     */
 
-  const itemTypeChange = (event,value) => {
-    //setItemType(event.target.innerText || event.target.value)
-    setSubmitObject({
-      ...submitObject,
-      itemType: value
-    })
-    setItemUIValueCtl({...itemUIValueCtl,itemType:value});
+  const itemTypeChange = (event) => {
+    if (event) {
+      setItemUIValueCtl({ ...itemUIValueCtl, itemType: event.target.innerText || event.target.value });
+    }
   }
 
   useEffect(() => { initSelect() }, [fetchPath])
@@ -255,21 +261,20 @@ const InputForm = () => {
     if (itemInput && itemType) {
       //console.log(`${itemInput},${itemType}`);
       addItem(`${itemInput},${itemType}`);
-      clearItemUIValue()
+      clearItemUIValue();
       //addItemCallBack(`${itemInput},${itemType}`);
     } else {
       setError("請輸入 租借物件編號 及 租借種類");
     }
   }
 
-  const clearItemUIValue=()=>{
-    setItemUIValueCtl({itemInput:"",itemType:""});
+  const clearItemUIValue = () => {
+    setItemUIValueCtl(initItemUIValueObject);
   }
 
   const itemInputFunction = (event) => {
     //setItemInput(event.target.value);
-    setSubmitObject({ ...submitObject, itemInput: event.target.value });
-    setItemUIValueCtl({...itemUIValueCtl,itemInput:event.target.value});
+    setItemUIValueCtl({ ...itemUIValueCtl, itemInput: event.target.value });
   }
 
   return (
@@ -286,15 +291,16 @@ const InputForm = () => {
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <TextField onChange={borrowerNameChange} label="租借者姓名" id="borrower" margin="none" fullWidth required>
+            <TextField onChange={borrowerNameChange} label="租借者姓名" id="borrower" margin="none" value={borrowerName} fullWidth required>
             </TextField>
           </Grid>
           <Grid item xs={6}>
             <Autocomplete
+              value={location}
               id="location"
               freeSolo
               options={selectLocation.map((sLocation) => sLocation)}
-              onInputChange={locationChange}
+              onChange={locationChange}
               renderInput={(params) => (
                 <TextField {...params} label="地點" />
               )}
@@ -331,17 +337,17 @@ const InputForm = () => {
             </Grid>
           </MuiPickersUtilsProvider>
           <Grid item xs={5}>
-            <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemUIValueCtl.itemInput} fullWidth required>
+            <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemInput} fullWidth required>
             </TextField>
           </Grid>
           <Grid item xs={5}>
             <Autocomplete
-              value={itemUIValueCtl.itemType}
+              value={itemType}
               id="itemType"
               freeSolo
               options={selectType} // {selectType.map((type) => type)}
-              //onInputChange={itemTypeChange}
-              onChange={itemTypeChange}
+              onInputChange={itemTypeChange}
+              //onChange={itemTypeChange}
               renderInput={(params) => (
                 <TextField {...params} label="租借種類" margin="none" />
               )}

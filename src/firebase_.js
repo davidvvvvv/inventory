@@ -72,10 +72,10 @@ export const getDBDoc = (col, doc) => {
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
 
-export const addRecord = (borrower, borrowDate, expectReturnDate, localion, itemList,setError) => {
+export const addRecord = (borrower,localion, borrowDate, expectReturnDate, itemsMap, setError) => {
  // const ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
   //console.log('auth.currentUser ',auth.currentUser);
-  itemList.forEach(element => {
+  itemsMap.forEach((element,key) => {
     if (element.dbRefNo) {
       const ref2 = firestore.collection('record').doc(element.dbRefNo);
       ref2.set({
@@ -88,15 +88,16 @@ export const addRecord = (borrower, borrowDate, expectReturnDate, localion, item
     firestore.collection('record').doc().set({
       created_at: firebase.firestore.FieldValue.serverTimestamp(),
       borrower,
+      localion,
       borrow_date: borrowDate,
       expect_return_date: expectReturnDate,
-      localion,
       item_type: element.type,
       item: element.refno,
       return_date: new Date("9999/01/01"),
       user: auth.currentUser.email
     }).then(() => {
       console.log('addRecord successful');
+
     }).catch(error => {
       console.log("addRecord_error", error.message);
       setError("😫 錯誤 : error.message");
