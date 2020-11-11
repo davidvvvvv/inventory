@@ -15,6 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
+  console.log("firebase_initializeApp");
 }
 
 export const auth = firebase.auth();
@@ -72,7 +73,7 @@ export const getDBDoc = (col, doc) => {
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
 
-export const addRecord = (borrower,localion, borrowDate, expectReturnDate, itemsMap, setError) => {
+export const addRecord = (borrower,localion, borrowDate, expectReturnDate, itemsMap, setError,resetAllInput) => {
  // const ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
   //console.log('auth.currentUser ',auth.currentUser);
   itemsMap.forEach((element,key) => {
@@ -97,7 +98,7 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
       user: auth.currentUser.email
     }).then(() => {
       console.log('addRecord successful');
-
+      resetAllInput();
     }).catch(error => {
       console.log("addRecord_error", error.message);
       setError("😫 錯誤 : error.message");

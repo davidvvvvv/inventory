@@ -153,16 +153,20 @@ const InputForm = () => {
 
   const submit = () => {
     if (itemsMap.size > 0) {
-      addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError);
-      //resetSubmitObject();
-      //clearItemUIValue();
-    }else{
+      addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError, resetAllInput);
+    } else {
       setError("😫 錯誤 : 請輸入適當資料");
     }
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
 
+  }
+
+  const resetAllInput = () => {
+    resetSubmitObject();
+    clearItemUIValue();
+    setItemsMap(new (Map));
   }
 
   const resetSubmitObject = () => {
