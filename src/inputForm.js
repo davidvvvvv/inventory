@@ -49,6 +49,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
     width: '100%'
+  },
+  inputGroupBg:{
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    backgroundColor: '#cfe8fc' ,
   }
 }));
 
@@ -135,24 +140,25 @@ const InputForm = () => {
     addItemsMap(tempArray[0], tempObject);
     //console.log(itemsMap);
 
-    /*
     checkItemNotReturn(tempArray[0]).then(result => {
       if (result) {
         const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
-        _itemsList.current.forEach(item => {
+        console.log(nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData);
+        _itemsMap.current.forEach(item => {
           if (item.refno == nonReturnItemRefno) {
-            item.desc = `應未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
+            item.desc = ` /未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
             item.dbRefNo = nonReturnDbRefNo;
           }
         })
-        const tempList = [..._itemsList.current];
-        setItemList(tempList);
+        //const tempList = [..._itemsList.current];
+        //setItemList(tempList);
+        refreshItemsMap();
       }
-    })*/
+    })
   }
 
   const submit = () => {
-    if (itemsMap.size > 0) {
+    if (itemsMap.size > 0 && borrowerName && location) {
       addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError, resetAllInput);
     } else {
       setError("😫 錯誤 : 請輸入適當資料");
@@ -160,7 +166,6 @@ const InputForm = () => {
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
-
   }
 
   const resetAllInput = () => {
@@ -197,9 +202,6 @@ const InputForm = () => {
   }, [nfcMessageVisible, nfcMessage]);
 */
 
-
-
-
   /*
     const [groupNo, setGroupNo] = useState("");
     const [borrowerName, setBorrowerName] = useState("");
@@ -216,7 +218,7 @@ const InputForm = () => {
 
   const [selectLocation, setSelectLocation] = useState([]);
   const [selectType, setSelectType] = useState([]);
-  const { get, post, response, loading, error } = useFetch('.')
+  const { get, post, response, loading, error } = useFetch('.');
   const [fetchPath, setFetchPath] = useState('/data.json');
 
   const borrowerNameChange = (event) => {
@@ -340,32 +342,34 @@ const InputForm = () => {
               />
             </Grid>
           </MuiPickersUtilsProvider>
-          <Grid item xs={5}>
-            <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemInput} fullWidth required>
-            </TextField>
-          </Grid>
-          <Grid item xs={5}>
-            <Autocomplete
-              value={itemType}
-              id="itemType"
-              freeSolo
-              options={selectType} // {selectType.map((type) => type)}
-              onInputChange={itemTypeChange}
-              //onChange={itemTypeChange}
-              renderInput={(params) => (
-                <TextField {...params} label="租借種類" margin="none" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <Grid container
-              direction="row"
-              justify="space-evenly"
-              alignItems="center"
-            >
-              <IconButton onClick={inputListFunction} color="primary" aria-label="plus">
-                <Archive fontSize="large" />
-              </IconButton>
+          <Grid container spacing={2} className={classes.inputGroupBg}>
+            <Grid item xs={5}>
+              <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemInput} fullWidth required>
+              </TextField>
+            </Grid>
+            <Grid item xs={5}>
+              <Autocomplete
+                value={itemType}
+                id="itemType"
+                freeSolo
+                options={selectType} // {selectType.map((type) => type)}
+                onInputChange={itemTypeChange}
+                //onChange={itemTypeChange}
+                renderInput={(params) => (
+                  <TextField {...params} label="租借種類" margin="none" />
+                )}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <Grid container
+                direction="row"
+                justify="space-evenly"
+                alignItems="center"
+              >
+                <IconButton onClick={inputListFunction} color="primary" aria-label="plus">
+                  <Archive fontSize="large" />
+                </IconButton>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
