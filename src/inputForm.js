@@ -2,15 +2,13 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 //import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
+import { logoutAll, addRecord } from "./lib/firebase_";
+import { getFormatToday, getFormatDate} from "./lib/dateFormat";
 //import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import nfc_react from "./nfc_react";
-//import Location from "./_inputLocation";
-//import InputType from "./inputType";
+import InputItemHook from "./inputItemHook"
 
-
-//import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -41,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '100%',
     display: 'flex',
     flexDirection: 'column',
-
     //justifyContent:'space-between'
     //alignItems:'center',
   },
@@ -60,12 +57,19 @@ const useStyles = makeStyles((theme) => ({
 
 const InputForm = () => {
   const todayString = getFormatToday();
-  const initItemUIValueObject = { itemInput: "", itemType: "" };
-  const [itemUIValueCtl, setItemUIValueCtl] = useState(initItemUIValueObject);
-  const { itemInput, itemType } = itemUIValueCtl;
-  const classes = useStyles();
   const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+  const initItemUIValueObject = { itemInput: ""};
+  const [itemUIValueCtl, setItemUIValueCtl] = useState(initItemUIValueObject);
+  const { itemInput } = itemUIValueCtl;
+  
 
+  const [selectLocation, setSelectLocation] = useState([]);
+  //const [selectType, setSelectType] = useState([]);
+  const { get, post, response, loading, error } = useFetch('.');
+  const [fetchPath, setFetchPath] = useState('/data.json');
+
+  const classes = useStyles();
+  
   const initObject = {
     borrowerName: "", location: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
   };
@@ -73,33 +77,11 @@ const InputForm = () => {
   const [submitObject, setSubmitObject] = useState(initObject);
   const { borrowerName, location, selectBorrowDate, predictReturnDate } = submitObject;
 
-  const initDataValueObject = {};
-
-  const [login, setLogin] = useContext(LoginContext);
   //const [activeItem, setActiveItem] = useState("");
   const [readTag, writeTag] = nfc_react();
 
+  const [login, setLogin] = useContext(LoginContext);
   if (login == null) navigate("/");
-
-  // old array code
-  /*
-  const [itemsList, _setItemList] = useState([]);
-  const _itemsList = useRef(itemsList);
-  const setItemList = data => {
-    _itemsList.current = data;
-    _setItemList(data);
-  };
-*/
-
-  const [itemsMap, setItemsMap] = useState(new Map());
-  const _itemsMap = useRef(itemsMap);
-  const refreshItemsMap = () => {
-    setItemsMap(new Map(_itemsMap.current));
-  }
-  const addItemsMap = (key, value) => {
-    //_setItemsMap(data);
-    setItemsMap(new Map(_itemsMap.current.set(key, value)));
-  }
 
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessageVisible, setErrorMessageVisible] = useState(false);
@@ -108,54 +90,7 @@ const InputForm = () => {
     setErrorMessage(message);
     setErrorMessageVisible(true);
   }, [])
-
-
-  // old array code
-  /*
-  const removeItem = index => {
-    itemsList.splice(index, 1);
-    const tempList = [...itemsList];
-    //_itemsList.current=tempList; 
-    setItemList(tempList);
-  }
-  */
-
-  const removeItem = key => {
-    if (_itemsMap.current.delete(key)) refreshItemsMap();
-  }
-
-  const addItem = (dataString) => {
-    //const decoder = new TextDecoder();
-    // for (const record of event.message.records) {
-    //setNfcMessage("Record type:  " + record.recordType);
-    //setNfcMessage("MIME type:    " + record.mediaType);
-    //setNfcMessage("=== data ===\n" + decoder.decode(record.data));
-    // }
-    //setNfcMessage('tempItemsList.length '+event.itemsList.length);
-    //const tempArray = decoder.decode(event.message.records[0].data).split(",");
-    const tempArray = dataString.split(",");
-    const tempObject = { 'refno': tempArray[0], 'type': tempArray[1], 'desc': '', 'dbRefNo': '' };
-    // old array code   const tempList = [..._itemsList.current,tempObject];
-    // old array code   setItemList(tempList);
-    addItemsMap(tempArray[0], tempObject);
-    //console.log(itemsMap);
-
-    checkItemNotReturn(tempArray[0]).then(result => {
-      if (result) {
-        const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
-        console.log(nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData);
-        _itemsMap.current.forEach(item => {
-          if (item.refno == nonReturnItemRefno) {
-            item.desc = ` /未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
-            item.dbRefNo = nonReturnDbRefNo;
-          }
-        })
-        //const tempList = [..._itemsList.current];
-        //setItemList(tempList);
-        refreshItemsMap();
-      }
-    })
-  }
+  const [addItem,removeItem,itemsMap] = InputItemHook(setError);
 
   const submit = () => {
     if (itemsMap.size > 0 && borrowerName && location) {
@@ -171,7 +106,7 @@ const InputForm = () => {
   const resetAllInput = () => {
     resetSubmitObject();
     clearItemUIValue();
-    setItemsMap(new (Map));
+    //*setItemsMap(new (Map));
   }
 
   const resetSubmitObject = () => {
@@ -189,38 +124,6 @@ const InputForm = () => {
     readTag(setError, addItem);
   }, []);
 
-  /*
-  useEffect(() => {
-    console.log("inputForm_useEffect2");
-    const messageTimeout = setTimeout(() => {
-      setErrorMessageVisible(false);
-    }, 3000)
-    return (() => {
-      console.log("InputForm_useEffect2_return");
-      clearTimeout(messageTimeout);
-    })
-  }, [nfcMessageVisible, nfcMessage]);
-*/
-
-  /*
-    const [groupNo, setGroupNo] = useState("");
-    const [borrowerName, setBorrowerName] = useState("");
-    // const [locationOpen, setLocationOpen] = useState(false);
-    const [location, setLocation] = useState("");
-    //const [itemTypeOpen, setItemTypeOpen] = useState(false);
-    const [itemType, setItemType] = useState("");
-    const [itemInput, setItemInput] = useState("");
-    
-    const [selectBorrowDate, setSelectBorrowDate] = useState(todayDate);
-    const [predictReturnDate, setPredictReturnDate] = useState(todayDate);
-    //const { loading, error, data = [] } = useFetch('data.json',[]);
-    */
-
-  const [selectLocation, setSelectLocation] = useState([]);
-  const [selectType, setSelectType] = useState([]);
-  const { get, post, response, loading, error } = useFetch('.');
-  const [fetchPath, setFetchPath] = useState('/data.json');
-
   const borrowerNameChange = (event) => {
     //setBorrowerName(value);
     setSubmitObject({
@@ -228,28 +131,13 @@ const InputForm = () => {
       borrowerName: event.target.value,
     })
   };
-  /*
-    const localtionHandle = () => {
-      setLocationOpen(!locationOpen);
-    };
-    */
+
   const locationChange = (event) => {
     //setLocation(event.target.value);
     if (event) {
       setSubmitObject({ ...submitObject, location: event.target.innerText || event.target.value });
     }
   };
-  /*
-    const itemTypeHandle = () => {
-      setItemTypeOpen(!itemTypeOpen);
-    };
-    */
-
-  const itemTypeChange = (event) => {
-    if (event) {
-      setItemUIValueCtl({ ...itemUIValueCtl, itemType: event.target.innerText || event.target.value });
-    }
-  }
 
   useEffect(() => { initSelect() }, [fetchPath])
 
@@ -258,22 +146,21 @@ const InputForm = () => {
     if (response.ok) {
       //console.log(initSelectData.groups);
       setSelectLocation(initSelectData.location);
-      setSelectType(initSelectData.type);
+      //setSelectType(initSelectData.type);
       //console.log("selectBorrowDate",selectBorrowDate);
     }
   }
 
   const inputListFunction = () => {
-    if (itemInput && itemType) {
+    if (itemInput) {
       //console.log(`${itemInput},${itemType}`);
-      addItem(`${itemInput},${itemType}`);
+      addItem(`${itemInput}`);
       clearItemUIValue();
       //addItemCallBack(`${itemInput},${itemType}`);
     } else {
-      setError("請輸入 租借物件編號 及 租借種類");
+      setError("請輸入 租借物件編號");
     }
   }
-
   const clearItemUIValue = () => {
     setItemUIValueCtl(initItemUIValueObject);
   }
@@ -343,22 +230,9 @@ const InputForm = () => {
             </Grid>
           </MuiPickersUtilsProvider>
           <Grid container spacing={2} className={classes.inputGroupBg}>
-            <Grid item xs={5}>
+            <Grid item xs={10}>
               <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemInput} fullWidth required>
               </TextField>
-            </Grid>
-            <Grid item xs={5}>
-              <Autocomplete
-                value={itemType}
-                id="itemType"
-                freeSolo
-                options={selectType} // {selectType.map((type) => type)}
-                onInputChange={itemTypeChange}
-                //onChange={itemTypeChange}
-                renderInput={(params) => (
-                  <TextField {...params} label="租借種類" margin="none" />
-                )}
-              />
             </Grid>
             <Grid item xs={2}>
               <Grid container
