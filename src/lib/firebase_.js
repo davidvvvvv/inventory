@@ -82,7 +82,8 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
       const ref2 = firestore.collection('record').doc(element.dbRefNo);
       ref2.set({
         return_date: new Date(getFormatToday()),
-        return_date_disapprove: true
+        return_date_disapprove: true,
+        is_return:true
       }, { merge: true }).then(() => {
         console.log('set new return_date successful');
       }).catch(error => console.log("addRecord_set new return_date_error", error.message));
@@ -95,7 +96,7 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
       expect_return_date: expectReturnDate,
       item_type: element.type,
       item: element.refno,
-      return_date: new Date("9999/01/01"),
+      is_return:false,
       user: auth.currentUser.email
     }).then(() => {
       console.log('addRecord successful');
@@ -110,9 +111,10 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
 export const checkItemNotReturn = item => {
   console.log('firebase_checkItemStatus');
   const ref = firestore.collection('record');
-  return ref.where('item', '==', item).where('return_date', '>', new Date("3000/01/01")).get()
+  //('is_return', '==', new Date("3000/01/01")
+  return ref.where('item', '==', item).where('is_return', '==',false).get()
     .then(querySnapshot => {
-      return querySnapshot.docs.length > 0 ? [querySnapshot.docs[0].id, item, querySnapshot.docs[0].data()] : false;
+      return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : false;
     });
 };
 

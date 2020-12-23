@@ -90,7 +90,7 @@ const InputForm = () => {
     setErrorMessage(message);
     setErrorMessageVisible(true);
   }, [])
-  const [addItem,removeItem,itemsMap] = InputItemHook(setError);
+  const [addItem,removeItem,resetItemsMap,itemsMap] = InputItemHook(setError);
 
   const submit = () => {
     if (itemsMap.size > 0 && borrowerName && location) {
@@ -106,7 +106,7 @@ const InputForm = () => {
   const resetAllInput = () => {
     resetSubmitObject();
     clearItemUIValue();
-    //*setItemsMap(new (Map));
+    resetItemsMap();
   }
 
   const resetSubmitObject = () => {

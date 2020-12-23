@@ -211,7 +211,7 @@ export default function ListGroup(props) {
                                         padding="none"
                                         multiline="true"
                                     >
-                                        {`${row.refno} ${row.desc} - ref: ${row.dbRefNo}`}
+                                        {`${row.refno} ${row.desc} ${row.dbRefNo}`}
                                     </TableCell>
                                     <TableCell align="right">{row.type}</TableCell>
                                 </TableRow>

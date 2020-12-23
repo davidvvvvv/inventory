@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import * as R from 'ramda';
 import { checkItemNotReturn, getType } from "./lib/firebase_";
 import { DataUsage } from '@material-ui/icons';
-import {getFormatDate} from './lib/dateFormat';
+import { getFormatDate } from './lib/dateFormat';
 
 
 const InputItemHook = (setError) => {
@@ -18,41 +18,35 @@ const InputItemHook = (setError) => {
   const removeItem = key => {
     if (_itemsMap.current.delete(key)) refreshItemsMap();
   }
+  const resetItemsMap = ()=> setItemsMap(new Map());
 
-  const createItemObject = (refno, type) => ({ 'refno': refno, 'type': type, 'desc': '', 'dbRefNo': '' });
-  const checkType = data => {
-    //console.log(`data1 ${data}`)
-    if (data) return data;
-    throw new Error("沒有產品資料");
-  }
-
-  const addItem =  async dataString => {
+  const addItem = async dataString => {
     try {
-      //createItemObject(dataString, checkType(await getType(dataString)));
+      const createItemObject = (refno, type) => ({ 'refno': refno, 'type': type, 'desc': '', 'dbRefNo': '' });
+      const checkType = data => {
+        if (data) return data;
+        throw new Error("沒有產品資料");
+      }
+      const filterFunction = item => item.refno === dataString;
+      const filterCurry = R.filter(filterFunction);
+      const foreachCurry = R.forEach(item => {
+        item.desc = ` /未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`;
+        item.dbRefNo = ` ** ${dbRecord.id}`;
+        console.log(dbRecord.id);
+      });
+
       addItemsMap(dataString, createItemObject(dataString, checkType(await getType(dataString))));
-      //console.log(itemsMap);
-      /*
-      checkItemNotReturn(dataString).then(result => {
-        if (result) {
-          const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
-          console.log(nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData);
-          _itemsMap.current.forEach(item => {
-            if (item.refno == nonReturnItemRefno) {
-              item.desc = ` /未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
-              item.dbRefNo = nonReturnDbRefNo;
-            }
-          })
-          //const tempList = [..._itemsList.current];
-          //setItemList(tempList);
-          refreshItemsMap();
-        }
-      })*/
+      const dbRecord = await checkItemNotReturn(dataString);
+      if (dbRecord) {
+        filterCurry(_itemsMap.current)
+        foreachCurry(_itemsMap.current);
+        refreshItemsMap();
+      }
     } catch (err) {
       setError(err.message);
     }
   }
-
-  return [addItem,removeItem,itemsMap]
+  return [addItem, removeItem,resetItemsMap, itemsMap]
 }
 //setItemsMap(new (Map));
 
