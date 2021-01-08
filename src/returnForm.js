@@ -60,12 +60,12 @@ const ReturnForm=()=> {
         </Snackbar>
 
         <Typography variant="h6" gutterBottom color="primary">
-          租借登記頁
+        歸還登記頁
         </Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <TextField label="租借者姓名" id="borrower" margin="none"  fullWidth required>
+            <TextField label="歸還者姓名" id="borrower" margin="none"  fullWidth required>
             </TextField>
           </Grid>
           
@@ -74,7 +74,7 @@ const ReturnForm=()=> {
               <DatePicker
                 autoOk
                 variant="dialog"
-                label="租借日期"
+                label="歸還日期"
                 fullWidth
                 disableFuture
                 format="dd/MM/yyyy"
@@ -85,9 +85,10 @@ const ReturnForm=()=> {
               />
             </Grid>
           </MuiPickersUtilsProvider>
+          
           <Grid container spacing={2} className={classes.inputGroupBg}>
             <Grid item xs={10}>
-              <TextField label="租借物件編號" id="rentItem" margin="none"  fullWidth required>
+              <TextField label="歸還物件編號" id="rentItem" margin="none"  fullWidth required>
               </TextField>
             </Grid>
             <Grid item xs={2}>
@@ -104,7 +105,9 @@ const ReturnForm=()=> {
           </Grid>
         </Grid>
       </div>
-     
+      <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
+        <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit" >確定</Button>
       </div>

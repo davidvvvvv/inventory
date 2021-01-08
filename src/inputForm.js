@@ -7,7 +7,7 @@ import { getFormatToday, getFormatDate} from "./lib/dateFormat";
 //import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import nfc_react from "./nfc_react";
-import InputItemHook from "./inputItemHook"
+import InputItemHook from "./inputItemHook";
 
 import DateFnsUtils from '@date-io/date-fns';
 import Grid from '@material-ui/core/Grid';
