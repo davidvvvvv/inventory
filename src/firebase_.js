@@ -111,6 +111,7 @@ export const checkItemNotReturn = item => {
   const ref = firestore.collection('record');
   return ref.where('item', '==', item).where('return_date', '>', new Date("3000/01/01")).get()
     .then(querySnapshot => {
+      
       return querySnapshot.docs.length > 0 ? [querySnapshot.docs[0].id, item, querySnapshot.docs[0].data()] : false;
     });
 };
