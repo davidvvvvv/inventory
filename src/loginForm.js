@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { LoginContext } from "./loginContext";
-import { loginWithGoogle, loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./firebase_";
+import { loginWithGoogle, loginWithGoogleRedirect, logoutAll, emailPwSignIn } from "./lib/firebase_";
 import { navigate } from "@reach/router";
 import {
   Button,

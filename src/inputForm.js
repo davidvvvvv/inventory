@@ -2,15 +2,13 @@ import React, { useState, useContext, useEffect, useMemo, useCallback, useRef } 
 //import SemanticDatepicker from "react-semantic-ui-datepickers";
 import { LoginContext } from "./loginContext";
 import { navigate } from "@reach/router";
-import { logoutAll, addRecord, checkItemNotReturn, getFormatToday, getFormatDate } from "./firebase_";
+import { logoutAll, addRecord } from "./lib/firebase_";
+import { getFormatToday, getFormatDate } from "./lib/dateFormat";
 //import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import nfc_react from "./nfc_react";
-//import Location from "./_inputLocation";
-//import InputType from "./inputType";
+import InputItemHook from "./inputItemHook";
 
-
-//import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -41,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '100%',
     display: 'flex',
     flexDirection: 'column',
-
     //justifyContent:'space-between'
     //alignItems:'center',
   },
@@ -50,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     width: '100%'
   },
-  inputGroupBg:{
+  inputGroupBg: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     backgroundColor: '#cfe8fc',
@@ -61,29 +58,25 @@ const InputForm = () => {
   const classes = useStyles();
   const [readTag, writeTag] = nfc_react();
   const todayString = getFormatToday();
-  const [login, setLogin] = useContext(LoginContext);
-  if (login == null) navigate("/");
-
+  const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
   const initItemUIValueObject = { itemInput: "" };
   const [itemUIValueCtl, setItemUIValueCtl] = useState(initItemUIValueObject);
   const { itemInput } = itemUIValueCtl;
-  
-  const todayDate = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
+
+
+  const [selectLocation, setSelectLocation] = useState([]);
+  //const [selectType, setSelectType] = useState([]);
+  const { get, post, response, loading, error } = useFetch('.');
+  const [fetchPath, setFetchPath] = useState('/data.json');
+
   const initObject = {
     borrowerName: "", location: "", selectBorrowDate: todayDate, predictReturnDate: todayDate
   };
   const [submitObject, setSubmitObject] = useState(initObject);
   const { borrowerName, location, selectBorrowDate, predictReturnDate } = submitObject;
 
-  const [itemsMap, setItemsMap] = useState(new Map());
-  const _itemsMap = useRef(itemsMap);
-  const refreshItemsMap = () => {
-    setItemsMap(new Map(_itemsMap.current));
-  }
-  const addItemsMap = (key, value) => {
-    //_setItemsMap(data);
-    setItemsMap(new Map(_itemsMap.current.set(key, value)));
-  }
+  const [login, setLogin] = useContext(LoginContext);
+  if (login == null) navigate("/");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessageVisible, setErrorMessageVisible] = useState(false);
@@ -92,30 +85,7 @@ const InputForm = () => {
     setErrorMessage(message);
     setErrorMessageVisible(true);
   }, [])
-
-
-  const removeItem = key => {
-    if (_itemsMap.current.delete(key)) refreshItemsMap();
-  }
-
-  const addItem = (itemRefNo) => {
-    const tempObject = { 'refno': itemRefNo, 'desc': '', 'dbRefNo': '' };
-    addItemsMap(itemRefNo, tempObject);
-    //console.log(itemsMap);
-    checkItemNotReturn(itemRefNo).then(result => {
-      if (result) {
-        const [nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData] = result;
-        console.log(nonReturnDbRefNo, nonReturnItemRefno, nonReturnItemData);
-        _itemsMap.current.forEach(item => {
-          if (item.refno == nonReturnItemRefno) {
-            item.desc = ` /未歸還: ${nonReturnItemData.borrower} (${getFormatDate(nonReturnItemData.borrow_date.toDate())})`;
-            item.dbRefNo = nonReturnDbRefNo;
-          }
-        })
-        refreshItemsMap();
-      }
-    })
-  }
+  const [addItem, removeItem, resetItemsMap, itemsMap] = InputItemHook(setError);
 
   const submit = () => {
     if (itemsMap.size > 0 && borrowerName && location) {
@@ -131,7 +101,7 @@ const InputForm = () => {
   const resetAllInput = () => {
     resetSubmitObject();
     clearItemUIValue();
-    setItemsMap(new (Map));
+    resetItemsMap();
   }
 
   const resetSubmitObject = () => {
@@ -149,11 +119,6 @@ const InputForm = () => {
     readTag(setError, addItem);
   }, []);
 
-  const [selectLocation, setSelectLocation] = useState([]);
-  const [selectType, setSelectType] = useState([]);
-  const { get, post, response, loading, error } = useFetch('.');
-  const [fetchPath, setFetchPath] = useState('/data.json');
-
   const borrowerNameChange = (event) => {
     setSubmitObject({
       ...submitObject,
@@ -169,27 +134,26 @@ const InputForm = () => {
 
   useEffect(() => { initSelect() }, [fetchPath])
 
-  const initSelect= async ()=> {
+  const initSelect = async () => {
     const initSelectData = await get(fetchPath);
     if (response.ok) {
       //console.log(initSelectData.groups);
       setSelectLocation(initSelectData.location);
-      setSelectType(initSelectData.type);
+      //setSelectType(initSelectData.type);
       //console.log("selectBorrowDate",selectBorrowDate);
     }
   }
 
   const inputListFunction = () => {
     if (itemInput) {
-      //console.log(`${itemInput}`);
+      //console.log(`${itemInput},${itemType}`);
       addItem(`${itemInput}`);
       clearItemUIValue();
       //addItemCallBack(`${itemInput}`);
     } else {
-      setError("請輸入 租借物件編號 及 租借種類");
+      setError("請輸入 租借物件編號");
     }
   }
-
   const clearItemUIValue = () => {
     setItemUIValueCtl(initItemUIValueObject);
   }
@@ -258,6 +222,7 @@ const InputForm = () => {
               />
             </Grid>
           </MuiPickersUtilsProvider>
+          <Grid container spacing={2} className={classes.inputGroupBg}>
             <Grid item xs={10}>
               <TextField onChange={itemInputFunction} label="租借物件編號" id="rentItem" margin="none" value={itemInput} fullWidth required>
               </TextField>
@@ -273,14 +238,16 @@ const InputForm = () => {
                 </IconButton>
               </Grid>
             </Grid>
+          </Grid>
         </Grid>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
-        <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Button variant="contained" color="primary" className={classes.submitButton} type="submit" onClick={submit}>確定</Button>
-      </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
+          <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <Button variant="contained" color="primary" className={classes.submitButton} type="submit" onClick={submit}>確定</Button>
+        </div>
+      
     </div>
   );
 };

@@ -7,12 +7,14 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Toolbar from "@material-ui/core/Toolbar";
-import InputForm from "./inputForm";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/Grid";
 import AccountBox from '@material-ui/icons/AccountBox';
+
+import InputForm from "./inputForm";
+import ReturnForm from "./returnForm";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -77,7 +79,7 @@ export default function SwitchPage() {
                         aria-label="Tabs"
                     >
                         <Tab label="租借登記頁" {...a11yProps(0)} />
-                        <Tab label="Item Two" {...a11yProps(1)} />
+                        <Tab label="歸還登記頁" {...a11yProps(1)} />
                         <Tab label="Item Three" {...a11yProps(2)} />
                     </Tabs>
                     <IconButton aria-label="account">
@@ -89,8 +91,8 @@ export default function SwitchPage() {
                 <InputForm />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                Item Two
-      </TabPanel>
+                <ReturnForm />
+            </TabPanel>
             <TabPanel value={value} index={2}>
                 Item Three
       </TabPanel>

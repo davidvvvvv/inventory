@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import {getFormatToday} from './dateFormat'; 
 
 const firebaseConfig = {
   apiKey: "AIzaSyCT72ac9bDKa7miAtozx-erO2CLmdFnXEM",
@@ -81,7 +82,8 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
       const ref2 = firestore.collection('record').doc(element.dbRefNo);
       ref2.set({
         return_date: new Date(getFormatToday()),
-        return_date_disapprove: true
+        return_date_disapprove: true,
+        is_return:true
       }, { merge: true }).then(() => {
         console.log('set new return_date successful');
       }).catch(error => console.log("addRecord_set new return_date_error", error.message));
@@ -94,7 +96,7 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
       expect_return_date: expectReturnDate,
       item_type: element.type,
       item: element.refno,
-      return_date: new Date("9999/01/01"),
+      is_return:false,
       user: auth.currentUser.email
     }).then(() => {
       console.log('addRecord successful');
@@ -109,27 +111,22 @@ export const addRecord = (borrower,localion, borrowDate, expectReturnDate, items
 export const checkItemNotReturn = item => {
   console.log('firebase_checkItemStatus');
   const ref = firestore.collection('record');
-  return ref.where('item', '==', item).where('return_date', '>', new Date("3000/01/01")).get()
+  //('is_return', '==', new Date("3000/01/01")
+  return ref.where('item', '==', item).where('is_return', '==',false).get()
     .then(querySnapshot => {
-      
-      return querySnapshot.docs.length > 0 ? [querySnapshot.docs[0].id, item, querySnapshot.docs[0].data()] : false;
+      return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : false;
     });
 };
 
-export const getFormatDate = (date) => {
-  const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date)
-  const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date)
-  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date)
-  return `${ye}/${mo}/${da}`;
+export const getType = async refNo => {
+    const ref = firestore.collection('items');
+    const querySnapshot=await ref.where('ref','==',refNo).get();
+    return querySnapshot.docs.length > 0 ? querySnapshot.docs[0].data().type : undefined;
 }
 
-export const getFormatToday = () => {
-  const today = new Date(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
-  const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today)
-  const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today)
-  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
-  return `${ye}/${mo}/${da}`;
-}
+
+
+
 
 /*export const addRecord = async (username,borrowDate,expectReturnDate,location,itemArray,)
 
