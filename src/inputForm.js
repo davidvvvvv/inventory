@@ -88,6 +88,7 @@ const InputForm = () => {
   const [addItem, removeItem, resetItemsMap, itemsMap] = InputItemHook(setError);
 
   const submit = () => {
+    try{
     if (itemsMap.size > 0 && borrowerName && location) {
       addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError, resetAllInput);
     } else {
@@ -96,6 +97,9 @@ const InputForm = () => {
     //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
     //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
     // }
+  }catch(err){
+    setError(err.message);
+  }
   }
 
   const resetAllInput = () => {

@@ -18,35 +18,23 @@ const InputItemHook = (setError) => {
   const removeItem = key => {
     if (_itemsMap.current.delete(key)) refreshItemsMap();
   }
-  const resetItemsMap = ()=> setItemsMap(new Map());
+  const resetItemsMap = () => setItemsMap(new Map());
+  const createItemObject = (refno, type, desc = '', dbRefNo = '', returned = true) => ({ refno, type, desc, dbRefNo, returned });
+  const checkType = data => {
+    if (data) return data;
+    throw new Error("沒有產品資料");
+  }
 
   const addItem = async dataString => {
     try {
-      const createItemObject = (refno, type) => ({ 'refno': refno, 'type': type, 'desc': '', 'dbRefNo': '' });
-      const checkType = data => {
-        if (data) return data;
-        throw new Error("沒有產品資料");
-      }
-      const filterFunction = item => item.refno === dataString;
-      const filterCurry = R.filter(filterFunction);
-      const foreachCurry = R.forEach(item => {
-        item.desc = ` /未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`;
-        item.dbRefNo = ` ** ${dbRecord.id}`;
-        console.log(dbRecord.id);
-      });
+      const [desc, dbRefNo, returned = true] = await checkItemNotReturn(dataString);
+      addItemsMap(dataString, createItemObject(dataString, checkType(await getType(dataString)), desc, dbRefNo, returned));
 
-      addItemsMap(dataString, createItemObject(dataString, checkType(await getType(dataString))));
-      const dbRecord = await checkItemNotReturn(dataString);
-      if (dbRecord) {
-        filterCurry(_itemsMap.current)
-        foreachCurry(_itemsMap.current);
-        refreshItemsMap();
-      }
     } catch (err) {
       setError(err.message);
     }
   }
-  return [addItem, removeItem,resetItemsMap, itemsMap]
+  return [addItem, removeItem, resetItemsMap, itemsMap]
 }
 //setItemsMap(new (Map));
 
