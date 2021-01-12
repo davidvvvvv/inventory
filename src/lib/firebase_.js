@@ -1,8 +1,10 @@
+import { ErrorTwoTone } from "@material-ui/icons";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import { getFormatToday, getFormatDate } from './dateFormat';
 
+const dbRecords = "records";
 const firebaseConfig = {
   apiKey: "AIzaSyCT72ac9bDKa7miAtozx-erO2CLmdFnXEM",
   authDomain: "mytesting-c9489.firebaseapp.com",
@@ -109,38 +111,43 @@ export const addRecord = (borrower, localion, borrowDate, expectReturnDate, item
   });
   */
   itemsMap.forEach(async (element, key) => {
-    const docRef = await firestore.collection('record').doc().set({
-      created_at: firebase.firestore.FieldValue.serverTimestamp(),
-      borrower,
-      localion,
-      borrow_date: borrowDate,
-      expect_return_date: expectReturnDate,
-      item_type: element.type,
-      item: element.refno,
-      is_return: false,
-      user: auth.currentUser.email
-    });
-    resetAllInput();
-    if (!element.returned) {
-      await firestore.collection('record').doc(element.dbRefNo).set({
-        return_date: new Date(getFormatToday()),
-        noReturn_next_id: docRef,
-        is_return: true
-      }, { merge: true });
+    try {
+      const docRef = firestore.collection(dbRecords).doc();
+      await docRef.set({
+        created_at: firebase.firestore.FieldValue.serverTimestamp(),
+        borrower,
+        localion,
+        borrow_date: borrowDate,
+        expect_return_date: expectReturnDate,
+        item_type: element.type,
+        item: element.refno,
+        is_return: false,
+        user: auth.currentUser.email
+      });
+      resetAllInput();
+      if (!element.returned) {
+        await firestore.collection(dbRecords).doc(element.dbRefNo).set({
+          return_date: new Date(getFormatToday()),
+          noReturn_next_id: docRef.id,
+          is_return: true
+        }, { merge: true });
+      }
+    } catch (err) {
+      setError(`錯誤 : ${err.message}`);
     }
   });
 }
 
 export const checkItemNotReturn = item => {
   console.log('firebase_checkItemStatus');
-  const ref = firestore.collection('record');
+  const ref = firestore.collection(dbRecords);
   //('is_return', '==', new Date("3000/01/01")
   return ref.where('item', '==', item).where('is_return', '==', false).get()
     .then(querySnapshot => {
       return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : false;
     })
     .then(dbRecord => {
-      return dbRecord ? [` /應尚未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`, ` ** ${dbRecord.id}`, false] : ['', '', true]
+      return dbRecord ? [` /應尚未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`, `${dbRecord.id}`, false] : ['', '', true]
     })
 };
 

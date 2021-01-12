@@ -14,7 +14,7 @@ const InputItemHook = (setError) => {
   const addItemsMap = (key, value) => {
     _itemsMap.current.set(key, value);
     refreshItemsMap()
-  }
+  }n
   const removeItem = key => {
     if (_itemsMap.current.delete(key)) refreshItemsMap();
   }

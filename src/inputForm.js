@@ -88,18 +88,18 @@ const InputForm = () => {
   const [addItem, removeItem, resetItemsMap, itemsMap] = InputItemHook(setError);
 
   const submit = () => {
-    try{
-    if (itemsMap.size > 0 && borrowerName && location) {
-      addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError, resetAllInput);
-    } else {
-      setError("😫 錯誤 : 請輸入適當資料");
+    try {
+      if (itemsMap.size > 0 && borrowerName && location) {
+        addRecord(borrowerName, location, selectBorrowDate, predictReturnDate, itemsMap, setError, resetAllInput);
+      } else {
+        setError("😫 錯誤 : 請輸入適當資料");
+      }
+      //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
+      //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
+      // }
+    } catch (err) {
+      setError(err.message);
     }
-    //if (itemsList.length === 0) setError("😫 錯誤 : 請輸入租借物件");
-    //addRecord(borrowerName, new Date(rentDate), new Date(expectReturnDate), location, itemsList, setError)
-    // }
-  }catch(err){
-    setError(err.message);
-  }
   }
 
   const resetAllInput = () => {
@@ -244,14 +244,14 @@ const InputForm = () => {
             </Grid>
           </Grid>
         </Grid>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
-          <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Button variant="contained" color="primary" className={classes.submitButton} type="submit" onClick={submit}>確定</Button>
-        </div>
-      
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: '1' }}>
+        <ListGroup itemsMap={itemsMap} removeItem={removeItem} />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Button variant="contained" color="primary" className={classes.submitButton} type="submit" onClick={submit}>確定</Button>
+      </div>
+
     </div>
   );
 };
