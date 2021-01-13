@@ -125,15 +125,25 @@ export const addRecord = (borrower, localion, borrowDate, expectReturnDate, item
         user: auth.currentUser.email
       });
       resetAllInput();
-      if (!element.returned) {
-        await firestore.collection(dbRecords).doc(element.dbRefNo).set({
-          return_date: new Date(getFormatToday()),
-          noReturn_next_id: docRef.id,
-          is_return: true
-        }, { merge: true });
+      try {
+        if (!element.returned) {
+          const oldDocRef = firestore.collection(dbRecords).doc(element.dbRefNo);
+          await oldDocRef.set({
+            return_date: new Date(getFormatToday()),
+            noReturn_next_id: docRef.id,
+            is_return: true
+          }, { merge: true });
+        }
+      } catch (oldDocRefErr) {
+        try {
+          firestore.collection(dbRecords).doc(docRef.id).delete();
+        } catch (deleteNewDBRecordErr) {
+          setError(`刪除資料庫紀錄錯誤 : ${docRef.id} - ${deleteNewDBRecordErr.message}`);
+        }
+        setError(`資料庫更新舊紀錄錯誤 : ${element.refno} - ${oldDocRefErr.message}`);
       }
-    } catch (err) {
-      setError(`錯誤 : ${err.message}`);
+    } catch (newDocRefErr) {
+      setError(`資料庫輸入錯誤 : ${element.refno} - ${newDocRefErr.message}`);
     }
   });
 }
