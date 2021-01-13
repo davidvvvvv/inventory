@@ -63,7 +63,6 @@ const InputForm = () => {
   const [itemUIValueCtl, setItemUIValueCtl] = useState(initItemUIValueObject);
   const { itemInput } = itemUIValueCtl;
 
-
   const [selectLocation, setSelectLocation] = useState([]);
   //const [selectType, setSelectType] = useState([]);
   const { get, post, response, loading, error } = useFetch('.');
