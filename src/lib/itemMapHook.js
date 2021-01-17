@@ -36,7 +36,7 @@ const checkType = data => {
 export const createInputItemObject = async dataString => {
   const createItemObject = (refno, type, itemStatus) => ({refno , type , desc:itemStatus.desc, dbRefNo:itemStatus.dbRefNo, returned:itemStatus.returned});
   const itemStatus = await checkItemNotReturn(dataString);
-  createItemObject(dataString, checkType(await getType(dataString)), itemStatus);
+  return createItemObject(dataString, checkType(await getType(dataString)), itemStatus);
 }
 
 export default ItemMapHook;
