@@ -16,10 +16,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-}
-
 const useToolbarStyles = makeStyles((theme) => ({
     root: {
         paddingLeft: theme.spacing(2),
@@ -42,13 +38,13 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { numSelected,selected,removeItem,deleteSelected } = props;
+    const { numSelected,selected,removeItem,cancelSelected } = props;
 
     const deleteItem = () =>{
         const items=[...selected.keys()];
         items.forEach((item)=>{
             removeItem(item);
-            deleteSelected(item);
+            cancelSelected(item);
         })
     }
 
@@ -158,12 +154,12 @@ export default function ListGroup(props) {
     };
     */
 
-    const deleteSelected = (name)=>{
+    const cancelSelected = (name)=>{
         if (selected.delete(name)) setSelected(new Map(selected));
     }
 
     const handleClick = (event,name) => {
-        selected.has(name) ? deleteSelected(name) : setSelected(new Map(selected.set(name)));
+        selected.has(name) ? cancelSelected(name) : setSelected(new Map(selected.set(name)));
     }
 
     const handleChangeDense = (event) => {
@@ -175,7 +171,7 @@ export default function ListGroup(props) {
 
     return (
         <div className={classes.root} >
-            <EnhancedTableToolbar numSelected={selected.size} selected={selected} removeItem={removeItem} deleteSelected={deleteSelected}/>
+            <EnhancedTableToolbar numSelected={selected.size} selected={selected} removeItem={removeItem} cancelSelected={cancelSelected}/>
             <TableContainer className={classes.container}>
                 <Table
                     className={classes.table}

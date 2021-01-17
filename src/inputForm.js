@@ -7,7 +7,7 @@ import { getFormatToday, getFormatDate } from "./lib/dateFormat";
 //import { readTag } from "./nfc";
 import ListGroup from "./listgroup";
 import nfc_react from "./nfc_react";
-import InputItemHook from "./inputItemHook";
+import itemMapHook,{createInputItemObject} from "./lib/itemMapHook";
 
 import DateFnsUtils from '@date-io/date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -63,6 +63,7 @@ const InputForm = () => {
   const [itemUIValueCtl, setItemUIValueCtl] = useState(initItemUIValueObject);
   const { itemInput } = itemUIValueCtl;
 
+
   const [selectLocation, setSelectLocation] = useState([]);
   //const [selectType, setSelectType] = useState([]);
   const { get, post, response, loading, error } = useFetch('.');
@@ -84,7 +85,8 @@ const InputForm = () => {
     setErrorMessage(message);
     setErrorMessageVisible(true);
   }, [])
-  const [addItem, removeItem, resetItemsMap, itemsMap] = InputItemHook(setError);
+
+  const [addItem, removeItem, resetItemsMap, itemsMap] = itemMapHook(setError);
 
   const submit = () => {
     try {
@@ -119,7 +121,7 @@ const InputForm = () => {
   };
   useEffect(() => {
     console.log("inputForm_useEffect");
-    readTag(setError, addItem);
+    readTag(setError, addItem,createInputItemObject);
   }, []);
 
   const borrowerNameChange = (event) => {
@@ -150,7 +152,7 @@ const InputForm = () => {
   const inputListFunction = () => {
     if (itemInput) {
       //console.log(`${itemInput},${itemType}`);
-      addItem(`${itemInput}`);
+      addItem(`${itemInput}`,createInputItemObject);
       clearItemUIValue();
       //addItemCallBack(`${itemInput}`);
     } else {

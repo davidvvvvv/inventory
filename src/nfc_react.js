@@ -1,7 +1,7 @@
 import React from 'react';
 
 const nfc_react = () => {
-    const readTag = (setMessage, addItem) => {
+    const readTag = (setMessage, addItem,createInputItemObject) => {
         if ("NDEFReader" in window) {
             /*global NDEFReader*/
             const reader = new NDEFReader();
@@ -9,7 +9,7 @@ const nfc_react = () => {
                 reader.scan();
                 const decoder = new TextDecoder();
                 reader.onreading = event => {
-                    addItem(decoder.decode(event.message.records[0].data));
+                    addItem(decoder.decode(event.message.records[0].data),createInputItemObject);
                 }
             } catch (error) {
                 setMessage(error.message);

@@ -157,7 +157,19 @@ export const checkItemNotReturn = item => {
       return querySnapshot.docs.length > 0 ? querySnapshot.docs[0] : false;
     })
     .then(dbRecord => {
-      return dbRecord ? [` /應尚未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`, `${dbRecord.id}`, false] : ['', '', true]
+      // return dbRecord ? [` /應尚未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`, `${dbRecord.id}`, false] : ['', '', true]
+      return dbRecord ?
+        {
+          desc: ` /應尚未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`,
+          dbRefNo : `${dbRecord.id}`,
+          returned : true
+        }
+        :
+        {
+          desc: '',
+          dbRefNo : '',
+          returned : false
+        }
     })
 };
 
