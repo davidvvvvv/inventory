@@ -38,30 +38,30 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { numSelected,selected,removeItem,cancelSelected } = props;
+    const { selected, removeItem } = props;
+    const items = [...selected.keys()];
 
-    const deleteItem = () =>{
-        const items=[...selected.keys()];
-        items.forEach((item)=>{
+    const deleteItem = () => {
+        items.forEach((item) => {
             removeItem(item);
-            cancelSelected(item);
+            selected.cancelSelected(item);
         })
     }
 
     return (
         <Toolbar
             className={clsx(classes.root, {
-                [classes.highlight]: numSelected > 0
+                [classes.highlight]: selected.numSelected > 0
             })}
         >
-            {numSelected > 0 ? (
+            {selected.numSelected > 0 ? (
                 <Typography
                     className={classes.title}
                     color="inherit"
                     variant="subtitle1"
                     component="div"
                 >
-                    {numSelected} selected
+                    {selected.numSelected} selected
                 </Typography>
             ) : (
                     <Typography
@@ -72,11 +72,11 @@ const EnhancedTableToolbar = (props) => {
                         align="center"
                         color="primary"
                     >
-                    租借物品表
+                        租借物品表
                     </Typography>
                 )}
 
-            {numSelected > 0 ? (
+            {selected.numSelected > 0 ? (
                 <Tooltip title="Delete">
                     <IconButton aria-label="delete" onClick={deleteItem} >
                         <DeleteIcon />
@@ -93,15 +93,17 @@ const EnhancedTableToolbar = (props) => {
     );
 };
 
+/*
 EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired
 };
+*/
 
 const tableStyles = makeStyles((theme) => ({
     container: {
         display: "flex",
         flexDirection: "column",
-        height:'100%'
+        height: '100%'
     },
     table: {
         //width: "100%"
@@ -117,61 +119,44 @@ const tableStyles = makeStyles((theme) => ({
         top: 20,
         width: 1
     },
-    root: { 
+    root: {
         display: "flex",
         flexDirection: "column",
-        height:'100%'
+        height: '100%'
     },
 }));
 
-export default function ListGroup(props) {
-
-    const {itemsMap,removeItem} =props;
-    const itemsList=[...itemsMap.values()];
-    const classes = tableStyles();
-    //const [selected, setSelected] = React.useState([]);
-    const [dense, setDense] = React.useState(false);
-    const [selected,setSelected]=React.useState(new Map());
-
-    /*
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1)
-            );
-        }
-        setSelected(newSelected);
-    };
-    */
-
-    const cancelSelected = (name)=>{
+const SelectedMapHook = () => {
+    const [selected, setSelected] = React.useState(new Map());
+    const hasSelected = name => selected.has(name);
+    const cancelSelected = (name) => {
         if (selected.delete(name)) setSelected(new Map(selected));
     }
+    const isSelected = (name) => selected.has(name);
+    const addSelect = name => setSelected(new Map(selected.set(name)));
+    const selectObject = { selected, cancelSelected, addSelect, isSelected, hasSelected }
+    return selectObject;
+}
 
-    const handleClick = (event,name) => {
-        selected.has(name) ? cancelSelected(name) : setSelected(new Map(selected.set(name)));
+export default function ListGroup(props) {
+
+    const { itemsMap, removeItem } = props;
+    const itemsList = [...itemsMap.values()];
+    const classes = tableStyles();
+    const [dense, setDense] = React.useState(false);
+    const selectObject = SelectedMapHook();
+
+    const handleClick = (event, name) => {
+        selectObject.hasSelected(name) ? selectObject.cancelSelected(name) : selectObject.addSelect(name);
     }
 
     const handleChangeDense = (event) => {
         setDense(event.target.checked);
     };
 
-    //const isSelected = (name) => selected.indexOf(name) !== -1;
-    const isSelected = (name) => selected.has(name);
-
     return (
         <div className={classes.root} >
-            <EnhancedTableToolbar numSelected={selected.size} selected={selected} removeItem={removeItem} cancelSelected={cancelSelected}/>
+            <EnhancedTableToolbar selected={selectObject.selected} removeItem={removeItem} />
             <TableContainer className={classes.container}>
                 <Table
                     className={classes.table}
@@ -181,9 +166,8 @@ export default function ListGroup(props) {
                 >
                     <TableBody>
                         {itemsList.map((row, index) => {
-                            const isItemSelected = isSelected(row.refno);
+                            const isItemSelected = selectObject.isSelected(row.refno);
                             const labelId = `enhanced-table-checkbox-${index}`;
-
                             return (
                                 <TableRow
                                     hover
@@ -191,7 +175,7 @@ export default function ListGroup(props) {
                                     role="checkbox"
                                     aria-checked={isItemSelected}
                                     tabIndex={-1}
-                                    key={row.refno+row.type}
+                                    key={row.refno + row.type}
                                     selected={isItemSelected}
                                 >
                                     <TableCell padding="checkbox">

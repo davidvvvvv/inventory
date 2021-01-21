@@ -179,10 +179,6 @@ export const getType = async refNo => {
   return querySnapshot.docs.length > 0 ? querySnapshot.docs[0].data().type : undefined;
 }
 
-
-
-
-
 /*export const addRecord = async (username,borrowDate,expectReturnDate,location,itemArray,)
 
 /*
