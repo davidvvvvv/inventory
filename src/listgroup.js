@@ -38,30 +38,30 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { selected, removeItem } = props;
-    const items = [...selected.keys()];
+    const { selectObject, removeItem } = props;
+    const items = [...selectObject.getSelectKey()];
 
     const deleteItem = () => {
         items.forEach((item) => {
             removeItem(item);
-            selected.cancelSelected(item);
+            selectObject.cancelSelected(item);
         })
     }
 
     return (
         <Toolbar
             className={clsx(classes.root, {
-                [classes.highlight]: selected.numSelected > 0
+                [classes.highlight]: selectObject.getNumSelected() > 0
             })}
         >
-            {selected.numSelected > 0 ? (
+            {selectObject.getNumSelected() > 0 ? (
                 <Typography
                     className={classes.title}
                     color="inherit"
                     variant="subtitle1"
                     component="div"
                 >
-                    {selected.numSelected} selected
+                    {selectObject.getNumSelected()} selected
                 </Typography>
             ) : (
                     <Typography
@@ -76,7 +76,7 @@ const EnhancedTableToolbar = (props) => {
                     </Typography>
                 )}
 
-            {selected.numSelected > 0 ? (
+            {selectObject.getNumSelected() > 0 ? (
                 <Tooltip title="Delete">
                     <IconButton aria-label="delete" onClick={deleteItem} >
                         <DeleteIcon />
@@ -128,14 +128,17 @@ const tableStyles = makeStyles((theme) => ({
 
 const SelectedMapHook = () => {
     const [selected, setSelected] = React.useState(new Map());
+    const getSelectKey = ()=> selected.keys;
     const hasSelected = name => selected.has(name);
     const cancelSelected = (name) => {
         if (selected.delete(name)) setSelected(new Map(selected));
     }
     const isSelected = (name) => selected.has(name);
     const addSelect = name => setSelected(new Map(selected.set(name)));
-    const selectObject = { selected, cancelSelected, addSelect, isSelected, hasSelected }
+    const getNumSelected = () => selected.size;
+    const selectObject = { getSelectKey, cancelSelected, addSelect, isSelected, hasSelected, getNumSelected }
     return selectObject;
+
 }
 
 export default function ListGroup(props) {
@@ -156,7 +159,7 @@ export default function ListGroup(props) {
 
     return (
         <div className={classes.root} >
-            <EnhancedTableToolbar selected={selectObject.selected} removeItem={removeItem} />
+            <EnhancedTableToolbar selectObject={selectObject} removeItem={removeItem} />
             <TableContainer className={classes.container}>
                 <Table
                     className={classes.table}
