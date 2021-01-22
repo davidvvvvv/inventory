@@ -40,7 +40,7 @@ const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
     const { selectObject, removeItem } = props;
     const items = [...selectObject.getSelectKey()];
-
+    
     const deleteItem = () => {
         items.forEach((item) => {
             removeItem(item);
@@ -128,7 +128,7 @@ const tableStyles = makeStyles((theme) => ({
 
 const SelectedMapHook = () => {
     const [selected, setSelected] = React.useState(new Map());
-    const getSelectKey = ()=> selected.keys;
+    const getSelectKey = ()=> selected.keys();
     const hasSelected = name => selected.has(name);
     const cancelSelected = (name) => {
         if (selected.delete(name)) setSelected(new Map(selected));
@@ -138,7 +138,6 @@ const SelectedMapHook = () => {
     const getNumSelected = () => selected.size;
     const selectObject = { getSelectKey, cancelSelected, addSelect, isSelected, hasSelected, getNumSelected }
     return selectObject;
-
 }
 
 export default function ListGroup(props) {
