@@ -72,7 +72,7 @@ const EnhancedTableToolbar = (props) => {
                         align="center"
                         color="primary"
                     >
-                        租借物品表
+                        項目表
                     </Typography>
                 )}
 
@@ -142,7 +142,7 @@ const SelectedMapHook = () => {
 
 export default function ListGroup(props) {
 
-    const { itemsMap, removeItem } = props;
+    const { itemsMap, removeItem,TestComponent } = props;
     const itemsList = [...itemsMap.values()];
     const classes = tableStyles();
     const [dense, setDense] = React.useState(false);
@@ -158,6 +158,7 @@ export default function ListGroup(props) {
 
     return (
         <div className={classes.root} >
+           <TestComponent />
             <EnhancedTableToolbar selectObject={selectObject} removeItem={removeItem} />
             <TableContainer className={classes.container}>
                 <Table
@@ -204,4 +205,13 @@ export default function ListGroup(props) {
             </TableContainer>
         </div>
     );
+}
+
+export const TestComponent = () => {
+    const testString = 'testComponent';
+    return (
+        <div>
+            {testString};
+        </div>
+    )
 }
