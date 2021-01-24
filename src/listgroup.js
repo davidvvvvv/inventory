@@ -40,7 +40,7 @@ const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
     const { selectObject, removeItem } = props;
     const items = [...selectObject.getSelectKey()];
-    
+
     const deleteItem = () => {
         items.forEach((item) => {
             removeItem(item);
@@ -126,9 +126,38 @@ const tableStyles = makeStyles((theme) => ({
     },
 }));
 
+export default function ListGroup(props) {
+
+    const { itemsMap, removeItem, CustomTableBody } = props;
+    const itemsList = [...itemsMap.values()];
+    const classes = tableStyles();
+    const [dense, setDense] = React.useState(false);
+    const selectObject = SelectedMapHook();
+
+    const handleChangeDense = (event) => {
+        setDense(event.target.checked);
+    };
+
+    return (
+        <div className={classes.root} >
+            <EnhancedTableToolbar selectObject={selectObject} removeItem={removeItem} />
+            <TableContainer className={classes.container}>
+                <Table
+                    className={classes.table}
+                    aria-labelledby="tableTitle"
+                    size={dense ? "small" : "medium"}
+                    aria-label="enhanced table"
+                >
+                    <CustomTableBody selectObject={selectObject} itemsList={itemsList}/>
+                </Table>
+            </TableContainer>
+        </div>
+    );
+}
+
 const SelectedMapHook = () => {
     const [selected, setSelected] = React.useState(new Map());
-    const getSelectKey = ()=> selected.keys();
+    const getSelectKey = () => selected.keys();
     const hasSelected = name => selected.has(name);
     const cancelSelected = (name) => {
         if (selected.delete(name)) setSelected(new Map(selected));
@@ -140,78 +169,46 @@ const SelectedMapHook = () => {
     return selectObject;
 }
 
-export default function ListGroup(props) {
-
-    const { itemsMap, removeItem,TestComponent } = props;
-    const itemsList = [...itemsMap.values()];
-    const classes = tableStyles();
-    const [dense, setDense] = React.useState(false);
-    const selectObject = SelectedMapHook();
-
+// import from inputForm for item listing table
+export const InputTableBody = (prop) => {
+    const { selectObject, itemsList } = prop;
     const handleClick = (event, name) => {
         selectObject.hasSelected(name) ? selectObject.cancelSelected(name) : selectObject.addSelect(name);
     }
-
-    const handleChangeDense = (event) => {
-        setDense(event.target.checked);
-    };
-
     return (
-        <div className={classes.root} >
-           <TestComponent />
-            <EnhancedTableToolbar selectObject={selectObject} removeItem={removeItem} />
-            <TableContainer className={classes.container}>
-                <Table
-                    className={classes.table}
-                    aria-labelledby="tableTitle"
-                    size={dense ? "small" : "medium"}
-                    aria-label="enhanced table"
-                >
-                    <TableBody>
-                        {itemsList.map((row, index) => {
-                            const isItemSelected = selectObject.isSelected(row.refno);
-                            const labelId = `enhanced-table-checkbox-${index}`;
-                            return (
-                                <TableRow
-                                    hover
-                                    onClick={(event) => handleClick(event, row.refno)}
-                                    role="checkbox"
-                                    aria-checked={isItemSelected}
-                                    tabIndex={-1}
-                                    key={row.refno + row.type}
-                                    selected={isItemSelected}
-                                >
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            checked={isItemSelected}
-                                            inputProps={{ "aria-labelledby": labelId }}
-                                        />
-                                    </TableCell>
-                                    <TableCell
-                                        component="th"
-                                        id={labelId}
-                                        scope="row"
-                                        padding="none"
-                                        multiline="true"
-                                    >
-                                        {`${row.refno} ${row.desc} ${row.dbRefNo}`}
-                                    </TableCell>
-                                    <TableCell align="right">{row.type}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
-    );
-}
-
-export const TestComponent = () => {
-    const testString = 'testComponent';
-    return (
-        <div>
-            {testString};
-        </div>
+        <TableBody>
+            {itemsList.map((row, index) => {
+                const isItemSelected = selectObject.isSelected(row.refno);
+                const labelId = `enhanced-table-checkbox-${index}`;
+                return (
+                    <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.refno)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.refno + row.type}
+                        selected={isItemSelected}
+                    >
+                        <TableCell padding="checkbox">
+                            <Checkbox
+                                checked={isItemSelected}
+                                inputProps={{ "aria-labelledby": labelId }}
+                            />
+                        </TableCell>
+                        <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                            multiline="true"
+                        >
+                            {`${row.refno} ${row.desc} ${row.dbRefNo}`}
+                        </TableCell>
+                        <TableCell align="right">{row.type}</TableCell>
+                    </TableRow>
+                );
+            })}
+        </TableBody>
     )
 }
