@@ -39,4 +39,8 @@ export const createInputItemObject = async dataString => {
   return createItemObject(dataString, checkType(await getType(dataString)), itemStatus);
 }
 
+export const createReturnObjet = async dataString =>{
+  
+}
+
 export default ItemMapHook;
