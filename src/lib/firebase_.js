@@ -173,9 +173,11 @@ export const checkItemNotReturn = item => {
     })
 };
 
-export const checkItemNotBorrow = item =>{
+export const checkItemNotBorrow = async item =>{
   console.log('firebase_checkItemNotBorrow');
   const ref = firestore.collection(dbRecords);
+  const dbResult=await ref.where('item','==',item).where('is_return','==',false).get();
+  if dbResult.docs.length
  // return ref.where('item','==',item)
 }
 
