@@ -32,9 +32,10 @@ const checkType = data => {
   throw new Error("沒有產品資料");
 }
 
+const createItemObject = (refno, type, itemStatus) => ({refno , type , desc:itemStatus.desc, dbRefNo:itemStatus.dbRefNo, notYetReturned:itemStatus.returned});
+
 /* create itemObject by inputForm.js*/
 export const createInputItemObject = async dataString => {
-  const createItemObject = (refno, type, itemStatus) => ({refno , type , desc:itemStatus.desc, dbRefNo:itemStatus.dbRefNo, returned:itemStatus.returned});
   const itemStatus = await checkItemNotReturn(dataString);
   return createItemObject(dataString, checkType(await getType(dataString)), itemStatus);
 }

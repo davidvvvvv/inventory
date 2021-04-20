@@ -76,7 +76,7 @@ export const getDBDoc = (col, doc) => {
     .catch(error => console.log("firebase_getDBDoc", error.message));
 };
 
-export const addRecord = (borrower, localion, borrowDate, expectReturnDate, itemsMap, setError, resetAllInput) => {
+export const addRecord = async (borrower, localion, borrowDate, expectReturnDate, itemsMap, setError, resetAllInput) => {
   // const ref = firestore.collection('record').doc(); // doc() 沒有指定名稱
   //console.log('auth.currentUser ',auth.currentUser);
   /*
@@ -110,6 +110,8 @@ export const addRecord = (borrower, localion, borrowDate, expectReturnDate, item
     });
   });
   */
+
+  /*
   itemsMap.forEach(async (element, key) => {
     try {
       const docRef = firestore.collection(dbRecords).doc();
@@ -126,7 +128,7 @@ export const addRecord = (borrower, localion, borrowDate, expectReturnDate, item
       });
       resetAllInput();
       try {
-        if (!element.returned) {
+        if (element.notYetReturned) {
           const oldDocRef = firestore.collection(dbRecords).doc(element.dbRefNo);
           await oldDocRef.set({
             return_date: new Date(getFormatToday()),
@@ -145,7 +147,47 @@ export const addRecord = (borrower, localion, borrowDate, expectReturnDate, item
     } catch (newDocRefErr) {
       setError(`資料庫輸入錯誤 : ${element.refno} - ${newDocRefErr.message}`);
     }
-  });
+  });*/
+
+
+  for (var [key, element] of itemsMap) {
+    try {
+      const docRef = firestore.collection(dbRecords).doc();
+      await docRef.set({
+        created_at: firebase.firestore.FieldValue.serverTimestamp(),
+        borrower,
+        localion,
+        borrow_date: borrowDate,
+        expect_return_date: expectReturnDate,
+        item_type: element.type,
+        item: element.refno,
+        is_return: false,
+        user: auth.currentUser.email
+      });
+    } catch (newDocRefErr) {
+      setError(`資料庫輸入錯誤 : ${element.refno} - ${newDocRefErr.message}`);
+      continue;
+    }
+    resetAllInput();
+    try {
+      if (element.notYetReturned) {
+        const oldDocRef = firestore.collection(dbRecords).doc(element.dbRefNo);
+        await oldDocRef.set({
+          return_date: new Date(getFormatToday()),
+          noReturn_next_id: docRef.id,
+          is_return: true
+        }, { merge: true });
+      }
+    } catch (oldDocRefErr) {
+      try {
+        firestore.collection(dbRecords).doc(docRef.id).delete();
+      } catch (deleteNewDBRecordErr) {
+        setError(`刪除資料庫紀錄錯誤 : ${docRef.id} - ${deleteNewDBRecordErr.message}`);
+      }
+      setError(`資料庫更新舊紀錄錯誤 : ${element.refno} - ${oldDocRefErr.message}`);
+    }
+
+  }
 }
 
 export const checkItemNotReturn = item => {
@@ -161,22 +203,22 @@ export const checkItemNotReturn = item => {
       return dbRecord ?
         {
           desc: ` /應尚未歸還: ${dbRecord.data().borrower} (${getFormatDate(dbRecord.data().borrow_date.toDate())})`,
-          dbRefNo : `${dbRecord.id}`,
-          returned : true
+          dbRefNo: `${dbRecord.id}`,
+          notYetReturned: true
         }
         :
         {
           desc: '',
-          dbRefNo : '',
-          returned : false
+          dbRefNo: '',
+          notYetReturned: false
         }
     })
 };
 
-export const checkItemNotBorrow = async item =>{
+export const checkItemNotBorrow = async item => {
   console.log('firebase_checkItemNotBorrow');
   const ref = firestore.collection(dbRecords);
-  const dbResult=await ref.where('item','==',item).where('is_return','==',false).get();
+  const dbResult = await ref.where('item', '==', item).where('is_return', '==', false).get();
   if dbResult.docs.length
  // return ref.where('item','==',item)
 }

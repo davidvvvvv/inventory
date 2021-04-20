@@ -252,7 +252,6 @@ const InputForm = () => {
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Button variant="contained" color="primary" className={classes.submitButton} type="submit" onClick={submit}>確定</Button>
       </div>
-
     </div>
   );
 };
