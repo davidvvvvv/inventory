@@ -17,9 +17,9 @@ const ItemMapHook = (setError) => {
   }
   const resetItemsMap = () => setItemsMap(new Map());
 
-  const addItem = async (dataString, createObjectFunction) => {
+  const addItem = async (dataString) => {
     try {
-      addItemsMap(dataString, await createObjectFunction(dataString));
+      addItemsMap(dataString, await createInputItemObject(dataString));
     } catch (err) {
       setError(err.message);
     }

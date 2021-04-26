@@ -121,7 +121,7 @@ const InputForm = () => {
   };
   useEffect(() => {
     console.log("inputForm_useEffect");
-    readTag(setError, addItem,createInputItemObject);
+    readTag(setError, addItem);
   }, []);
 
   const borrowerNameChange = (event) => {
@@ -152,7 +152,7 @@ const InputForm = () => {
   const inputListFunction = () => {
     if (itemInput) {
       //console.log(`${itemInput},${itemType}`);
-      addItem(`${itemInput}`,createInputItemObject);
+      addItem(`${itemInput}`);
       clearItemUIValue();
       //addItemCallBack(`${itemInput}`);
     } else {

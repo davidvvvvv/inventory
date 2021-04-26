@@ -152,6 +152,18 @@ export const addRecord = async (borrower, localion, borrowDate, expectReturnDate
 
   for (var [key, element] of itemsMap) {
     try {
+      if (element.notYetReturned) {
+        const oldDocRef = firestore.collection(dbRecords).doc(element.dbRefNo);
+        await oldDocRef.set({
+          return_date: new Date(getFormatToday()),
+          noReturn_reset_timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          is_return: true
+        }, { merge: true });
+      }
+    } catch (oldDocRefErr) {
+      setError(`資料庫更新舊紀錄錯誤 : ${element.refno} - ${element.dbRefNo} - ${oldDocRefErr.message}`);
+    }
+    try {
       const docRef = firestore.collection(dbRecords).doc();
       await docRef.set({
         created_at: firebase.firestore.FieldValue.serverTimestamp(),
@@ -165,28 +177,9 @@ export const addRecord = async (borrower, localion, borrowDate, expectReturnDate
         user: auth.currentUser.email
       });
     } catch (newDocRefErr) {
-      setError(`資料庫輸入錯誤 : ${element.refno} - ${newDocRefErr.message}`);
-      continue;
+      setError(`資料庫輸入錯誤，請重新輸入 : ${element.refno} - ${newDocRefErr.message}`);
     }
     resetAllInput();
-    try {
-      if (element.notYetReturned) {
-        const oldDocRef = firestore.collection(dbRecords).doc(element.dbRefNo);
-        await oldDocRef.set({
-          return_date: new Date(getFormatToday()),
-          noReturn_next_id: docRef.id,
-          is_return: true
-        }, { merge: true });
-      }
-    } catch (oldDocRefErr) {
-      try {
-        firestore.collection(dbRecords).doc(docRef.id).delete();
-      } catch (deleteNewDBRecordErr) {
-        setError(`刪除資料庫紀錄錯誤 : ${docRef.id} - ${deleteNewDBRecordErr.message}`);
-      }
-      setError(`資料庫更新舊紀錄錯誤 : ${element.refno} - ${oldDocRefErr.message}`);
-    }
-
   }
 }
 
@@ -213,14 +206,15 @@ export const checkItemNotReturn = item => {
           notYetReturned: false
         }
     })
-};
+    .catch(error=>{setError("資料庫查詢錯誤，請重新輸入")})
+  }
 
 export const checkItemNotBorrow = async item => {
   console.log('firebase_checkItemNotBorrow');
   const ref = firestore.collection(dbRecords);
   const dbResult = await ref.where('item', '==', item).where('is_return', '==', false).get();
-  if dbResult.docs.length
- // return ref.where('item','==',item)
+  //if dbResult.docs.length
+  // return ref.where('item','==',item)
 }
 
 export const getType = async refNo => {
