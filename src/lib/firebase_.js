@@ -206,7 +206,7 @@ export const checkItemNotReturn = item => {
           notYetReturned: false
         }
     })
-    .catch(error=>{setError("資料庫查詢錯誤，請重新輸入")})
+    .catch(()=>setError("資料庫查詢錯誤，請重新輸入"));
   }
 
 export const checkItemNotBorrow = async item => {
