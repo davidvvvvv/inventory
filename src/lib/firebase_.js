@@ -206,13 +206,14 @@ export const checkItemNotReturn = item => {
           notYetReturned: false
         }
     })
-    .catch(()=>setError("資料庫查詢錯誤，請重新輸入"));
+    //.catch(()=>setError("資料庫查詢錯誤，請重新輸入"));
   }
 
 export const checkItemNotBorrow = async item => {
   console.log('firebase_checkItemNotBorrow');
   const ref = firestore.collection(dbRecords);
   const dbResult = await ref.where('item', '==', item).where('is_return', '==', false).get();
+  
   //if dbResult.docs.length
   // return ref.where('item','==',item)
 }
